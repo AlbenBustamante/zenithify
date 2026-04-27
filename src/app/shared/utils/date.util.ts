@@ -1,0 +1,54 @@
+export function formatDate(date: Date, locale: string = 'es-VE'): string {
+  return new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+}
+
+export function formatShortDate(date: Date, locale: string = 'es-VE'): string {
+  return new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(date);
+}
+
+export function isToday(date: Date): boolean {
+  const today = new Date();
+  return (
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear()
+  );
+}
+
+export function isOverdue(date: Date): boolean {
+  return date < new Date();
+}
+
+export function daysFromNow(date: Date): number {
+  const now = new Date();
+  const diff = date.getTime() - now.getTime();
+  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+}
+
+export function startOfMonth(date: Date = new Date()): Date {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+export function endOfMonth(date: Date = new Date()): Date {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+}
+
+export function startOfWeek(date: Date = new Date()): Date {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  return new Date(d.setDate(diff));
+}
+
+export function endOfWeek(date: Date = new Date()): Date {
+  const start = startOfWeek(date);
+  return new Date(start.getTime() + 6 * 24 * 60 * 60 * 1000);
+}
