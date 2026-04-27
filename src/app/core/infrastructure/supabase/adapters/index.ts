@@ -1,0 +1,11 @@
+export { SupabaseAuthAdapter } from './supabase-auth.adapter';
+export { SupabaseExpenseRepository } from './supabase-expense.repository';
+export { SupabaseIncomeRepository } from './supabase-income.repository';
+export { SupabaseBudgetRepository } from './supabase-budget.repository';
+export { SupabasePlanRepository } from './supabase-plan.repository';
+export { SupabaseTaskRepository } from './supabase-task.repository';
+export { SupabaseBookmarkRepository } from './supabase-bookmark.repository';
+export { SupabaseCategoryRepository } from './supabase-category.repository';
+export { SupabaseQuotaRepository } from './supabase-quota.repository';
+export { SupabaseExchangeRateRepository } from './supabase-exchange-rate.repository';
+export { SupabaseNotificationAdapter } from './supabase-notification.adapter';
