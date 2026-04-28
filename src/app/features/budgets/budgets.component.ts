@@ -30,76 +30,84 @@ interface BudgetWithUtilization extends Budget {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, TitleCasePipe, ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent],
   template: `
-    <div class="space-y-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Presupuestos</h1>
-          <p class="text-sm text-gray-500 mt-1">Controla tus gastos fijos</p>
-        </div>
-        <app-button (clicked)="openCreateModal()">
-          <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          Nuevo Presupuesto
-        </app-button>
-      </div>
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-8">
+      <div class="max-w-7xl mx-auto space-y-8">
 
-      @if (budgets().length === 0) {
-        <app-card>
-          <div class="text-center py-8">
-            <div class="w-12 h-12 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
+        <header class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 animate-slide-up">
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="w-1 h-8 bg-primary-600 rounded-full"></span>
+              <h1 class="text-4xl font-bold text-slate-900 tracking-tight">Presupuestos</h1>
             </div>
-            <p class="text-gray-500 text-sm mb-4">No hay presupuestos creados</p>
-            <app-button variant="secondary" (clicked)="openCreateModal()">Crear tu primer presupuesto</app-button>
+            <p class="text-slate-500 text-sm">Controla tus gastos fijos</p>
           </div>
-        </app-card>
-      } @else {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          @for (budget of budgets(); track budget.id) {
-            <app-card>
-              <div class="flex items-start justify-between mb-4">
-                <div>
-                  <p class="font-semibold text-gray-900">{{ budget.name }}</p>
-                  <p class="text-xs text-gray-500 mt-0.5">{{ budget.period | titlecase }}</p>
-                </div>
-                <app-badge [variant]="budget.utilization.isOverBudget ? 'danger' : 'success'">
-                  {{ budget.utilization.percentage.toFixed(0) }}%
-                </app-badge>
+          <app-button (clicked)="openCreateModal()">
+            <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Nuevo Presupuesto
+          </app-button>
+        </header>
+
+        @if (budgets().length === 0) {
+          <app-card class="animate-slide-up stagger-1">
+            <div class="text-center py-12">
+              <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-slate-100 flex items-center justify-center">
+                <svg class="w-10 h-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
               </div>
-              <div class="space-y-3">
-                <div class="flex justify-between">
-                  <span class="text-sm text-gray-500">Límite</span>
-                  <span class="font-medium">{{ formatMoney(budget.amount, budget.currency) }}</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-sm text-gray-500">Gastado</span>
-                  <span class="font-medium" [class]="budget.utilization.isOverBudget ? 'text-red-600' : 'text-gray-900'">
-                    {{ formatMoney(budget.utilization.spent.amount, budget.utilization.spent.currency) }}
-                  </span>
-                </div>
-                <div class="w-full bg-gray-100 rounded-full h-1.5">
-                  <div
-                    class="h-1.5 rounded-full transition-all"
-                    [class]="budget.utilization.isOverBudget ? 'bg-red-500' : 'bg-primary-500'"
-                    [style.width.%]="Math.min(budget.utilization.percentage, 100)"
-                  ></div>
-                </div>
+              <p class="text-slate-400 text-sm mb-6">No hay presupuestos creados</p>
+              <app-button variant="secondary" (clicked)="openCreateModal()">Crear tu primer presupuesto</app-button>
+            </div>
+          </app-card>
+        } @else {
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            @for (budget of budgets(); track budget.id; let i = $index) {
+              <div class="animate-slide-up" [class]="'stagger-' + (i + 1)">
+                <app-card>
+                  <div class="flex items-start justify-between mb-5">
+                    <div>
+                      <p class="font-semibold text-slate-800">{{ budget.name }}</p>
+                      <p class="text-xs text-slate-400 mt-0.5">{{ budget.period | titlecase }}</p>
+                    </div>
+                    <app-badge [variant]="budget.utilization.isOverBudget ? 'danger' : 'success'">
+                      {{ budget.utilization.percentage.toFixed(0) }}%
+                    </app-badge>
+                  </div>
+                  <div class="space-y-4">
+                    <div class="flex justify-between">
+                      <span class="text-sm text-slate-500">Límite</span>
+                      <span class="font-medium text-slate-700">{{ formatMoney(budget.amount, budget.currency) }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-sm text-slate-500">Gastado</span>
+                      <span class="font-medium" [class]="budget.utilization.isOverBudget ? 'text-red-600' : 'text-slate-800'">
+                        {{ formatMoney(budget.utilization.spent.amount, budget.utilization.spent.currency) }}
+                      </span>
+                    </div>
+                    <div class="relative h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        class="absolute top-0 left-0 h-full rounded-full transition-all duration-500"
+                        [class]="budget.utilization.isOverBudget ? 'bg-gradient-to-r from-red-400 to-red-600' : 'bg-gradient-to-r from-primary-400 to-primary-600'"
+                        [style.width.%]="Math.min(budget.utilization.percentage, 100)"
+                      ></div>
+                    </div>
+                  </div>
+                  <div class="flex justify-end gap-2 mt-5 pt-4 border-t border-slate-100">
+                    <app-button variant="ghost" size="sm" (clicked)="openEditModal(budget)">Editar</app-button>
+                    <app-button variant="ghost" size="sm" (clicked)="confirmDelete(budget)">Eliminar</app-button>
+                  </div>
+                </app-card>
               </div>
-              <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-100">
-                <app-button variant="ghost" size="sm" (clicked)="openEditModal(budget)">Editar</app-button>
-                <app-button variant="ghost" size="sm" (clicked)="confirmDelete(budget)">Eliminar</app-button>
-              </div>
-            </app-card>
-          }
-        </div>
-      }
+            }
+          </div>
+        }
+      </div>
     </div>
 
     <app-modal [isOpen]="isModalOpen()" [title]="editingBudget() ? 'Editar Presupuesto' : 'Nuevo Presupuesto'" (close)="closeModal()">
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
         <app-input formControlName="name" label="Nombre" placeholder="Ej: Presupuesto mensual alimentación"
           [error]="form.controls['name'].invalid && form.controls['name'].touched ? 'Nombre requerido' : ''" />
 
@@ -131,7 +139,7 @@ interface BudgetWithUtilization extends Budget {
     </app-modal>
 
     <app-modal [isOpen]="isDeleteModalOpen()" title="Eliminar Presupuesto" (close)="closeDeleteModal()">
-      <p class="text-gray-600">¿Estás seguro de que deseas eliminar este presupuesto?</p>
+      <p class="text-slate-600">¿Estás seguro de que deseas eliminar este presupuesto?</p>
       <div class="flex justify-end gap-3 mt-6">
         <app-button variant="secondary" (clicked)="closeDeleteModal()">Cancelar</app-button>
         <app-button variant="danger" (clicked)="onDelete()" [loading]="isLoading()">Eliminar</app-button>
