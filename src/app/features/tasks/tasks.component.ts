@@ -1,5 +1,5 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
-import { CommonModule, NgClass, TitleCasePipe } from '@angular/common';
+import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CardComponent } from '../../shared/ui/components/card/card.component';
 import { ButtonComponent } from '../../shared/ui/components/button/button.component';
@@ -14,20 +14,31 @@ import { CreateTaskUseCase, UpdateTaskUseCase, DeleteTaskUseCase, CompleteTaskUs
 
 @Component({
   selector: 'app-tasks',
-  imports: [CommonModule, NgClass, TitleCasePipe, ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, TitleCasePipe, ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-900">Tareas</h1>
-        <app-button (clicked)="openCreateModal()">+ Nueva Tarea</app-button>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Tareas</h1>
+          <p class="text-sm text-gray-500 mt-1">Organiza tu trabajo pendientes</p>
+        </div>
+        <app-button (clicked)="openCreateModal()">
+          <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Nueva Tarea
+        </app-button>
       </div>
 
       <div class="flex gap-2 flex-wrap">
         @for (filter of statusFilters; track filter.value) {
           <button
             (click)="setStatusFilter(filter.value)"
-            [ngClass]="statusFilter() === filter.value ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
             class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+            [class]="statusFilter() === filter.value
+              ? 'bg-primary-600 text-white'
+              : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'"
           >
             {{ filter.label }}
           </button>
@@ -36,18 +47,25 @@ import { CreateTaskUseCase, UpdateTaskUseCase, DeleteTaskUseCase, CompleteTaskUs
 
       <app-card [noPadding]="true">
         @if (tasks().length === 0) {
-          <div class="p-8 text-center text-gray-500">
-            <p>No hay tareas</p>
-            <app-button variant="ghost" (clicked)="openCreateModal()" class="mt-2">Crear tu primera tarea</app-button>
+          <div class="p-12 text-center">
+            <div class="w-12 h-12 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+            </div>
+            <p class="text-gray-500 text-sm mb-4">No hay tareas</p>
+            <app-button variant="secondary" (clicked)="openCreateModal()">Crear tu primera tarea</app-button>
           </div>
         } @else {
-          <div class="divide-y divide-gray-200">
+          <div class="divide-y divide-gray-100">
             @for (task of tasks(); track task.id) {
-              <div class="p-4 flex items-center gap-4 hover:bg-gray-50">
+              <div class="p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors">
                 <button
                   (click)="toggleComplete(task)"
-                  [ngClass]="task.status === 'completed' ? 'bg-green-500 border-green-500' : 'border-gray-300 hover:border-primary-500'"
-                  class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors"
+                  class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200"
+                  [class]="task.status === 'completed'
+                    ? 'bg-green-500 border-green-500'
+                    : 'border-gray-300 hover:border-primary-500'"
                 >
                   @if (task.status === 'completed') {
                     <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -55,16 +73,17 @@ import { CreateTaskUseCase, UpdateTaskUseCase, DeleteTaskUseCase, CompleteTaskUs
                     </svg>
                   }
                 </button>
-                <div class="flex-1">
-                  <p [ngClass]="task.status === 'completed' ? 'line-through text-gray-400' : 'text-gray-900'" class="font-medium">
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium truncate"
+                     [class]="task.status === 'completed' ? 'line-through text-gray-400' : 'text-gray-900'">
                     {{ task.title }}
                   </p>
                   @if (task.dueDate) {
-                    <p class="text-sm" [ngClass]="isOverdue(task.dueDate) ? 'text-red-500' : 'text-gray-500'">
+                    <p class="text-xs mt-0.5" [class]="isOverdue(task.dueDate) ? 'text-red-500' : 'text-gray-500'">
                       {{ formatDate(task.dueDate) }}
                       @if (!isOverdue(task.dueDate)) {
                         <span>({{ daysFromNow(task.dueDate) }} días)</span>
-                      })
+                      }
                     </p>
                   }
                 </div>
@@ -93,7 +112,7 @@ import { CreateTaskUseCase, UpdateTaskUseCase, DeleteTaskUseCase, CompleteTaskUs
             <option value="medium">Media</option>
             <option value="high">Alta</option>
           </app-select>
-          <app-input formControlName="dueDate" label="Fecha de vencimiento" type="text" />
+          <app-input formControlName="dueDate" label="Fecha de vencimiento" type="date" />
         </div>
 
         <div class="flex justify-end gap-3 mt-6">
@@ -106,7 +125,7 @@ import { CreateTaskUseCase, UpdateTaskUseCase, DeleteTaskUseCase, CompleteTaskUs
     </app-modal>
 
     <app-modal [isOpen]="isDeleteModalOpen()" title="Eliminar Tarea" (close)="closeDeleteModal()">
-      <p class="text-gray-700">¿Estás seguro de que deseas eliminar esta tarea?</p>
+      <p class="text-gray-600">¿Estás seguro de que deseas eliminar esta tarea?</p>
       <div class="flex justify-end gap-3 mt-6">
         <app-button variant="secondary" (clicked)="closeDeleteModal()">Cancelar</app-button>
         <app-button variant="danger" (clicked)="onDelete()" [loading]="isLoading()">Eliminar</app-button>

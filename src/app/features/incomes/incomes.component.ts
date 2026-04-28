@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CardComponent } from '../../shared/ui/components/card/card.component';
 import { ButtonComponent } from '../../shared/ui/components/button/button.component';
@@ -14,23 +14,47 @@ import { CreateIncomeUseCase, UpdateIncomeUseCase, DeleteIncomeUseCase } from '.
 
 @Component({
   selector: 'app-incomes',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-900">Ingresos</h1>
-        <app-button (clicked)="openCreateModal()">+ Nuevo Ingreso</app-button>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Ingresos</h1>
+          <p class="text-sm text-gray-500 mt-1">Gestiona tus ingresos mensuales</p>
+        </div>
+        <app-button (clicked)="openCreateModal()">
+          <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Nuevo Ingreso
+        </app-button>
       </div>
 
       <div class="flex gap-4 flex-wrap">
-        <input type="date" [value]="startDate()" (change)="onStartDateChange($event)"
-          class="rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500" />
-        <span class="text-gray-500">hasta</span>
-        <input type="date" [value]="endDate()" (change)="onEndDateChange($event)"
-          class="rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500" />
+        <div class="flex items-center gap-2">
+          <div class="relative">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <input
+              type="date"
+              [value]="startDate()"
+              (change)="onStartDateChange($event)"
+              class="pl-9 pr-3 py-2 rounded-lg border border-gray-300 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
+            />
+          </div>
+          <span class="text-gray-400 text-sm">hasta</span>
+          <input
+            type="date"
+            [value]="endDate()"
+            (change)="onEndDateChange($event)"
+            class="rounded-lg border border-gray-300 py-2 px-3 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
+          />
+        </div>
 
         <select [value]="selectedCategory()" (change)="onCategoryFilterChange($event)"
-          class="rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+          class="rounded-lg border border-gray-300 py-2 px-3 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500">
           <option value="">Todas las categorías</option>
           @for (cat of categories(); track cat.id) {
             <option [value]="cat.id">{{ cat.name }}</option>
@@ -40,14 +64,19 @@ import { CreateIncomeUseCase, UpdateIncomeUseCase, DeleteIncomeUseCase } from '.
 
       <app-card [noPadding]="true">
         @if (incomes().length === 0) {
-          <div class="p-8 text-center text-gray-500">
-            <p>No hay ingresos registrados</p>
-            <app-button variant="ghost" (clicked)="openCreateModal()" class="mt-2">Agregar tu primer ingreso</app-button>
+          <div class="p-12 text-center">
+            <div class="w-12 h-12 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 112 2h-2a2 2 0 012-2zm0 0V5a2 2 0 012-2h2a2 2 0 012 2v2m-6 9h6a2 2 0 002-2v-6a2 2 0 00-2-2h-6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <p class="text-gray-500 text-sm mb-4">No hay ingresos registrados</p>
+            <app-button variant="secondary" (clicked)="openCreateModal()">Agregar tu primer ingreso</app-button>
           </div>
         } @else {
           <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
+              <thead class="bg-gray-50/50">
                 <tr>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
                   <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descripción</th>
@@ -56,24 +85,24 @@ import { CreateIncomeUseCase, UpdateIncomeUseCase, DeleteIncomeUseCase } from '.
                   <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
                 </tr>
               </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
+              <tbody class="bg-white divide-y divide-gray-100">
                 @for (income of incomes(); track income.id) {
-                  <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(income.incomeDate) }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ income.description }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-3.5 whitespace-nowrap text-sm text-gray-500">{{ formatDate(income.incomeDate) }}</td>
+                    <td class="px-6 py-3.5 whitespace-nowrap text-sm font-medium text-gray-900">{{ income.description }}</td>
+                    <td class="px-6 py-3.5 whitespace-nowrap text-sm">
                       @if (income.category) {
                         <app-badge variant="success">{{ income.category.name }}</app-badge>
                       } @else {
                         <span class="text-gray-400">Sin categoría</span>
                       }
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-green-600">
+                    <td class="px-6 py-3.5 whitespace-nowrap text-sm text-right font-semibold text-green-600">
                       +{{ formatMoney(income.amount, income.currency) }}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      <button (click)="openEditModal(income)" class="text-primary-600 hover:text-primary-900 mr-3">Editar</button>
-                      <button (click)="confirmDelete(income)" class="text-red-600 hover:text-red-900">Eliminar</button>
+                    <td class="px-6 py-3.5 whitespace-nowrap text-right text-sm">
+                      <button (click)="openEditModal(income)" class="text-primary-600 hover:text-primary-800 mr-4 font-medium">Editar</button>
+                      <button (click)="confirmDelete(income)" class="text-red-600 hover:text-red-800 font-medium">Eliminar</button>
                     </td>
                   </tr>
                 }
@@ -83,7 +112,7 @@ import { CreateIncomeUseCase, UpdateIncomeUseCase, DeleteIncomeUseCase } from '.
         }
       </app-card>
 
-      <p class="text-sm text-gray-500">Total: <span class="font-medium text-gray-900">{{ formatMoney(totalAmount(), 'USD') }}</span></p>
+      <p class="text-sm text-gray-500">Total: <span class="font-semibold text-gray-900">{{ formatMoney(totalAmount(), 'USD') }}</span></p>
     </div>
 
     <app-modal [isOpen]="isModalOpen()" [title]="editingIncome() ? 'Editar Ingreso' : 'Nuevo Ingreso'" (close)="closeModal()">
@@ -107,7 +136,7 @@ import { CreateIncomeUseCase, UpdateIncomeUseCase, DeleteIncomeUseCase } from '.
           }
         </app-select>
 
-        <app-input formControlName="incomeDate" label="Fecha" type="text"
+        <app-input formControlName="incomeDate" label="Fecha" type="date"
           [error]="form.controls['incomeDate'].invalid && form.controls['incomeDate'].touched ? 'Fecha requerida' : ''" />
 
         <div class="flex justify-end gap-3 mt-6">
@@ -120,7 +149,7 @@ import { CreateIncomeUseCase, UpdateIncomeUseCase, DeleteIncomeUseCase } from '.
     </app-modal>
 
     <app-modal [isOpen]="isDeleteModalOpen()" title="Eliminar Ingreso" (close)="closeDeleteModal()">
-      <p class="text-gray-700">¿Estás seguro de que deseas eliminar este ingreso?</p>
+      <p class="text-gray-600">¿Estás seguro de que deseas eliminar este ingreso?</p>
       <div class="flex justify-end gap-3 mt-6">
         <app-button variant="secondary" (clicked)="closeDeleteModal()">Cancelar</app-button>
         <app-button variant="danger" (clicked)="onDelete()" [loading]="isLoading()">Eliminar</app-button>

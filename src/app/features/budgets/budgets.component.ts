@@ -1,16 +1,16 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
-import { CommonModule, NgClass, TitleCasePipe } from '@angular/common';
+import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CardComponent } from '../../shared/ui/components/card/card.component';
 import { ButtonComponent } from '../../shared/ui/components/button/button.component';
 import { InputComponent } from '../../shared/ui/components/input/input.component';
 import { ModalComponent } from '../../shared/ui/components/modal/modal.component';
 import { SelectComponent } from '../../shared/ui/components/select/select.component';
+import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
 import { Currency, Budget, BudgetPeriod } from '../../core/domain/entities';
 import { formatCurrency } from '../../shared/utils';
 import { Money } from '../../core/domain/value-objects';
 import { SupabaseBudgetRepository } from '../../core/infrastructure/supabase/adapters/supabase-budget.repository';
-import { SupabaseCategoryRepository } from '../../core/infrastructure/supabase/adapters/supabase-category.repository';
 import { SupabaseExpenseRepository } from '../../core/infrastructure/supabase/adapters/supabase-expense.repository';
 import { SupabaseExchangeRateRepository } from '../../core/infrastructure/supabase/adapters/supabase-exchange-rate.repository';
 import { BudgetCalculationService } from '../../core/domain/services';
@@ -27,25 +27,48 @@ interface BudgetWithUtilization extends Budget {
 
 @Component({
   selector: 'app-budgets',
-  imports: [CommonModule, NgClass, TitleCasePipe, ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, TitleCasePipe, ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-900">Presupuestos</h1>
-        <app-button (clicked)="openCreateModal()">+ Nuevo Presupuesto</app-button>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Presupuestos</h1>
+          <p class="text-sm text-gray-500 mt-1">Controla tus gastos fijos</p>
+        </div>
+        <app-button (clicked)="openCreateModal()">
+          <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Nuevo Presupuesto
+        </app-button>
       </div>
 
       @if (budgets().length === 0) {
         <app-card>
-          <div class="text-center text-gray-500 py-8">
-            <p>No hay presupuestos creados</p>
-            <app-button variant="ghost" (clicked)="openCreateModal()" class="mt-2">Crear tu primer presupuesto</app-button>
+          <div class="text-center py-8">
+            <div class="w-12 h-12 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <p class="text-gray-500 text-sm mb-4">No hay presupuestos creados</p>
+            <app-button variant="secondary" (clicked)="openCreateModal()">Crear tu primer presupuesto</app-button>
           </div>
         </app-card>
       } @else {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           @for (budget of budgets(); track budget.id) {
-            <app-card [title]="budget.name">
+            <app-card>
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <p class="font-semibold text-gray-900">{{ budget.name }}</p>
+                  <p class="text-xs text-gray-500 mt-0.5">{{ budget.period | titlecase }}</p>
+                </div>
+                <app-badge [variant]="budget.utilization.isOverBudget ? 'danger' : 'success'">
+                  {{ budget.utilization.percentage.toFixed(0) }}%
+                </app-badge>
+              </div>
               <div class="space-y-3">
                 <div class="flex justify-between">
                   <span class="text-sm text-gray-500">Límite</span>
@@ -53,23 +76,19 @@ interface BudgetWithUtilization extends Budget {
                 </div>
                 <div class="flex justify-between">
                   <span class="text-sm text-gray-500">Gastado</span>
-                  <span class="font-medium">{{ formatMoney(budget.utilization.spent.amount, budget.utilization.spent.currency) }}</span>
+                  <span class="font-medium" [class]="budget.utilization.isOverBudget ? 'text-red-600' : 'text-gray-900'">
+                    {{ formatMoney(budget.utilization.spent.amount, budget.utilization.spent.currency) }}
+                  </span>
                 </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="w-full bg-gray-100 rounded-full h-1.5">
                   <div
-                    class="h-2 rounded-full transition-all"
-                    [ngClass]="budget.utilization.isOverBudget ? 'bg-red-500' : 'bg-primary-500'"
+                    class="h-1.5 rounded-full transition-all"
+                    [class]="budget.utilization.isOverBudget ? 'bg-red-500' : 'bg-primary-500'"
                     [style.width.%]="Math.min(budget.utilization.percentage, 100)"
                   ></div>
                 </div>
-                <div class="flex justify-between text-sm">
-                  <span [ngClass]="budget.utilization.isOverBudget ? 'text-red-500' : 'text-gray-500'">
-                    {{ budget.utilization.percentage.toFixed(1) }}% utilizado
-                  </span>
-                  <span class="text-gray-500">{{ budget.period | titlecase }}</span>
-                </div>
               </div>
-              <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-200">
+              <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-100">
                 <app-button variant="ghost" size="sm" (clicked)="openEditModal(budget)">Editar</app-button>
                 <app-button variant="ghost" size="sm" (clicked)="confirmDelete(budget)">Eliminar</app-button>
               </div>
@@ -99,7 +118,7 @@ interface BudgetWithUtilization extends Budget {
           <option value="yearly">Anual</option>
         </app-select>
 
-        <app-input formControlName="startDate" label="Fecha de inicio" type="text"
+        <app-input formControlName="startDate" label="Fecha de inicio" type="date"
           [error]="form.controls['startDate'].invalid && form.controls['startDate'].touched ? 'Fecha requerida' : ''" />
 
         <div class="flex justify-end gap-3 mt-6">
@@ -112,7 +131,7 @@ interface BudgetWithUtilization extends Budget {
     </app-modal>
 
     <app-modal [isOpen]="isDeleteModalOpen()" title="Eliminar Presupuesto" (close)="closeDeleteModal()">
-      <p class="text-gray-700">¿Estás seguro de que deseas eliminar este presupuesto?</p>
+      <p class="text-gray-600">¿Estás seguro de que deseas eliminar este presupuesto?</p>
       <div class="flex justify-end gap-3 mt-6">
         <app-button variant="secondary" (clicked)="closeDeleteModal()">Cancelar</app-button>
         <app-button variant="danger" (clicked)="onDelete()" [loading]="isLoading()">Eliminar</app-button>

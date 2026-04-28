@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CardComponent } from '../../shared/ui/components/card/card.component';
 import { ButtonComponent } from '../../shared/ui/components/button/button.component';
@@ -11,65 +11,82 @@ import { CreateCategoryUseCase, UpdateCategoryUseCase, DeleteCategoryUseCase, Li
 
 @Component({
   selector: 'app-categories',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-900">Categorías</h1>
-        <app-button (clicked)="openCreateModal()">+ Nueva Categoría</app-button>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Categorías</h1>
+          <p class="text-sm text-gray-500 mt-1">Organiza tus gastos e ingresos</p>
+        </div>
+        <app-button (clicked)="openCreateModal()">
+          <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Nueva Categoría
+        </app-button>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <app-card title="Categorías de Gastos">
-          @if (expenseCategories().length === 0) {
-            <p class="text-gray-500 text-center py-4">No hay categorías de gastos</p>
-          } @else {
-            <div class="space-y-2">
+        <app-card title="Gastos" [noPadding]="true">
+          <div class="divide-y divide-gray-100">
+            @if (expenseCategories().length === 0) {
+              <div class="p-6 text-center">
+                <p class="text-gray-400 text-sm">No hay categorías de gastos</p>
+              </div>
+            } @else {
               @for (cat of expenseCategories(); track cat.id) {
-                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div class="flex items-center gap-2">
-                    <span class="text-xl">{{ cat.icon }}</span>
-                    <span class="font-medium text-gray-900">{{ cat.name }}</span>
-                    @if (cat.isSystem) {
-                      <span class="text-xs text-gray-400">(Sistema)</span>
-                    }
+                <div class="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                  <div class="flex items-center gap-3">
+                    <span class="text-xl">{{ cat.icon || '📁' }}</span>
+                    <div>
+                      <span class="font-medium text-gray-900">{{ cat.name }}</span>
+                      @if (cat.isSystem) {
+                        <span class="ml-2 text-xs text-gray-400">(Sistema)</span>
+                      }
+                    </div>
                   </div>
                   @if (!cat.isSystem) {
-                    <div class="flex gap-2">
+                    <div class="flex gap-1">
                       <app-button variant="ghost" size="sm" (clicked)="openEditModal(cat)">Editar</app-button>
                       <app-button variant="ghost" size="sm" (clicked)="confirmDelete(cat)">Eliminar</app-button>
                     </div>
                   }
                 </div>
               }
-            </div>
-          }
+            }
+          </div>
         </app-card>
 
-        <app-card title="Categorías de Ingresos">
-          @if (incomeCategories().length === 0) {
-            <p class="text-gray-500 text-center py-4">No hay categorías de ingresos</p>
-          } @else {
-            <div class="space-y-2">
+        <app-card title="Ingresos" [noPadding]="true">
+          <div class="divide-y divide-gray-100">
+            @if (incomeCategories().length === 0) {
+              <div class="p-6 text-center">
+                <p class="text-gray-400 text-sm">No hay categorías de ingresos</p>
+              </div>
+            } @else {
               @for (cat of incomeCategories(); track cat.id) {
-                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div class="flex items-center gap-2">
-                    <span class="text-xl">{{ cat.icon }}</span>
-                    <span class="font-medium text-gray-900">{{ cat.name }}</span>
-                    @if (cat.isSystem) {
-                      <span class="text-xs text-gray-400">(Sistema)</span>
-                    }
+                <div class="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                  <div class="flex items-center gap-3">
+                    <span class="text-xl">{{ cat.icon || '📁' }}</span>
+                    <div>
+                      <span class="font-medium text-gray-900">{{ cat.name }}</span>
+                      @if (cat.isSystem) {
+                        <span class="ml-2 text-xs text-gray-400">(Sistema)</span>
+                      }
+                    </div>
                   </div>
                   @if (!cat.isSystem) {
-                    <div class="flex gap-2">
+                    <div class="flex gap-1">
                       <app-button variant="ghost" size="sm" (clicked)="openEditModal(cat)">Editar</app-button>
                       <app-button variant="ghost" size="sm" (clicked)="confirmDelete(cat)">Eliminar</app-button>
                     </div>
                   }
                 </div>
               }
-            </div>
-          }
+            }
+          </div>
         </app-card>
       </div>
     </div>
@@ -98,7 +115,7 @@ import { CreateCategoryUseCase, UpdateCategoryUseCase, DeleteCategoryUseCase, Li
     </app-modal>
 
     <app-modal [isOpen]="isDeleteModalOpen()" title="Eliminar Categoría" (close)="closeDeleteModal()">
-      <p class="text-gray-700">¿Estás seguro de que deseas eliminar esta categoría?</p>
+      <p class="text-gray-600">¿Estás seguro de que deseas eliminar esta categoría?</p>
       <div class="flex justify-end gap-3 mt-6">
         <app-button variant="secondary" (clicked)="closeDeleteModal()">Cancelar</app-button>
         <app-button variant="danger" (clicked)="onDelete()" [loading]="isLoading()">Eliminar</app-button>

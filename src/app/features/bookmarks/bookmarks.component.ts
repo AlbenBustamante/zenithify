@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CardComponent } from '../../shared/ui/components/card/card.component';
 import { ButtonComponent } from '../../shared/ui/components/button/button.component';
@@ -11,51 +11,69 @@ import { CreateBookmarkUseCase, UpdateBookmarkUseCase, DeleteBookmarkUseCase, Li
 
 @Component({
   selector: 'app-bookmarks',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, BadgeComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-900">Marcadores</h1>
-        <app-button (clicked)="openCreateModal()">+ Nuevo Marcador</app-button>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Marcadores</h1>
+          <p class="text-sm text-gray-500 mt-1">Guarda tus enlaces importantes</p>
+        </div>
+        <app-button (clicked)="openCreateModal()">
+          <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Nuevo Marcador
+        </app-button>
       </div>
 
-      <app-input
-        type="text"
-        placeholder="Buscar marcadores..."
-        [prefix]="'🔍'"
-        (input)="onSearch($event)"
-      />
+      <div class="relative max-w-md">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          type="text"
+          placeholder="Buscar marcadores..."
+          [value]="searchTerm()"
+          (input)="onSearch($event)"
+          class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
+        />
+      </div>
 
       @if (bookmarks().length === 0) {
         <app-card>
-          <div class="text-center text-gray-500 py-8">
-            <p>No hay marcadores</p>
-            <app-button variant="ghost" (clicked)="openCreateModal()" class="mt-2">Agregar tu primer marcador</app-button>
+          <div class="text-center py-8">
+            <div class="w-12 h-12 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              </svg>
+            </div>
+            <p class="text-gray-500 text-sm mb-4">No hay marcadores</p>
+            <app-button variant="secondary" (clicked)="openCreateModal()">Agregar tu primer marcador</app-button>
           </div>
         </app-card>
       } @else {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           @for (bookmark of bookmarks(); track bookmark.id) {
             <app-card>
-              <div class="flex items-start justify-between">
-                <div class="flex items-start gap-3">
-                  <img [src]="bookmark.faviconUrl || '/favicon.ico'" class="w-8 h-8 rounded" alt="" />
-                  <div>
-                    <p class="font-medium text-gray-900">{{ bookmark.title }}</p>
-                    <a [href]="bookmark.url" target="_blank" class="text-sm text-primary-600 hover:text-primary-500 truncate block max-w-[200px]">
-                      {{ bookmark.url }}
-                    </a>
-                  </div>
+              <div class="flex items-start gap-3">
+                <img [src]="bookmark.faviconUrl || '/favicon.ico'" class="w-10 h-10 rounded-lg bg-gray-100" alt="" />
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-gray-900 truncate">{{ bookmark.title }}</p>
+                  <a [href]="bookmark.url" target="_blank" class="text-xs text-primary-600 hover:text-primary-700 truncate block">
+                    {{ bookmark.url }}
+                  </a>
                 </div>
               </div>
               @if (bookmark.tags.length > 0) {
-                <div class="flex flex-wrap gap-1 mt-3">
+                <div class="flex flex-wrap gap-1.5 mt-3">
                   @for (tag of bookmark.tags; track tag) {
                     <app-badge variant="default" size="sm">{{ tag }}</app-badge>
                   }
                 </div>
               }
-              <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-gray-200">
+              <div class="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-100">
                 <app-button variant="ghost" size="sm" (clicked)="openEditModal(bookmark)">Editar</app-button>
                 <app-button variant="ghost" size="sm" (clicked)="confirmDelete(bookmark)">Eliminar</app-button>
               </div>
@@ -87,7 +105,7 @@ import { CreateBookmarkUseCase, UpdateBookmarkUseCase, DeleteBookmarkUseCase, Li
     </app-modal>
 
     <app-modal [isOpen]="isDeleteModalOpen()" title="Eliminar Marcador" (close)="closeDeleteModal()">
-      <p class="text-gray-700">¿Estás seguro de que deseas eliminar este marcador?</p>
+      <p class="text-gray-600">¿Estás seguro de que deseas eliminar este marcador?</p>
       <div class="flex justify-end gap-3 mt-6">
         <app-button variant="secondary" (clicked)="closeDeleteModal()">Cancelar</app-button>
         <app-button variant="danger" (clicked)="onDelete()" [loading]="isLoading()">Eliminar</app-button>

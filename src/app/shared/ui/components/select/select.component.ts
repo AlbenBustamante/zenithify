@@ -1,8 +1,9 @@
-import { Component, input, output, forwardRef, signal } from '@angular/core';
+import { Component, input, output, forwardRef, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-select',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule],
   providers: [
     {
@@ -14,7 +15,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
   template: `
     <div class="w-full">
       @if (label()) {
-        <label [for]="selectId()" class="block text-sm font-medium text-gray-700 mb-1">
+        <label [for]="selectId()" class="block text-sm font-medium text-gray-700 mb-1.5">
           {{ label() }}
           @if (required()) {
             <span class="text-red-500">*</span>
@@ -24,7 +25,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
       <select
         [id]="selectId()"
         [disabled]="isDisabled()"
-        class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+        [value]="value()"
+        [class]="selectClasses"
         (change)="onSelectChange($event)"
         (blur)="onTouched()"
       >
@@ -34,7 +36,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
         <ng-content />
       </select>
       @if (error()) {
-        <p class="mt-1 text-sm text-red-600">{{ error() }}</p>
+        <p class="mt-1.5 text-sm text-red-600">{{ error() }}</p>
       }
     </div>
   `,
@@ -55,6 +57,16 @@ export class SelectComponent implements ControlValueAccessor {
 
   private onChange: (value: string) => void = () => {};
   onTouched: () => void = () => {};
+
+  get selectClasses(): string {
+    const base = 'block w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-gray-900 transition-colors duration-200 cursor-pointer';
+    const state = this.error()
+      ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-500'
+      : 'border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500';
+    const disabled = this.isDisabled() ? 'bg-gray-50 cursor-not-allowed text-gray-500' : '';
+
+    return [base, state, disabled].filter(Boolean).join(' ');
+  }
 
   onSelectChange(event: Event): void {
     const target = event.target as HTMLSelectElement;

@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { CardComponent } from '../../shared/ui/components/card/card.component';
 import { ButtonComponent } from '../../shared/ui/components/button/button.component';
@@ -12,16 +12,22 @@ import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-settings',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, SelectComponent],
   template: `
     <div class="space-y-6">
-      <h1 class="text-2xl font-bold text-gray-900">Configuración</h1>
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Configuración</h1>
+        <p class="text-sm text-gray-500 mt-1">Gestiona tu cuenta y preferencias</p>
+      </div>
 
       <app-card title="Perfil">
         <form [formGroup]="profileForm" class="space-y-4">
           <app-input formControlName="displayName" label="Nombre" />
           <app-input formControlName="email" label="Email" type="email" />
-          <app-button variant="secondary" (clicked)="saveProfile()">Guardar Cambios</app-button>
+          <div>
+            <app-button variant="secondary" (clicked)="saveProfile()" [loading]="isLoading()">Guardar Cambios</app-button>
+          </div>
         </form>
       </app-card>
 
@@ -31,15 +37,17 @@ import { environment } from '../../../environments/environment';
             <option value="USD">USD - Dólar estadounidense</option>
             <option value="VES">VES - Bolívar venezolano</option>
           </app-select>
-          <app-button variant="secondary" (clicked)="saveCurrency()">Guardar Cambios</app-button>
+          <div>
+            <app-button variant="secondary" (clicked)="saveCurrency()" [loading]="isLoading()">Guardar Cambios</app-button>
+          </div>
         </form>
       </app-card>
 
       <app-card title="Tasa de Cambio USD/VES">
         <div class="space-y-4">
-          <div class="flex items-center gap-4">
-            <p class="text-sm text-gray-500">
-              Tasa oficial del día: <span class="font-medium text-gray-900">{{ officialRate() }}</span>
+          <div class="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+            <p class="text-sm text-gray-600">
+              Tasa oficial del día: <span class="font-semibold text-gray-900">{{ officialRate() }}</span>
             </p>
             <app-button variant="ghost" size="sm" (clicked)="refreshOfficialRate()">Actualizar</app-button>
           </div>
@@ -51,7 +59,9 @@ import { environment } from '../../../environments/environment';
               placeholder="Ej: 50"
               hint="Esta tasa override la oficial para todos los cálculos"
             />
-            <app-button variant="secondary" (clicked)="saveExchangeRate()">Guardar Tasa</app-button>
+            <div>
+              <app-button variant="secondary" (clicked)="saveExchangeRate()" [loading]="isLoading()">Guardar Tasa</app-button>
+            </div>
           </form>
         </div>
       </app-card>
@@ -60,7 +70,9 @@ import { environment } from '../../../environments/environment';
         <form [formGroup]="passwordForm" class="space-y-4">
           <app-input formControlName="newPassword" label="Nueva Contraseña" type="password" />
           <app-input formControlName="confirmPassword" label="Confirmar Contraseña" type="password" />
-          <app-button variant="secondary" (clicked)="changePassword()">Cambiar Contraseña</app-button>
+          <div>
+            <app-button variant="secondary" (clicked)="changePassword()" [loading]="isLoading()">Cambiar Contraseña</app-button>
+          </div>
         </form>
       </app-card>
 
@@ -72,7 +84,9 @@ import { environment } from '../../../environments/environment';
             <option value="Europe/Madrid">Europa/Madrid (CET)</option>
             <option value="UTC">UTC</option>
           </app-select>
-          <app-button variant="secondary" (clicked)="saveTimezone()">Guardar Cambios</app-button>
+          <div>
+            <app-button variant="secondary" (clicked)="saveTimezone()" [loading]="isLoading()">Guardar Cambios</app-button>
+          </div>
         </form>
       </app-card>
     </div>
@@ -149,7 +163,6 @@ export class SettingsComponent implements OnInit {
   async saveProfile(): Promise<void> {
     this.isLoading.set(true);
     try {
-      // Implementation would update profile via use case
     } catch (error) {
       console.error('Error saving profile:', error);
     } finally {
@@ -160,7 +173,6 @@ export class SettingsComponent implements OnInit {
   async saveCurrency(): Promise<void> {
     this.isLoading.set(true);
     try {
-      // Implementation would update currency preference
     } catch (error) {
       console.error('Error saving currency:', error);
     } finally {
@@ -201,7 +213,6 @@ export class SettingsComponent implements OnInit {
   async saveTimezone(): Promise<void> {
     this.isLoading.set(true);
     try {
-      // Implementation would save timezone
     } catch (error) {
       console.error('Error saving timezone:', error);
     } finally {

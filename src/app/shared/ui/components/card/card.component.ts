@@ -1,23 +1,19 @@
-import { Component, input } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-card',
-  imports: [NgClass],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div
-      [ngClass]="cardClasses()"
-      class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
-    >
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
       @if (title()) {
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-900">{{ title() }}</h3>
+        <div class="px-6 py-4 border-b border-gray-100">
+          <h3 class="text-base font-semibold text-gray-900">{{ title() }}</h3>
           @if (subtitle()) {
-            <p class="text-sm text-gray-500 mt-1">{{ subtitle() }}</p>
+            <p class="text-sm text-gray-500 mt-0.5">{{ subtitle() }}</p>
           }
         </div>
       }
-      <div class="px-6 py-4" [ngClass]="{ '!px-0 !py-0': noPadding() }">
+      <div [class]="contentClasses">
         <ng-content />
       </div>
     </div>
@@ -28,9 +24,7 @@ export class CardComponent {
   subtitle = input<string>();
   noPadding = input(false);
 
-  cardClasses(): Record<string, boolean> {
-    return {
-      'border-l-4 border-l-primary-500': true,
-    };
+  get contentClasses(): string {
+    return this.noPadding() ? 'p-0' : 'px-6 py-5';
   }
 }

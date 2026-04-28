@@ -1,5 +1,5 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
-import { CommonModule, NgClass } from '@angular/common';
+import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CardComponent } from '../../shared/ui/components/card/card.component';
 import { ButtonComponent } from '../../shared/ui/components/button/button.component';
@@ -11,64 +11,104 @@ import { Currency, Plan, BillingCycle } from '../../core/domain/entities';
 import { formatCurrency, formatShortDate, daysFromNow } from '../../shared/utils';
 import { SubscriptionCycle } from '../../core/domain/value-objects';
 import { SupabasePlanRepository } from '../../core/infrastructure/supabase/adapters/supabase-plan.repository';
-import { SupabaseCategoryRepository } from '../../core/infrastructure/supabase/adapters/supabase-category.repository';
 import { CreatePlanUseCase, UpdatePlanUseCase, DeletePlanUseCase, ListPlansUseCase, RenewPlanUseCase } from '../../core/application/use-cases/plan/plan.use-cases';
 
 @Component({
   selector: 'app-plans',
-  imports: [CommonModule, NgClass, ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-900">Planes y Suscripciones</h1>
-        <app-button (clicked)="openCreateModal()">+ Nuevo Plan</app-button>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Planes y Suscripciones</h1>
+          <p class="text-sm text-gray-500 mt-1">Gestiona tus suscripciones recurrentes</p>
+        </div>
+        <app-button (clicked)="openCreateModal()">
+          <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Nuevo Plan
+        </app-button>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <app-card title="Mensual">
-          <div class="text-3xl font-bold text-primary-600">{{ formatMoney(monthlyTotal(), 'USD') }}</div>
-          <p class="text-sm text-gray-500 mt-1">Total mensual</p>
+        <app-card>
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-500">Total Mensual</p>
+              <p class="text-2xl font-bold text-primary-600 mt-1">{{ formatMoney(monthlyTotal(), 'USD') }}</p>
+            </div>
+            <div class="p-2 bg-primary-100 rounded-lg">
+              <svg class="w-5 h-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+          </div>
         </app-card>
-        <app-card title="Anual">
-          <div class="text-3xl font-bold text-primary-600">{{ formatMoney(yearlyTotal(), 'USD') }}</div>
-          <p class="text-sm text-gray-500 mt-1">Total anual</p>
+        <app-card>
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-500">Total Anual</p>
+              <p class="text-2xl font-bold text-primary-600 mt-1">{{ formatMoney(yearlyTotal(), 'USD') }}</p>
+            </div>
+            <div class="p-2 bg-primary-100 rounded-lg">
+              <svg class="w-5 h-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+          </div>
         </app-card>
-        <app-card title="Activos">
-          <div class="text-3xl font-bold text-green-600">{{ activePlans().length }}</div>
-          <p class="text-sm text-gray-500 mt-1">Suscripciones activas</p>
+        <app-card>
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-500">Activas</p>
+              <p class="text-2xl font-bold text-green-600 mt-1">{{ activePlans().length }}</p>
+            </div>
+            <div class="p-2 bg-green-100 rounded-lg">
+              <svg class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
         </app-card>
       </div>
 
       <app-card [noPadding]="true">
         @if (plans().length === 0) {
-          <div class="p-8 text-center text-gray-500">
-            <p>No hay suscripciones registradas</p>
-            <app-button variant="ghost" (clicked)="openCreateModal()" class="mt-2">Agregar tu primera suscripción</app-button>
+          <div class="p-12 text-center">
+            <div class="w-12 h-12 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <p class="text-gray-500 text-sm mb-4">No hay suscripciones registradas</p>
+            <app-button variant="secondary" (clicked)="openCreateModal()">Agregar tu primera suscripción</app-button>
           </div>
         } @else {
-          <div class="divide-y divide-gray-200">
+          <div class="divide-y divide-gray-100">
             @for (plan of plans(); track plan.id) {
-              <div class="p-4 flex items-center justify-between">
+              <div class="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
                 <div class="flex items-center gap-4">
-                  <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-lg font-bold">
+                  <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center text-lg font-bold text-primary-700">
                     {{ plan.name.charAt(0).toUpperCase() }}
                   </div>
                   <div>
                     <p class="font-medium text-gray-900">{{ plan.name }}</p>
-                    <p class="text-sm text-gray-500">{{ plan.provider }}</p>
+                    <p class="text-xs text-gray-500">{{ plan.provider }}</p>
                   </div>
                 </div>
                 <div class="flex items-center gap-6">
                   <div class="text-right">
                     <p class="font-medium text-gray-900">{{ formatMoney(plan.amount, plan.currency) }}/{{ plan.billingCycle === 'monthly' ? 'mes' : 'año' }}</p>
-                    <p class="text-sm" [ngClass]="getDaysUntil(plan) <= 7 ? 'text-red-500' : 'text-gray-500'">
+                    <p class="text-xs" [class]="getDaysUntil(plan) <= 7 ? 'text-red-500' : 'text-gray-500'">
                       Próxima: {{ formatDate(plan.nextBillingDate) }} ({{ getDaysUntil(plan) }} días)
                     </p>
                   </div>
                   <app-badge [variant]="plan.isActive ? 'success' : 'danger'">
                     {{ plan.isActive ? 'Activo' : 'Inactivo' }}
                   </app-badge>
-                  <div class="flex gap-2">
+                  <div class="flex gap-1">
                     <app-button variant="ghost" size="sm" (clicked)="openEditModal(plan)">Editar</app-button>
                     <app-button variant="ghost" size="sm" (clicked)="confirmDelete(plan)">Eliminar</app-button>
                   </div>
@@ -101,7 +141,7 @@ import { CreatePlanUseCase, UpdatePlanUseCase, DeletePlanUseCase, ListPlansUseCa
             <option value="monthly">Mensual</option>
             <option value="yearly">Anual</option>
           </app-select>
-          <app-input formControlName="nextBillingDate" label="Próxima facturación" type="text"
+          <app-input formControlName="nextBillingDate" label="Próxima facturación" type="date"
             [error]="form.controls['nextBillingDate'].invalid && form.controls['nextBillingDate'].touched ? 'Fecha requerida' : ''" />
         </div>
 
@@ -117,7 +157,7 @@ import { CreatePlanUseCase, UpdatePlanUseCase, DeletePlanUseCase, ListPlansUseCa
     </app-modal>
 
     <app-modal [isOpen]="isDeleteModalOpen()" title="Eliminar Plan" (close)="closeDeleteModal()">
-      <p class="text-gray-700">¿Estás seguro de que deseas eliminar este plan?</p>
+      <p class="text-gray-600">¿Estás seguro de que deseas eliminar este plan?</p>
       <div class="flex justify-end gap-3 mt-6">
         <app-button variant="secondary" (clicked)="closeDeleteModal()">Cancelar</app-button>
         <app-button variant="danger" (clicked)="onDelete()" [loading]="isLoading()">Eliminar</app-button>
