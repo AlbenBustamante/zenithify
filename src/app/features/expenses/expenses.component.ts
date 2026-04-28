@@ -17,129 +17,135 @@ import { CreateExpenseUseCase, UpdateExpenseUseCase, DeleteExpenseUseCase, ListE
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent],
   template: `
-    <div class="space-y-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Gastos</h1>
-          <p class="text-sm text-gray-500 mt-1">Gestiona tus gastos mensuales</p>
-        </div>
-        <app-button (clicked)="openCreateModal()">
-          <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          Nuevo Gasto
-        </app-button>
-      </div>
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-8">
+      <div class="max-w-7xl mx-auto space-y-8">
 
-      <div class="flex gap-4 flex-wrap">
-        <div class="flex items-center gap-2">
-          <div class="relative">
-            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        <header class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 animate-slide-up">
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="w-1 h-8 bg-red-500 rounded-full"></span>
+              <h1 class="text-4xl font-bold text-slate-900 tracking-tight">Gastos</h1>
+            </div>
+            <p class="text-slate-500 text-sm">Gestiona tus gastos mensuales</p>
+          </div>
+          <app-button (clicked)="openCreateModal()">
+            <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
             </svg>
+            Nuevo Gasto
+          </app-button>
+        </header>
+
+        <div class="flex gap-4 flex-wrap animate-slide-up stagger-1">
+          <div class="flex items-center gap-2">
+            <div class="relative">
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              <input
+                type="date"
+                [value]="startDate()"
+                (change)="onStartDateChange($event)"
+                class="pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white/80 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+              />
+            </div>
+            <span class="text-slate-400 text-sm">hasta</span>
             <input
               type="date"
-              [value]="startDate()"
-              (change)="onStartDateChange($event)"
-              class="pl-9 pr-3 py-2 rounded-lg border border-gray-300 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
+              [value]="endDate()"
+              (change)="onEndDateChange($event)"
+              class="rounded-xl border border-slate-200 bg-white/80 py-2.5 px-3 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
             />
           </div>
-          <span class="text-gray-400 text-sm">hasta</span>
-          <input
-            type="date"
-            [value]="endDate()"
-            (change)="onEndDateChange($event)"
-            class="rounded-lg border border-gray-300 py-2 px-3 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
-          />
+
+          <select
+            [value]="selectedCategory()"
+            (change)="onCategoryFilterChange($event)"
+            class="rounded-xl border border-slate-200 bg-white/80 py-2.5 px-3 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+          >
+            <option value="">Todas las categorías</option>
+            @for (cat of categories(); track cat.id) {
+              <option [value]="cat.id">{{ cat.name }}</option>
+            }
+          </select>
         </div>
 
-        <select
-          [value]="selectedCategory()"
-          (change)="onCategoryFilterChange($event)"
-          class="rounded-lg border border-gray-300 py-2 px-3 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
-        >
-          <option value="">Todas las categorías</option>
-          @for (cat of categories(); track cat.id) {
-            <option [value]="cat.id">{{ cat.name }}</option>
-          }
-        </select>
-      </div>
-
-      <app-card [noPadding]="true">
-        @if (expenses().length === 0) {
-          <div class="p-12 text-center">
-            <div class="w-12 h-12 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+        <app-card [noPadding]="true" class="animate-slide-up stagger-2">
+          @if (expenses().length === 0) {
+            <div class="p-16 text-center">
+              <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-red-50/80 flex items-center justify-center">
+                <svg class="w-10 h-10 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p class="text-slate-400 text-sm mb-6">No hay gastos registrados</p>
+              <app-button variant="secondary" (clicked)="openCreateModal()">Agregar tu primer gasto</app-button>
             </div>
-            <p class="text-gray-500 text-sm mb-4">No hay gastos registrados</p>
-            <app-button variant="secondary" (clicked)="openCreateModal()">Agregar tu primer gasto</app-button>
-          </div>
-        } @else {
-          <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50/50">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
-                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
-                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-100">
-                @for (expense of expenses(); track expense.id) {
-                  <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-6 py-3.5 whitespace-nowrap text-sm text-gray-500">
-                      {{ formatDate(expense.expenseDate) }}
-                    </td>
-                    <td class="px-6 py-3.5 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {{ expense.description }}
-                    </td>
-                    <td class="px-6 py-3.5 whitespace-nowrap text-sm">
-                      @if (expense.category) {
-                        <app-badge variant="default">{{ expense.category.name }}</app-badge>
-                      } @else {
-                        <span class="text-gray-400">Sin categoría</span>
-                      }
-                    </td>
-                    <td class="px-6 py-3.5 whitespace-nowrap text-sm text-right font-semibold text-red-600">
-                      -{{ formatMoney(expense.amount, expense.currency) }}
-                    </td>
-                    <td class="px-6 py-3.5 whitespace-nowrap text-right text-sm">
-                      <button
-                        (click)="openEditModal(expense)"
-                        class="text-primary-600 hover:text-primary-800 mr-4 font-medium"
-                      >
-                        Editar
-                      </button>
-                      <button
-                        (click)="confirmDelete(expense)"
-                        class="text-red-600 hover:text-red-800 font-medium"
-                      >
-                        Eliminar
-                      </button>
-                    </td>
+          } @else {
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-slate-100">
+                <thead class="bg-slate-50/50">
+                  <tr>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Fecha</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Descripción</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Categoría</th>
+                    <th class="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Monto</th>
+                    <th class="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Acciones</th>
                   </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        }
-      </app-card>
+                </thead>
+                <tbody class="bg-white divide-y divide-slate-100">
+                  @for (expense of expenses(); track expense.id) {
+                    <tr class="hover:bg-slate-50/80 transition-colors duration-200">
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                        {{ formatDate(expense.expenseDate) }}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-800">
+                        {{ expense.description }}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        @if (expense.category) {
+                          <app-badge variant="default">{{ expense.category.name }}</app-badge>
+                        } @else {
+                          <span class="text-slate-400">Sin categoría</span>
+                        }
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-red-600">
+                        -{{ formatMoney(expense.amount, expense.currency) }}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                        <button
+                          (click)="openEditModal(expense)"
+                          class="text-primary-600 hover:text-primary-800 mr-5 font-medium transition-colors"
+                        >
+                          Editar
+                        </button>
+                        <button
+                          (click)="confirmDelete(expense)"
+                          class="text-red-600 hover:text-red-800 font-medium transition-colors"
+                        >
+                          Eliminar
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </app-card>
 
-      <div class="flex justify-between items-center text-sm">
-        <p class="text-gray-500">
-          Total: <span class="font-semibold text-gray-900">{{ formatMoney(totalAmount(), 'USD') }}</span>
-        </p>
-        <div class="flex gap-2">
-          <app-button variant="secondary" size="sm" [disabled]="page() === 0" (clicked)="previousPage()">
-            Anterior
-          </app-button>
-          <app-button variant="secondary" size="sm" [disabled]="expenses().length < pageSize" (clicked)="nextPage()">
-            Siguiente
-          </app-button>
+        <div class="flex justify-between items-center text-sm animate-slide-up stagger-3">
+          <p class="text-slate-500">
+            Total: <span class="font-semibold text-slate-800">{{ formatMoney(totalAmount(), 'USD') }}</span>
+          </p>
+          <div class="flex gap-2">
+            <app-button variant="secondary" size="sm" [disabled]="page() === 0" (clicked)="previousPage()">
+              Anterior
+            </app-button>
+            <app-button variant="secondary" size="sm" [disabled]="expenses().length < pageSize" (clicked)="nextPage()">
+              Siguiente
+            </app-button>
+          </div>
         </div>
       </div>
     </div>
@@ -149,7 +155,7 @@ import { CreateExpenseUseCase, UpdateExpenseUseCase, DeleteExpenseUseCase, ListE
       [title]="editingExpense() ? 'Editar Gasto' : 'Nuevo Gasto'"
       (close)="closeModal()"
     >
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
         <app-input
           formControlName="description"
           label="Descripción"
@@ -208,7 +214,7 @@ import { CreateExpenseUseCase, UpdateExpenseUseCase, DeleteExpenseUseCase, ListE
       title="Eliminar Gasto"
       (close)="closeDeleteModal()"
     >
-      <p class="text-gray-600">¿Estás seguro de que deseas eliminar este gasto?</p>
+      <p class="text-slate-600">¿Estás seguro de que deseas eliminar este gasto?</p>
       <div class="flex justify-end gap-3 mt-6">
         <app-button variant="secondary" (clicked)="closeDeleteModal()">
           Cancelar
