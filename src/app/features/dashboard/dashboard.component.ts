@@ -1,6 +1,5 @@
 import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CardComponent } from '../../shared/ui/components/card/card.component';
-import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
 import { Currency } from '../../core/domain/entities';
 import { Money } from '../../core/domain/value-objects';
 import { formatCurrency } from '../../shared/utils';
@@ -19,189 +18,258 @@ import { Expense, Income, Plan, Task } from '../../core/domain/entities';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CardComponent],
   template: `
-    <div class="space-y-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p class="text-sm text-gray-500 mt-1">{{ today }}</p>
-        </div>
-      </div>
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-8">
+      <div class="max-w-7xl mx-auto space-y-8">
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <app-card>
-          <div class="flex items-start justify-between">
-            <div>
-              <p class="text-sm font-medium text-gray-500">Gastos del Mes</p>
-              <p class="text-2xl font-bold text-red-600 mt-1">
-                {{ formatMoney(totalExpensesThisMonth(), 'USD') }}
-              </p>
-              @if (vesRate() > 1) {
-                <p class="text-sm text-red-400 mt-0.5">
-                  {{ formatMoney(totalExpensesThisMonthUSD() * vesRate(), 'VES') }}
-                </p>
-              }
+        <header class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 animate-slide-up">
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="w-1 h-8 bg-primary-600 rounded-full"></span>
+              <h1 class="text-4xl font-bold text-slate-900 tracking-tight">
+                Dashboard
+              </h1>
             </div>
-            <div class="p-2 bg-red-100 rounded-lg">
-              <svg class="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
+            <p class="text-slate-500 text-sm tracking-wide">{{ today }}</p>
           </div>
-        </app-card>
-
-        <app-card>
-          <div class="flex items-start justify-between">
-            <div>
-              <p class="text-sm font-medium text-gray-500">Ingresos del Mes</p>
-              <p class="text-2xl font-bold text-green-600 mt-1">
-                {{ formatMoney(totalIncomesThisMonth(), 'USD') }}
-              </p>
-              @if (vesRate() > 1) {
-                <p class="text-sm text-green-400 mt-0.5">
-                  {{ formatMoney(totalIncomesThisMonthUSD() * vesRate(), 'VES') }}
-                </p>
-              }
-            </div>
-            <div class="p-2 bg-green-100 rounded-lg">
-              <svg class="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 112 2h-2a2 2 0 012 2v2m-6 9h6a2 2 0 002-2v-6a2 2 0 00-2-2h-6a2 2 0 00-2 2v6a2 2 0 002 2z" />
-              </svg>
-            </div>
+          <div class="flex items-center gap-2 text-xs  text-slate-400 uppercase tracking-widest">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Live</span>
           </div>
-        </app-card>
+        </header>
 
-        <app-card>
-          <div class="flex items-start justify-between">
-            <div>
-              <p class="text-sm font-medium text-gray-500">Balance Neto</p>
-              <p class="text-2xl font-bold mt-1" [class]="netBalance() >= 0 ? 'text-blue-600' : 'text-red-600'">
-                {{ formatMoney(netBalance(), 'USD') }}
-              </p>
-              <p class="text-xs text-gray-400 mt-0.5">Este mes</p>
-            </div>
-            <div class="p-2 bg-blue-100 rounded-lg">
-              <svg class="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-          </div>
-        </app-card>
-
-        <app-card>
-          <div class="flex items-start justify-between">
-            <div>
-              <p class="text-sm font-medium text-gray-500">Tareas Pendientes</p>
-              <p class="text-2xl font-bold text-purple-600 mt-1">
-                {{ pendingTasks().length }}
-              </p>
-              @if (overdueTasks().length > 0) {
-                <p class="text-xs text-red-500 mt-0.5">{{ overdueTasks().length }} vencidas</p>
-              } @else {
-                <p class="text-xs text-gray-400 mt-0.5">Sin vencidas</p>
-              }
-            </div>
-            <div class="p-2 bg-purple-100 rounded-lg">
-              <svg class="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-              </svg>
-            </div>
-          </div>
-        </app-card>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <app-card title="Renovaciones Próximas" [noPadding]="true">
-          @if (upcomingRenewals().length === 0) {
-            <div class="p-8 text-center">
-              <p class="text-gray-400 text-sm">No hay renovaciones próximas</p>
-            </div>
-          } @else {
-            <div class="divide-y divide-gray-100">
-              @for (plan of upcomingRenewals(); track plan.id) {
-                <div class="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-sm font-bold text-primary-700">
-                      {{ plan.name.charAt(0).toUpperCase() }}
-                    </div>
-                    <div>
-                      <p class="font-medium text-gray-900">{{ plan.name }}</p>
-                      <p class="text-xs text-gray-500">{{ plan.provider }}</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+          <div class="animate-slide-up stagger-1">
+            <app-card>
+              <div class="relative overflow-hidden">
+                <div class="absolute -top-4 -right-4 w-24 h-24 bg-red-100 rounded-full blur-xl opacity-60"></div>
+                <div class="relative">
+                  <div class="flex items-start justify-between mb-4">
+                    <span class="text-xs  font-bold text-red-600 uppercase tracking-wider">Gastos del Mes</span>
+                    <div class="w-10 h-10 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center">
+                      <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
                     </div>
                   </div>
-                  <div class="text-right">
-                    <p class="font-medium text-gray-900">
-                      {{ formatMoney(plan.amount, plan.currency) }}
+                  <p class="text-3xl font-bold  text-slate-900 mb-1">
+                    {{ formatMoney(totalExpensesThisMonth(), 'USD') }}
+                  </p>
+                  @if (vesRate() > 1) {
+                    <p class="text-sm  text-red-400/80">
+                      {{ formatMoney(totalExpensesThisMonthUSD() * vesRate(), 'VES') }}
                     </p>
-                    <p class="text-xs" [class]="daysUntil(plan.nextBillingDate) <= 3 ? 'text-red-500' : 'text-gray-500'">
-                      {{ daysUntil(plan.nextBillingDate) }} días
-                    </p>
-                  </div>
-                </div>
-              }
-            </div>
-          }
-        </app-card>
-
-        <app-card title="Transacciones Recientes" [noPadding]="true">
-          @if (recentTransactions().length === 0) {
-            <div class="p-8 text-center">
-              <p class="text-gray-400 text-sm">No hay transacciones este mes</p>
-            </div>
-          } @else {
-            <div class="divide-y divide-gray-100">
-              @for (tx of recentTransactions(); track tx.id) {
-                <div class="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                  <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                         [class]="tx.type === 'expense' ? 'bg-red-500' : 'bg-green-500'">
-                      {{ tx.type === 'expense' ? '-' : '+' }}
-                    </div>
-                    <div>
-                      <p class="font-medium text-gray-900 text-sm">{{ tx.description }}</p>
-                      <p class="text-xs text-gray-500">{{ tx.category || 'Sin categoría' }}</p>
-                    </div>
-                  </div>
-                  <div class="text-right">
-                    <p class="font-medium text-sm" [class]="tx.type === 'expense' ? 'text-red-600' : 'text-green-600'">
-                      {{ tx.type === 'expense' ? '-' : '+' }}{{ formatMoney(tx.amount, tx.currency) }}
-                    </p>
-                    <p class="text-xs text-gray-400">{{ formatDate(tx.date) }}</p>
-                  </div>
-                </div>
-              }
-            </div>
-          }
-        </app-card>
-      </div>
-
-      @if (budgetUtilizations().length > 0) {
-        <app-card title="Presupuestos">
-          <div class="space-y-4">
-            @for (budget of budgetUtilizations(); track budget.budgetId) {
-              <div>
-                <div class="flex justify-between text-sm mb-1.5">
-                  <span class="font-medium text-gray-700">{{ budget.budgetName }}</span>
-                  <span class="text-gray-500">
-                    {{ formatMoney(budget.spent.amount, budget.spent.currency) }} /
-                    {{ formatMoney(budget.limit.amount, budget.limit.currency) }}
-                  </span>
-                </div>
-                <div class="w-full bg-gray-100 rounded-full h-1.5">
-                  <div
-                    class="h-1.5 rounded-full transition-all"
-                    [class]="budget.isOverBudget ? 'bg-red-500' : 'bg-primary-500'"
-                    [style.width.%]="budget.percentage"
-                  ></div>
+                  }
                 </div>
               </div>
-            }
+            </app-card>
           </div>
-        </app-card>
-      }
+
+          <div class="animate-slide-up stagger-2">
+            <app-card>
+              <div class="relative overflow-hidden">
+                <div class="absolute -top-4 -right-4 w-24 h-24 bg-emerald-100 rounded-full blur-xl opacity-60"></div>
+                <div class="relative">
+                  <div class="flex items-start justify-between mb-4">
+                    <span class="text-xs  font-bold text-emerald-600 uppercase tracking-wider">Ingresos del Mes</span>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                      <svg class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p class="text-3xl font-bold  text-slate-900 mb-1">
+                    {{ formatMoney(totalIncomesThisMonth(), 'USD') }}
+                  </p>
+                  @if (vesRate() > 1) {
+                    <p class="text-sm  text-emerald-400/80">
+                      {{ formatMoney(totalIncomesThisMonthUSD() * vesRate(), 'VES') }}
+                    </p>
+                  }
+                </div>
+              </div>
+            </app-card>
+          </div>
+
+          <div class="animate-slide-up stagger-3">
+            <app-card>
+              <div class="relative overflow-hidden">
+                <div class="absolute -top-4 -right-4 w-24 h-24 bg-blue-100 rounded-full blur-xl opacity-60"></div>
+                <div class="relative">
+                  <div class="flex items-start justify-between mb-4">
+                    <span class="text-xs  font-bold text-blue-600 uppercase tracking-wider">Balance Neto</span>
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                      <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p class="text-3xl font-bold  mb-1" [class]="netBalance() >= 0 ? 'text-slate-900' : 'text-red-600'">
+                    {{ formatMoney(netBalance(), 'USD') }}
+                  </p>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full" [class]="netBalance() >= 0 ? 'bg-emerald-500' : 'bg-red-500'"></span>
+                    <span class="text-xs  text-slate-400">Este mes</span>
+                  </div>
+                </div>
+              </div>
+            </app-card>
+          </div>
+
+          <div class="animate-slide-up stagger-4">
+            <app-card>
+              <div class="relative overflow-hidden">
+                <div class="absolute -top-4 -right-4 w-24 h-24 bg-violet-100 rounded-full blur-xl opacity-60"></div>
+                <div class="relative">
+                  <div class="flex items-start justify-between mb-4">
+                    <span class="text-xs  font-bold text-violet-600 uppercase tracking-wider">Tareas</span>
+                    <div class="w-10 h-10 rounded-xl bg-violet-50 border border-violet-100 flex items-center justify-center">
+                      <svg class="w-5 h-5 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                      </svg>
+                    </div>
+                  </div>
+                  <p class="text-3xl font-bold  text-slate-900 mb-1">
+                    {{ pendingTasks().length }}
+                  </p>
+                  @if (overdueTasks().length > 0) {
+                    <div class="flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                      <span class="text-xs  text-red-500">{{ overdueTasks().length }} vencidas</span>
+                    </div>
+                  } @else {
+                    <span class="text-xs  text-slate-400">Sin vencidas</span>
+                  }
+                </div>
+              </div>
+            </app-card>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 animate-slide-up stagger-5">
+          <app-card title="Renovaciones Próximas" [noPadding]="true" class="lg:col-span-2">
+            @if (upcomingRenewals().length === 0) {
+              <div class="p-12 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 flex items-center justify-center">
+                  <svg class="w-8 h-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <p class="text-sm  text-slate-400">Sin renovaciones próximas</p>
+              </div>
+            } @else {
+              <div class="divide-y divide-slate-100">
+                @for (plan of upcomingRenewals(); track plan.id) {
+                  <div class="p-5 flex items-center justify-between hover:bg-slate-50/80 transition-all duration-200 group">
+                    <div class="flex items-center gap-4">
+                      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center text-lg font-bold  text-primary-700 group-hover:scale-105 transition-transform">
+                        {{ plan.name.charAt(0).toUpperCase() }}
+                      </div>
+                      <div>
+                        <p class="font-semibold text-slate-800">{{ plan.name }}</p>
+                        <p class="text-xs  text-slate-400 mt-0.5">{{ plan.provider }}</p>
+                      </div>
+                    </div>
+                    <div class="text-right">
+                      <p class=" font-bold text-slate-800">
+                        {{ formatMoney(plan.amount, plan.currency) }}
+                      </p>
+                      <p class="text-xs  mt-0.5" [class]="daysUntil(plan.nextBillingDate) <= 3 ? 'text-red-500' : 'text-slate-400'">
+                        {{ daysUntil(plan.nextBillingDate) }} días
+                      </p>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </app-card>
+
+          <app-card title="Transacciones Recientes" [noPadding]="true" class="lg:col-span-3">
+            @if (recentTransactions().length === 0) {
+              <div class="p-12 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 flex items-center justify-center">
+                  <svg class="w-8 h-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+                <p class="text-sm  text-slate-400">Sin transacciones este mes</p>
+              </div>
+            } @else {
+              <div class="divide-y divide-slate-100">
+                @for (tx of recentTransactions(); track tx.id) {
+                  <div class="p-5 flex items-center justify-between hover:bg-slate-50/80 transition-all duration-200 group">
+                    <div class="flex items-center gap-4">
+                      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold  text-white"
+                           [class]="tx.type === 'expense' ? 'bg-gradient-to-br from-red-400 to-red-600' : 'bg-gradient-to-br from-emerald-400 to-emerald-600'">
+                        {{ tx.type === 'expense' ? '−' : '+' }}
+                      </div>
+                      <div>
+                        <p class="font-medium text-slate-800 text-sm">{{ tx.description }}</p>
+                        <p class="text-xs  text-slate-400 mt-0.5">{{ tx.category || 'Sin categoría' }}</p>
+                      </div>
+                    </div>
+                    <div class="text-right">
+                      <p class=" font-bold text-sm" [class]="tx.type === 'expense' ? 'text-red-600' : 'text-emerald-600'">
+                        {{ tx.type === 'expense' ? '−' : '+' }}{{ formatMoney(tx.amount, tx.currency) }}
+                      </p>
+                      <p class="text-xs  text-slate-400 mt-0.5">{{ formatDate(tx.date) }}</p>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </app-card>
+        </div>
+
+        @if (budgetUtilizations().length > 0) {
+          <app-card title="Presupuestos" class="animate-slide-up stagger-6">
+            <div class="space-y-6">
+              @for (budget of budgetUtilizations(); track budget.budgetId) {
+                <div class="relative">
+                  <div class="flex justify-between items-end mb-2">
+                    <div>
+                      <span class="text-sm font-semibold text-slate-700">{{ budget.budgetName }}</span>
+                    </div>
+                    <div class="text-right">
+                      <span class=" text-sm font-bold" [class]="budget.isOverBudget ? 'text-red-600' : 'text-slate-600'">
+                        {{ formatMoney(budget.spent.amount, budget.spent.currency) }}
+                      </span>
+                      <span class="text-slate-300 mx-1">/</span>
+                      <span class=" text-sm text-slate-400">
+                        {{ formatMoney(budget.limit.amount, budget.limit.currency) }}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="relative h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div
+                      class="absolute top-0 left-0 h-full rounded-full transition-all duration-500 ease-out"
+                      [class]="budget.isOverBudget ? 'bg-gradient-to-r from-red-400 to-red-600' : 'bg-gradient-to-r from-primary-400 to-primary-600'"
+                      [style.width.%]="Math.min(budget.percentage, 100)"
+                    ></div>
+                    @if (budget.isOverBudget) {
+                      <div class="absolute top-0 right-0 h-full bg-red-800/20 animate-pulse rounded-full"
+                           [style.width.%]="Math.min(budget.percentage - 100, 100)"></div>
+                    }
+                  </div>
+                  <div class="flex justify-between mt-1.5">
+                    <span class="text-xs " [class]="budget.isOverBudget ? 'text-red-500' : 'text-slate-400'">
+                      {{ budget.percentage.toFixed(0) }}% utilizado
+                    </span>
+                    @if (budget.isOverBudget) {
+                      <span class="text-xs  text-red-500">Excedido</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </app-card>
+        }
+      </div>
     </div>
   `,
 })
 export class DashboardComponent implements OnInit {
+  protected Math = Math;
+
   private expenseRepo = inject(SupabaseExpenseRepository);
   private incomeRepo = inject(SupabaseIncomeRepository);
   private planRepo = inject(SupabasePlanRepository);
