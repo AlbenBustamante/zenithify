@@ -14,77 +14,85 @@ import { CreateBookmarkUseCase, UpdateBookmarkUseCase, DeleteBookmarkUseCase, Li
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, BadgeComponent],
   template: `
-    <div class="space-y-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Marcadores</h1>
-          <p class="text-sm text-gray-500 mt-1">Guarda tus enlaces importantes</p>
-        </div>
-        <app-button (clicked)="openCreateModal()">
-          <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          Nuevo Marcador
-        </app-button>
-      </div>
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-8">
+      <div class="max-w-7xl mx-auto space-y-8">
 
-      <div class="relative max-w-md">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-        <input
-          type="text"
-          placeholder="Buscar marcadores..."
-          [value]="searchTerm()"
-          (input)="onSearch($event)"
-          class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
-        />
-      </div>
-
-      @if (bookmarks().length === 0) {
-        <app-card>
-          <div class="text-center py-8">
-            <div class="w-12 h-12 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-              </svg>
+        <header class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 animate-slide-up">
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="w-1 h-8 bg-rose-500 rounded-full"></span>
+              <h1 class="text-4xl font-bold text-slate-900 tracking-tight">Marcadores</h1>
             </div>
-            <p class="text-gray-500 text-sm mb-4">No hay marcadores</p>
-            <app-button variant="secondary" (clicked)="openCreateModal()">Agregar tu primer marcador</app-button>
+            <p class="text-slate-500 text-sm">Guarda tus enlaces importantes</p>
           </div>
-        </app-card>
-      } @else {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          @for (bookmark of bookmarks(); track bookmark.id) {
-            <app-card>
-              <div class="flex items-start gap-3">
-                <img [src]="bookmark.faviconUrl || '/favicon.ico'" class="w-10 h-10 rounded-lg bg-gray-100" alt="" />
-                <div class="flex-1 min-w-0">
-                  <p class="font-medium text-gray-900 truncate">{{ bookmark.title }}</p>
-                  <a [href]="bookmark.url" target="_blank" class="text-xs text-primary-600 hover:text-primary-700 truncate block">
-                    {{ bookmark.url }}
-                  </a>
-                </div>
-              </div>
-              @if (bookmark.tags.length > 0) {
-                <div class="flex flex-wrap gap-1.5 mt-3">
-                  @for (tag of bookmark.tags; track tag) {
-                    <app-badge variant="default" size="sm">{{ tag }}</app-badge>
-                  }
-                </div>
-              }
-              <div class="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-100">
-                <app-button variant="ghost" size="sm" (clicked)="openEditModal(bookmark)">Editar</app-button>
-                <app-button variant="ghost" size="sm" (clicked)="confirmDelete(bookmark)">Eliminar</app-button>
-              </div>
-            </app-card>
-          }
+          <app-button (clicked)="openCreateModal()">
+            <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Nuevo Marcador
+          </app-button>
+        </header>
+
+        <div class="relative max-w-md animate-slide-up stagger-1">
+          <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Buscar marcadores..."
+            [value]="searchTerm()"
+            (input)="onSearch($event)"
+            class="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 bg-white/80 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+          />
         </div>
-      }
+
+        @if (bookmarks().length === 0) {
+          <app-card class="animate-slide-up stagger-2">
+            <div class="text-center py-12">
+              <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-slate-100 flex items-center justify-center">
+                <svg class="w-10 h-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                </svg>
+              </div>
+              <p class="text-slate-400 text-sm mb-6">No hay marcadores</p>
+              <app-button variant="secondary" (clicked)="openCreateModal()">Agregar tu primer marcador</app-button>
+            </div>
+          </app-card>
+        } @else {
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            @for (bookmark of bookmarks(); track bookmark.id; let i = $index) {
+              <div class="animate-slide-up" [class]="'stagger-' + (i + 2)">
+                <app-card>
+                  <div class="flex items-start gap-4">
+                    <img [src]="bookmark.faviconUrl || '/favicon.ico'" class="w-12 h-12 rounded-xl bg-slate-100 p-1" alt="" />
+                    <div class="flex-1 min-w-0">
+                      <p class="font-semibold text-slate-800 truncate">{{ bookmark.title }}</p>
+                      <a [href]="bookmark.url" target="_blank" class="text-xs text-primary-600 hover:text-primary-700 truncate block mt-0.5">
+                        {{ bookmark.url }}
+                      </a>
+                    </div>
+                  </div>
+                  @if (bookmark.tags.length > 0) {
+                    <div class="flex flex-wrap gap-2 mt-4">
+                      @for (tag of bookmark.tags; track tag) {
+                        <app-badge variant="default" size="sm">{{ tag }}</app-badge>
+                      }
+                    </div>
+                  }
+                  <div class="flex justify-end gap-2 mt-5 pt-4 border-t border-slate-100">
+                    <app-button variant="ghost" size="sm" (clicked)="openEditModal(bookmark)">Editar</app-button>
+                    <app-button variant="ghost" size="sm" (clicked)="confirmDelete(bookmark)">Eliminar</app-button>
+                  </div>
+                </app-card>
+              </div>
+            }
+          </div>
+        }
+      </div>
     </div>
 
     <app-modal [isOpen]="isModalOpen()" [title]="editingBookmark() ? 'Editar Marcador' : 'Nuevo Marcador'" (close)="closeModal()">
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
         <app-input formControlName="title" label="Título" placeholder="Nombre del sitio"
           [error]="form.controls['title'].invalid && form.controls['title'].touched ? 'Título requerido' : ''" />
 
@@ -105,7 +113,7 @@ import { CreateBookmarkUseCase, UpdateBookmarkUseCase, DeleteBookmarkUseCase, Li
     </app-modal>
 
     <app-modal [isOpen]="isDeleteModalOpen()" title="Eliminar Marcador" (close)="closeDeleteModal()">
-      <p class="text-gray-600">¿Estás seguro de que deseas eliminar este marcador?</p>
+      <p class="text-slate-600">¿Estás seguro de que deseas eliminar este marcador?</p>
       <div class="flex justify-end gap-3 mt-6">
         <app-button variant="secondary" (clicked)="closeDeleteModal()">Cancelar</app-button>
         <app-button variant="danger" (clicked)="onDelete()" [loading]="isLoading()">Eliminar</app-button>
