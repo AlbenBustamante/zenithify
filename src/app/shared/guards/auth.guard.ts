@@ -1,7 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AuthPort } from '../../../core/application/ports/inbound/auth-port';
-import { SupabaseAuthAdapter } from '../../../core/infrastructure/supabase/adapters';
+import { SupabaseAuthAdapter } from '../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
 
 export const authGuard: CanActivateFn = async () => {
   const authService = inject(SupabaseAuthAdapter);

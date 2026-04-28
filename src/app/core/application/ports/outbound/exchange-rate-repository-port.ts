@@ -1,4 +1,4 @@
-import { ExchangeRate, Currency } from '../../domain/entities';
+import { ExchangeRate, Currency } from '../../../domain/entities';
 
 export interface ExchangeRateRepositoryPort {
   findByUserAndPair(userId: string, fromCurrency: Currency, toCurrency: Currency): Promise<ExchangeRate | null>;

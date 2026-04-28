@@ -1,4 +1,4 @@
-import { Task, TaskPriority, TaskStatus } from '../../domain/entities';
+import { Task, TaskPriority, TaskStatus } from '../../../domain/entities';
 
 export interface CreateTaskDto {
   title: string;

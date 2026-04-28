@@ -1,22 +1,22 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
-import { CardComponent, BadgeComponent } from '../../shared/ui/components';
+import { CommonModule, NgClass } from '@angular/common';
+import { CardComponent } from '../../shared/ui/components/card/card.component';
+import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
 import { Currency } from '../../core/domain/entities';
 import { Money } from '../../core/domain/value-objects';
 import { formatCurrency } from '../../shared/utils';
-import {
-  SupabaseExpenseRepository,
-  SupabaseIncomeRepository,
-  SupabasePlanRepository,
-  SupabaseTaskRepository,
-  SupabaseBudgetRepository,
-  SupabaseExchangeRateRepository,
-} from '../../core/infrastructure/supabase/adapters';
+import { SupabaseExpenseRepository } from '../../core/infrastructure/supabase/adapters/supabase-expense.repository';
+import { SupabaseIncomeRepository } from '../../core/infrastructure/supabase/adapters/supabase-income.repository';
+import { SupabasePlanRepository } from '../../core/infrastructure/supabase/adapters/supabase-plan.repository';
+import { SupabaseTaskRepository } from '../../core/infrastructure/supabase/adapters/supabase-task.repository';
+import { SupabaseBudgetRepository } from '../../core/infrastructure/supabase/adapters/supabase-budget.repository';
+import { SupabaseExchangeRateRepository } from '../../core/infrastructure/supabase/adapters/supabase-exchange-rate.repository';
 import { BudgetCalculationService } from '../../core/domain/services';
 import { Expense, Income, Plan, Task } from '../../core/domain/entities';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CardComponent, BadgeComponent],
+  imports: [CommonModule, NgClass, CardComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
@@ -27,31 +27,31 @@ import { Expense, Income, Plan, Task } from '../../core/domain/entities';
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <app-card [title]="'Gastos del Mes'" class="bg-gradient-to-br from-red-50 to-red-100">
           <div class="text-2xl font-bold text-red-600">
-            {{ formatMoney(totalExpensesThisMonth, 'USD') }}
+            {{ formatMoney(totalExpensesThisMonth(), 'USD') }}
           </div>
           <p class="text-sm text-gray-500 mt-1">En USD</p>
-          @if (vesRate > 1) {
+          @if (vesRate() > 1) {
             <div class="text-lg font-semibold text-red-400 mt-1">
-              {{ formatMoney(totalExpensesThisMonthUSD * vesRate, 'VES') }}
+              {{ formatMoney(totalExpensesThisMonthUSD() * vesRate(), 'VES') }}
             </div>
           }
         </app-card>
 
         <app-card [title]="'Ingresos del Mes'" class="bg-gradient-to-br from-green-50 to-green-100">
           <div class="text-2xl font-bold text-green-600">
-            {{ formatMoney(totalIncomesThisMonth, 'USD') }}
+            {{ formatMoney(totalIncomesThisMonth(), 'USD') }}
           </div>
           <p class="text-sm text-gray-500 mt-1">En USD</p>
-          @if (vesRate > 1) {
+          @if (vesRate() > 1) {
             <div class="text-lg font-semibold text-green-400 mt-1">
-              {{ formatMoney(totalIncomesThisMonthUSD * vesRate, 'VES') }}
+              {{ formatMoney(totalIncomesThisMonthUSD() * vesRate(), 'VES') }}
             </div>
           }
         </app-card>
 
         <app-card [title]="'Balance Neto'" class="bg-gradient-to-br from-blue-50 to-blue-100">
-          <div class="text-2xl font-bold" [ngClass]="netBalance >= 0 ? 'text-blue-600' : 'text-red-600'">
-            {{ formatMoney(netBalance, 'USD') }}
+          <div class="text-2xl font-bold" [ngClass]="netBalance() >= 0 ? 'text-blue-600' : 'text-red-600'">
+            {{ formatMoney(netBalance(), 'USD') }}
           </div>
           <p class="text-sm text-gray-500 mt-1">Este mes</p>
         </app-card>

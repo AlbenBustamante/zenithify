@@ -1,4 +1,4 @@
-import { Income, Currency } from '../../domain/entities';
+import { Income, Currency } from '../../../domain/entities';
 
 export interface CreateIncomeDto {
   amount: number;

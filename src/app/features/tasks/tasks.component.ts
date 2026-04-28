@@ -1,14 +1,20 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
+import { CommonModule, NgClass, TitleCasePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent } from '../../shared/ui/components';
+import { CardComponent } from '../../shared/ui/components/card/card.component';
+import { ButtonComponent } from '../../shared/ui/components/button/button.component';
+import { InputComponent } from '../../shared/ui/components/input/input.component';
+import { ModalComponent } from '../../shared/ui/components/modal/modal.component';
+import { SelectComponent } from '../../shared/ui/components/select/select.component';
+import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
 import { Task, TaskPriority, TaskStatus } from '../../core/domain/entities';
 import { formatShortDate, isOverdue, daysFromNow } from '../../shared/utils';
-import { SupabaseTaskRepository } from '../../core/infrastructure/supabase/adapters';
+import { SupabaseTaskRepository } from '../../core/infrastructure/supabase/adapters/supabase-task.repository';
 import { CreateTaskUseCase, UpdateTaskUseCase, DeleteTaskUseCase, CompleteTaskUseCase, ListTasksUseCase } from '../../core/application/use-cases/task/task.use-cases';
 
 @Component({
   selector: 'app-tasks',
-  imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent],
+  imports: [CommonModule, NgClass, TitleCasePipe, ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
@@ -17,14 +23,15 @@ import { CreateTaskUseCase, UpdateTaskUseCase, DeleteTaskUseCase, CompleteTaskUs
       </div>
 
       <div class="flex gap-2 flex-wrap">
-        <button
-          *ngFor="let filter of statusFilters"
-          (click)="setStatusFilter(filter.value)"
-          [ngClass]="statusFilter() === filter.value ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-          class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
-        >
-          {{ filter.label }}
-        </button>
+        @for (filter of statusFilters; track filter.value) {
+          <button
+            (click)="setStatusFilter(filter.value)"
+            [ngClass]="statusFilter() === filter.value ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+            class="px-3 py-1.5 rounded-full text-sm font-medium transition-colors"
+          >
+            {{ filter.label }}
+          </button>
+        }
       </div>
 
       <app-card [noPadding]="true">
@@ -55,7 +62,7 @@ import { CreateTaskUseCase, UpdateTaskUseCase, DeleteTaskUseCase, CompleteTaskUs
                   @if (task.dueDate) {
                     <p class="text-sm" [ngClass]="isOverdue(task.dueDate) ? 'text-red-500' : 'text-gray-500'">
                       {{ formatDate(task.dueDate) }}
-                      @if (!isOverdue(task.dueDate) {
+                      @if (!isOverdue(task.dueDate)) {
                         <span>({{ daysFromNow(task.dueDate) }} días)</span>
                       })
                     </p>
@@ -86,7 +93,7 @@ import { CreateTaskUseCase, UpdateTaskUseCase, DeleteTaskUseCase, CompleteTaskUs
             <option value="medium">Media</option>
             <option value="high">Alta</option>
           </app-select>
-          <app-input formControlName="dueDate" label="Fecha de vencimiento" type="date" />
+          <app-input formControlName="dueDate" label="Fecha de vencimiento" type="text" />
         </div>
 
         <div class="flex justify-end gap-3 mt-6">

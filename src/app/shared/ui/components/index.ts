@@ -1,7 +1,7 @@
-export { ButtonComponent } from './button.component';
-export { CardComponent } from './card.component';
-export { InputComponent } from './input.component';
-export { CurrencyInputComponent } from './currency-input.component';
-export { BadgeComponent } from './badge.component';
-export { ModalComponent } from './modal.component';
-export { SelectComponent } from './select.component';
+export { ButtonComponent } from './button/button.component';
+export { CardComponent } from './card/card.component';
+export { InputComponent } from './input/input.component';
+export { CurrencyInputComponent } from './currency-input/currency-input.component';
+export { BadgeComponent } from './badge/badge.component';
+export { ModalComponent } from './modal/modal.component';
+export { SelectComponent } from './select/select.component';

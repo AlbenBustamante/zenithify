@@ -1,4 +1,4 @@
-import { UserQuota } from '../../domain/entities';
+import { UserQuota } from '../../../domain/entities';
 
 export interface QuotaRepositoryPort {
   findByUserId(userId: string): Promise<UserQuota | null>;

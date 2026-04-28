@@ -1,3 +1,10 @@
+const resourceKeyMap = {
+  expense: 'expenses',
+  income: 'incomes',
+  task: 'tasks',
+  bookmark: 'bookmarks',
+} as const;
+
 export interface QuotaLimits {
   expenses: number;
   incomes: number;

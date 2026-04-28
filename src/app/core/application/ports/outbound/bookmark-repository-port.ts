@@ -1,4 +1,4 @@
-import { Bookmark } from '../../domain/entities';
+import { Bookmark } from '../../../domain/entities';
 import { CreateBookmarkDto, UpdateBookmarkDto, BookmarkFilters } from '../inbound/bookmark-port';
 
 export interface BookmarkRepositoryPort {

@@ -1,13 +1,15 @@
 import { inject, Injectable } from '@angular/core';
-import { BookmarkPort, CreateBookmarkDto, UpdateBookmarkDto, BookmarkFilters } from '../../ports/inbound/bookmark-port';
+import { BOOKMARK_PORT, QUOTA_REPOSITORY_PORT } from '../../ports/ports.tokens';
+import { CreateBookmarkDto, UpdateBookmarkDto, BookmarkFilters } from '../../ports/inbound/bookmark-port';
 import { QuotaRepositoryPort } from '../../ports/outbound/quota-repository-port';
 import { Bookmark } from '../../../domain/entities';
 import { QuotaEnforcementService } from '../../../domain/services';
+import { FREEMIUM_LIMITS, QuotaStatusVO } from '../../../domain/value-objects';
 
 @Injectable()
 export class CreateBookmarkUseCase {
-  private bookmarkPort = inject(BookmarkPort);
-  private quotaRepo = inject(QuotaRepositoryPort);
+  private bookmarkPort = inject(BOOKMARK_PORT);
+  private quotaRepo = inject(QUOTA_REPOSITORY_PORT);
   private quotaService = inject(QuotaEnforcementService);
 
   async execute(dto: CreateBookmarkDto, userId: string, isPremium: boolean): Promise<Bookmark> {
@@ -27,7 +29,7 @@ export class CreateBookmarkUseCase {
 
 @Injectable()
 export class UpdateBookmarkUseCase {
-  private bookmarkPort = inject(BookmarkPort);
+  private bookmarkPort = inject(BOOKMARK_PORT);
 
   async execute(id: string, dto: UpdateBookmarkDto): Promise<Bookmark> {
     return this.bookmarkPort.update(id, dto);
@@ -36,8 +38,8 @@ export class UpdateBookmarkUseCase {
 
 @Injectable()
 export class DeleteBookmarkUseCase {
-  private bookmarkPort = inject(BookmarkPort);
-  private quotaRepo = inject(QuotaRepositoryPort);
+  private bookmarkPort = inject(BOOKMARK_PORT);
+  private quotaRepo = inject(QUOTA_REPOSITORY_PORT);
 
   async execute(id: string, userId: string): Promise<void> {
     const bookmark = await this.bookmarkPort.findById(id);
@@ -50,7 +52,7 @@ export class DeleteBookmarkUseCase {
 
 @Injectable()
 export class ListBookmarksUseCase {
-  private bookmarkPort = inject(BookmarkPort);
+  private bookmarkPort = inject(BOOKMARK_PORT);
 
   async execute(filters?: BookmarkFilters): Promise<Bookmark[]> {
     return this.bookmarkPort.findAll(filters);

@@ -1,4 +1,4 @@
-import { Task } from '../../domain/entities';
+import { Task } from '../../../domain/entities';
 import { CreateTaskDto, UpdateTaskDto, TaskFilters } from '../inbound/task-port';
 
 export interface TaskRepositoryPort {

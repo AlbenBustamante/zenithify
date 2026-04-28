@@ -1,5 +1,12 @@
 import { UserQuota } from '../entities';
-import { FREEMIUM_LIMITS, QuotaStatusVO } from '../value-objects';
+import { FREEMIUM_LIMITS, QuotaStatusVO } from '../value-objects/quota-status.vo';
+
+const resourceKeyMap = {
+  expense: 'expenses',
+  income: 'incomes',
+  task: 'tasks',
+  bookmark: 'bookmarks',
+} as const;
 
 export class QuotaEnforcementService {
   checkQuota(quota: UserQuota, resource: 'expense' | 'income' | 'task' | 'bookmark', isPremium: boolean): QuotaStatusVO {
@@ -7,11 +14,11 @@ export class QuotaEnforcementService {
     const resetDate = this.getResetDate(quota, resource);
 
     if (resetDate < now) {
-      return new QuotaStatusVO(resource, 0, FREEMIUM_LIMITS[resource], isPremium, now);
+      return new QuotaStatusVO(resource, 0, FREEMIUM_LIMITS[resourceKeyMap[resource]], isPremium, now);
     }
 
     const currentCount = this.getCurrentCount(quota, resource);
-    return new QuotaStatusVO(resource, currentCount, FREEMIUM_LIMITS[resource], isPremium, resetDate);
+    return new QuotaStatusVO(resource, currentCount, FREEMIUM_LIMITS[resourceKeyMap[resource]], isPremium, resetDate);
   }
 
   private getResetDate(quota: UserQuota, resource: 'expense' | 'income' | 'task' | 'bookmark'): Date {

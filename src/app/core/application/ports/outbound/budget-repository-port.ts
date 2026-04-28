@@ -1,4 +1,4 @@
-import { Budget } from '../../domain/entities';
+import { Budget } from '../../../domain/entities';
 import { CreateBudgetDto, UpdateBudgetDto } from '../inbound/budget-port';
 
 export interface BudgetRepositoryPort {

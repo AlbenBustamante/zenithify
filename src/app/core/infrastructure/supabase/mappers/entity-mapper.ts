@@ -140,17 +140,17 @@ export interface UserQuotaRow {
 }
 
 export class EntityMapper {
-  static toUser(row: ProfileRow, email: string): User {
+  static toUser(row: ProfileRow | null, email: string): User {
     return {
-      id: row.user_id,
+      id: '',
       email,
-      displayName: row.display_name ?? undefined,
-      avatarUrl: row.avatar_url ?? undefined,
-      defaultCurrency: row.default_currency as 'USD' | 'VES',
-      timezone: row.timezone,
-      isPremium: row.is_premium,
-      createdAt: new Date(row.created_at),
-      updatedAt: new Date(row.updated_at),
+      displayName: row?.display_name ?? undefined,
+      avatarUrl: row?.avatar_url ?? undefined,
+      defaultCurrency: (row?.default_currency ?? 'USD') as 'USD' | 'VES',
+      timezone: row?.timezone ?? 'America/Caracas',
+      isPremium: row?.is_premium ?? false,
+      createdAt: row?.created_at ? new Date(row.created_at) : new Date(),
+      updatedAt: row?.updated_at ? new Date(row.updated_at) : new Date(),
     };
   }
 

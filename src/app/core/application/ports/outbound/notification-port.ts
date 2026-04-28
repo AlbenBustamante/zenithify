@@ -1,4 +1,4 @@
-import { Notification, NotificationType } from '../../domain/entities';
+import { Notification, NotificationType } from '../../../domain/entities';
 
 export interface NotificationPort {
   create(notification: {

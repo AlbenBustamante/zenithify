@@ -1,4 +1,4 @@
-import { Expense, Currency } from '../../domain/entities';
+import { Expense, Currency } from '../../../domain/entities';
 import { CreateExpenseDto, UpdateExpenseDto, ExpenseFilters } from '../inbound/expense-port';
 
 export interface ExpenseRepositoryPort {

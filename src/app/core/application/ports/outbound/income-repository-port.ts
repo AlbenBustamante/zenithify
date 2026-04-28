@@ -1,4 +1,4 @@
-import { Income } from '../../domain/entities';
+import { Income } from '../../../domain/entities';
 import { CreateIncomeDto, UpdateIncomeDto, IncomeFilters } from '../inbound/income-port';
 
 export interface IncomeRepositoryPort {

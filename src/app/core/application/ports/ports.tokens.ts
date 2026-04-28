@@ -1,0 +1,40 @@
+import { InjectionToken } from '@angular/core';
+import { AuthPort } from './inbound/auth-port';
+import { ExpensePort } from './inbound/expense-port';
+import { IncomePort } from './inbound/income-port';
+import { BudgetPort } from './inbound/budget-port';
+import { PlanPort } from './inbound/plan-port';
+import { TaskPort } from './inbound/task-port';
+import { BookmarkPort } from './inbound/bookmark-port';
+import { CategoryPort } from './inbound/category-port';
+
+import { ExpenseRepositoryPort } from './outbound/expense-repository-port';
+import { IncomeRepositoryPort } from './outbound/income-repository-port';
+import { BudgetRepositoryPort } from './outbound/budget-repository-port';
+import { PlanRepositoryPort } from './outbound/plan-repository-port';
+import { TaskRepositoryPort } from './outbound/task-repository-port';
+import { BookmarkRepositoryPort } from './outbound/bookmark-repository-port';
+import { CategoryRepositoryPort } from './outbound/category-repository-port';
+import { QuotaRepositoryPort } from './outbound/quota-repository-port';
+import { ExchangeRateRepositoryPort } from './outbound/exchange-rate-repository-port';
+import { NotificationPort } from './outbound/notification-port';
+
+export const AUTH_PORT = new InjectionToken<AuthPort>('AuthPort');
+export const EXPENSE_PORT = new InjectionToken<ExpensePort>('ExpensePort');
+export const INCOME_PORT = new InjectionToken<IncomePort>('IncomePort');
+export const BUDGET_PORT = new InjectionToken<BudgetPort>('BudgetPort');
+export const PLAN_PORT = new InjectionToken<PlanPort>('PlanPort');
+export const TASK_PORT = new InjectionToken<TaskPort>('TaskPort');
+export const BOOKMARK_PORT = new InjectionToken<BookmarkPort>('BookmarkPort');
+export const CATEGORY_PORT = new InjectionToken<CategoryPort>('CategoryPort');
+
+export const EXPENSE_REPOSITORY_PORT = new InjectionToken<ExpenseRepositoryPort>('ExpenseRepositoryPort');
+export const INCOME_REPOSITORY_PORT = new InjectionToken<IncomeRepositoryPort>('IncomeRepositoryPort');
+export const BUDGET_REPOSITORY_PORT = new InjectionToken<BudgetRepositoryPort>('BudgetRepositoryPort');
+export const PLAN_REPOSITORY_PORT = new InjectionToken<PlanRepositoryPort>('PlanRepositoryPort');
+export const TASK_REPOSITORY_PORT = new InjectionToken<TaskRepositoryPort>('TaskRepositoryPort');
+export const BOOKMARK_REPOSITORY_PORT = new InjectionToken<BookmarkRepositoryPort>('BookmarkRepositoryPort');
+export const CATEGORY_REPOSITORY_PORT = new InjectionToken<CategoryRepositoryPort>('CategoryRepositoryPort');
+export const QUOTA_REPOSITORY_PORT = new InjectionToken<QuotaRepositoryPort>('QuotaRepositoryPort');
+export const EXCHANGE_RATE_REPOSITORY_PORT = new InjectionToken<ExchangeRateRepositoryPort>('ExchangeRateRepositoryPort');
+export const NOTIFICATION_PORT = new InjectionToken<NotificationPort>('NotificationPort');

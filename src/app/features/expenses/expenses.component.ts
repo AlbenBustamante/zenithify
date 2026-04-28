@@ -1,15 +1,20 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent } from '../../shared/ui/components';
+import { CardComponent } from '../../shared/ui/components/card/card.component';
+import { ButtonComponent } from '../../shared/ui/components/button/button.component';
+import { InputComponent } from '../../shared/ui/components/input/input.component';
+import { ModalComponent } from '../../shared/ui/components/modal/modal.component';
+import { SelectComponent } from '../../shared/ui/components/select/select.component';
+import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
 import { Currency, Expense, Category } from '../../core/domain/entities';
 import { formatCurrency, formatShortDate } from '../../shared/utils';
-import { SupabaseExpenseRepository, SupabaseCategoryRepository } from '../../core/infrastructure/supabase/adapters';
+import { SupabaseExpenseRepository } from '../../core/infrastructure/supabase/adapters/supabase-expense.repository';
+import { SupabaseCategoryRepository } from '../../core/infrastructure/supabase/adapters/supabase-category.repository';
 import { CreateExpenseUseCase, UpdateExpenseUseCase, DeleteExpenseUseCase, ListExpensesUseCase } from '../../core/application/use-cases/expense/expense.use-cases';
 
 @Component({
   selector: 'app-expenses',
-  imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent, RouterLink],
+  imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
@@ -168,7 +173,7 @@ import { CreateExpenseUseCase, UpdateExpenseUseCase, DeleteExpenseUseCase, ListE
         <app-input
           formControlName="expenseDate"
           label="Fecha"
-          type="date"
+          type="text"
           [error]="form.controls['expenseDate'].invalid && form.controls['expenseDate'].touched ? 'Fecha requerida' : ''"
         />
 

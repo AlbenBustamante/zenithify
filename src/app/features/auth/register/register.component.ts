@@ -1,8 +1,10 @@
 import { Component, signal, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CardComponent, InputComponent, ButtonComponent } from '../../../shared/ui/components';
-import { SupabaseAuthAdapter } from '../../../core/infrastructure/supabase/adapters';
+import { CardComponent } from '../../../shared/ui/components/card/card.component';
+import { InputComponent } from '../../../shared/ui/components/input/input.component';
+import { ButtonComponent } from '../../../shared/ui/components/button/button.component';
+import { SupabaseAuthAdapter } from '../../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
 
 @Component({
   selector: 'app-register',

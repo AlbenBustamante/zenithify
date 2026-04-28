@@ -1,9 +1,15 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent } from '../../shared/ui/components';
+import { CardComponent } from '../../shared/ui/components/card/card.component';
+import { ButtonComponent } from '../../shared/ui/components/button/button.component';
+import { InputComponent } from '../../shared/ui/components/input/input.component';
+import { ModalComponent } from '../../shared/ui/components/modal/modal.component';
+import { SelectComponent } from '../../shared/ui/components/select/select.component';
+import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
 import { Currency, Income, Category } from '../../core/domain/entities';
 import { formatCurrency, formatShortDate } from '../../shared/utils';
-import { SupabaseIncomeRepository, SupabaseCategoryRepository } from '../../core/infrastructure/supabase/adapters';
+import { SupabaseIncomeRepository } from '../../core/infrastructure/supabase/adapters/supabase-income.repository';
+import { SupabaseCategoryRepository } from '../../core/infrastructure/supabase/adapters/supabase-category.repository';
 import { CreateIncomeUseCase, UpdateIncomeUseCase, DeleteIncomeUseCase } from '../../core/application/use-cases/income/income.use-cases';
 
 @Component({
@@ -101,7 +107,7 @@ import { CreateIncomeUseCase, UpdateIncomeUseCase, DeleteIncomeUseCase } from '.
           }
         </app-select>
 
-        <app-input formControlName="incomeDate" label="Fecha" type="date"
+        <app-input formControlName="incomeDate" label="Fecha" type="text"
           [error]="form.controls['incomeDate'].invalid && form.controls['incomeDate'].touched ? 'Fecha requerida' : ''" />
 
         <div class="flex justify-end gap-3 mt-6">

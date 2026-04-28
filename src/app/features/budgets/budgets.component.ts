@@ -1,10 +1,18 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
+import { CommonModule, NgClass, TitleCasePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent } from '../../shared/ui/components';
+import { CardComponent } from '../../shared/ui/components/card/card.component';
+import { ButtonComponent } from '../../shared/ui/components/button/button.component';
+import { InputComponent } from '../../shared/ui/components/input/input.component';
+import { ModalComponent } from '../../shared/ui/components/modal/modal.component';
+import { SelectComponent } from '../../shared/ui/components/select/select.component';
 import { Currency, Budget, BudgetPeriod } from '../../core/domain/entities';
 import { formatCurrency } from '../../shared/utils';
 import { Money } from '../../core/domain/value-objects';
-import { SupabaseBudgetRepository, SupabaseCategoryRepository, SupabaseExpenseRepository, SupabaseExchangeRateRepository } from '../../core/infrastructure/supabase/adapters';
+import { SupabaseBudgetRepository } from '../../core/infrastructure/supabase/adapters/supabase-budget.repository';
+import { SupabaseCategoryRepository } from '../../core/infrastructure/supabase/adapters/supabase-category.repository';
+import { SupabaseExpenseRepository } from '../../core/infrastructure/supabase/adapters/supabase-expense.repository';
+import { SupabaseExchangeRateRepository } from '../../core/infrastructure/supabase/adapters/supabase-exchange-rate.repository';
 import { BudgetCalculationService } from '../../core/domain/services';
 import { CreateBudgetUseCase, UpdateBudgetUseCase, DeleteBudgetUseCase, ListBudgetsUseCase, GetBudgetSummaryUseCase } from '../../core/application/use-cases/budget/budget.use-cases';
 
@@ -19,7 +27,7 @@ interface BudgetWithUtilization extends Budget {
 
 @Component({
   selector: 'app-budgets',
-  imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent],
+  imports: [CommonModule, NgClass, TitleCasePipe, ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent],
   template: `
     <div class="space-y-6">
       <div class="flex items-center justify-between">
@@ -91,7 +99,7 @@ interface BudgetWithUtilization extends Budget {
           <option value="yearly">Anual</option>
         </app-select>
 
-        <app-input formControlName="startDate" label="Fecha de inicio" type="date"
+        <app-input formControlName="startDate" label="Fecha de inicio" type="text"
           [error]="form.controls['startDate'].invalid && form.controls['startDate'].touched ? 'Fecha requerida' : ''" />
 
         <div class="flex justify-end gap-3 mt-6">

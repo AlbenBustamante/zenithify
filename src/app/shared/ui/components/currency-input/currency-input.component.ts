@@ -1,7 +1,7 @@
 import { Component, input, output, forwardRef, signal, computed } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
-import { Currency } from '../../../core/domain/entities';
+import { Currency } from '../../../../core/domain/entities';
 
 @Component({
   selector: 'app-currency-input',

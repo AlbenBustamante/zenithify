@@ -1,8 +1,12 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent } from '../../shared/ui/components';
+import { CardComponent } from '../../shared/ui/components/card/card.component';
+import { ButtonComponent } from '../../shared/ui/components/button/button.component';
+import { InputComponent } from '../../shared/ui/components/input/input.component';
+import { ModalComponent } from '../../shared/ui/components/modal/modal.component';
+import { SelectComponent } from '../../shared/ui/components/select/select.component';
 import { Category, CategoryType } from '../../core/domain/entities';
-import { SupabaseCategoryRepository } from '../../core/infrastructure/supabase/adapters';
+import { SupabaseCategoryRepository } from '../../core/infrastructure/supabase/adapters/supabase-category.repository';
 import { CreateCategoryUseCase, UpdateCategoryUseCase, DeleteCategoryUseCase, ListCategoriesUseCase } from '../../core/application/use-cases/category/category.use-cases';
 
 @Component({

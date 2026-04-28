@@ -1,4 +1,4 @@
-import { Plan, BillingCycle, Currency } from '../../domain/entities';
+import { Plan, BillingCycle, Currency } from '../../../domain/entities';
 
 export interface CreatePlanDto {
   name: string;

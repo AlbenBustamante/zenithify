@@ -1,4 +1,4 @@
-import { Plan } from '../../domain/entities';
+import { Plan } from '../../../domain/entities';
 import { CreatePlanDto, UpdatePlanDto } from '../inbound/plan-port';
 
 export interface PlanRepositoryPort {

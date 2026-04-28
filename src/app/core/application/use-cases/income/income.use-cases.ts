@@ -1,13 +1,15 @@
 import { inject, Injectable } from '@angular/core';
-import { IncomePort, CreateIncomeDto, UpdateIncomeDto, IncomeFilters } from '../../ports/inbound/income-port';
+import { INCOME_PORT, QUOTA_REPOSITORY_PORT } from '../../ports/ports.tokens';
+import { CreateIncomeDto, UpdateIncomeDto, IncomeFilters } from '../../ports/inbound/income-port';
 import { QuotaRepositoryPort } from '../../ports/outbound/quota-repository-port';
 import { Income } from '../../../domain/entities';
 import { QuotaEnforcementService } from '../../../domain/services';
+import { FREEMIUM_LIMITS, QuotaStatusVO } from '../../../domain/value-objects';
 
 @Injectable()
 export class CreateIncomeUseCase {
-  private incomePort = inject(IncomePort);
-  private quotaRepo = inject(QuotaRepositoryPort);
+  private incomePort = inject(INCOME_PORT);
+  private quotaRepo = inject(QUOTA_REPOSITORY_PORT);
   private quotaService = inject(QuotaEnforcementService);
 
   async execute(dto: CreateIncomeDto, userId: string, isPremium: boolean): Promise<Income> {
@@ -27,7 +29,7 @@ export class CreateIncomeUseCase {
 
 @Injectable()
 export class UpdateIncomeUseCase {
-  private incomePort = inject(IncomePort);
+  private incomePort = inject(INCOME_PORT);
 
   async execute(id: string, dto: UpdateIncomeDto): Promise<Income> {
     return this.incomePort.update(id, dto);
@@ -36,8 +38,8 @@ export class UpdateIncomeUseCase {
 
 @Injectable()
 export class DeleteIncomeUseCase {
-  private incomePort = inject(IncomePort);
-  private quotaRepo = inject(QuotaRepositoryPort);
+  private incomePort = inject(INCOME_PORT);
+  private quotaRepo = inject(QUOTA_REPOSITORY_PORT);
 
   async execute(id: string, userId: string): Promise<void> {
     const income = await this.incomePort.findById(id);
@@ -50,7 +52,7 @@ export class DeleteIncomeUseCase {
 
 @Injectable()
 export class ListIncomesUseCase {
-  private incomePort = inject(IncomePort);
+  private incomePort = inject(INCOME_PORT);
 
   async execute(filters?: IncomeFilters): Promise<Income[]> {
     return this.incomePort.findAll(filters);

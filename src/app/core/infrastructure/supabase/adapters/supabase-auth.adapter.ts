@@ -15,9 +15,12 @@ export class SupabaseAuthAdapter implements AuthPort {
     });
 
     if (error) throw error;
+    if (!data.user) throw new Error('User not found after sign in');
 
-    const profile = await this.getProfile(data.user.id);
-    return EntityMapper.toUser(profile, data.user.email ?? email);
+    return {
+      id: data.user.id,
+      email: data.user.email ?? email,
+    };
   }
 
   async signUpWithEmail(email: string, password: string, displayName?: string): Promise<User> {
@@ -30,9 +33,13 @@ export class SupabaseAuthAdapter implements AuthPort {
     });
 
     if (error) throw error;
+    if (!data.user) throw new Error('User not found after sign up');
 
-    const profile = await this.getProfile(data.user.id);
-    return EntityMapper.toUser(profile, data.user.email ?? email);
+    return {
+      id: data.user.id,
+      email: data.user.email ?? email,
+      displayName,
+    };
   }
 
   async signInWithGoogle(): Promise<User> {
@@ -43,8 +50,11 @@ export class SupabaseAuthAdapter implements AuthPort {
     if (error) throw error;
 
     const user = await this.supabase.auth.getUser();
-    const profile = await this.getProfile(user.data.user!.id);
-    return EntityMapper.toUser(profile, user.data.user!.email ?? '');
+    if (!user.data.user) throw new Error('User not found after Google sign in');
+    return {
+      id: user.data.user.id,
+      email: user.data.user.email ?? '',
+    };
   }
 
   async signOut(): Promise<void> {
@@ -56,8 +66,10 @@ export class SupabaseAuthAdapter implements AuthPort {
     const session = await this.supabase.auth.getSession();
     if (!session.data.session?.user) return null;
 
-    const profile = await this.getProfile(session.data.session.user.id);
-    return EntityMapper.toUser(profile, session.data.session.user.email ?? '');
+    return {
+      id: session.data.session.user.id,
+      email: session.data.session.user.email ?? '',
+    };
   }
 
   onAuthStateChange(callback: (user: User | null) => void): () => void {
@@ -67,8 +79,9 @@ export class SupabaseAuthAdapter implements AuthPort {
         return;
       }
 
-      this.getProfile(session.user.id).then((profile) => {
-        callback(EntityMapper.toUser(profile, session.user!.email ?? ''));
+      callback({
+        id: session.user.id,
+        email: session?.user?.email ?? '',
       });
     }).data.subscription.unsubscribe;
   }
@@ -83,12 +96,12 @@ export class SupabaseAuthAdapter implements AuthPort {
     if (error) throw error;
   }
 
-  private async getProfile(userId: string): Promise<ProfileRow> {
+  private async getProfile(userId: string): Promise<ProfileRow | null> {
     const { data, error } = await this.supabase
       .from('profiles')
       .select('*')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
     return data;

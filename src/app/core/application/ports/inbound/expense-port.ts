@@ -1,4 +1,4 @@
-import { Expense, Currency } from '../../domain/entities';
+import { Expense, Currency } from '../../../domain/entities';
 
 export interface CreateExpenseDto {
   amount: number;

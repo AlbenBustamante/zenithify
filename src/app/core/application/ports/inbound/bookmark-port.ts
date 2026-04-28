@@ -1,4 +1,4 @@
-import { Bookmark } from '../../domain/entities';
+import { Bookmark } from '../../../domain/entities';
 
 export interface CreateBookmarkDto {
   title: string;

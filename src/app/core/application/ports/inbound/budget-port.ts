@@ -1,4 +1,4 @@
-import { Budget, BudgetPeriod, Currency } from '../../domain/entities';
+import { Budget, BudgetPeriod, Currency } from '../../../domain/entities';
 
 export interface CreateBudgetDto {
   name: string;

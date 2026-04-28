@@ -1,4 +1,4 @@
-import { User } from '../../domain/entities';
+import { User } from '../../../domain/entities';
 
 export interface AuthPort {
   signInWithEmail(email: string, password: string): Promise<User>;

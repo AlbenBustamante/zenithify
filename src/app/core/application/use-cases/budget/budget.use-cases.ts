@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { BudgetPort, CreateBudgetDto, UpdateBudgetDto } from '../../ports/inbound/budget-port';
+import { BUDGET_PORT, EXPENSE_REPOSITORY_PORT, EXCHANGE_RATE_REPOSITORY_PORT } from '../../ports/ports.tokens';
+import { CreateBudgetDto, UpdateBudgetDto } from '../../ports/inbound/budget-port';
 import { BudgetRepositoryPort } from '../../ports/outbound/budget-repository-port';
 import { ExpenseRepositoryPort } from '../../ports/outbound/expense-repository-port';
 import { ExchangeRateRepositoryPort } from '../../ports/outbound/exchange-rate-repository-port';
@@ -8,7 +9,7 @@ import { BudgetCalculationService, BudgetUtilization } from '../../../domain/ser
 
 @Injectable()
 export class CreateBudgetUseCase {
-  private budgetPort = inject(BudgetPort);
+  private budgetPort = inject(BUDGET_PORT);
 
   async execute(dto: CreateBudgetDto): Promise<Budget> {
     return this.budgetPort.create(dto);
@@ -17,7 +18,7 @@ export class CreateBudgetUseCase {
 
 @Injectable()
 export class UpdateBudgetUseCase {
-  private budgetPort = inject(BudgetPort);
+  private budgetPort = inject(BUDGET_PORT);
 
   async execute(id: string, dto: UpdateBudgetDto): Promise<Budget> {
     return this.budgetPort.update(id, dto);
@@ -26,7 +27,7 @@ export class UpdateBudgetUseCase {
 
 @Injectable()
 export class DeleteBudgetUseCase {
-  private budgetPort = inject(BudgetPort);
+  private budgetPort = inject(BUDGET_PORT);
 
   async execute(id: string): Promise<void> {
     return this.budgetPort.delete(id);
@@ -35,7 +36,7 @@ export class DeleteBudgetUseCase {
 
 @Injectable()
 export class ListBudgetsUseCase {
-  private budgetPort = inject(BudgetPort);
+  private budgetPort = inject(BUDGET_PORT);
 
   async execute(): Promise<Budget[]> {
     return this.budgetPort.findAll();
@@ -44,9 +45,9 @@ export class ListBudgetsUseCase {
 
 @Injectable()
 export class GetBudgetSummaryUseCase {
-  private budgetPort = inject(BudgetPort);
-  private expenseRepo = inject(ExpenseRepositoryPort);
-  private exchangeRateRepo = inject(ExchangeRateRepositoryPort);
+  private budgetPort = inject(BUDGET_PORT);
+  private expenseRepo = inject(EXPENSE_REPOSITORY_PORT);
+  private exchangeRateRepo = inject(EXCHANGE_RATE_REPOSITORY_PORT);
   private budgetCalcService = inject(BudgetCalculationService);
 
   async execute(userId: string): Promise<BudgetUtilization[]> {

@@ -1,9 +1,13 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { CardComponent, ButtonComponent, InputComponent, SelectComponent } from '../../shared/ui/components';
+import { CardComponent } from '../../shared/ui/components/card/card.component';
+import { ButtonComponent } from '../../shared/ui/components/button/button.component';
+import { InputComponent } from '../../shared/ui/components/input/input.component';
+import { SelectComponent } from '../../shared/ui/components/select/select.component';
 import { Currency } from '../../core/domain/entities';
 import { CurrencyConversionService } from '../../core/domain/services';
-import { SupabaseAuthAdapter, SupabaseExchangeRateRepository } from '../../core/infrastructure/supabase/adapters';
+import { SupabaseAuthAdapter } from '../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
+import { SupabaseExchangeRateRepository } from '../../core/infrastructure/supabase/adapters/supabase-exchange-rate.repository';
 import { environment } from '../../../environments/environment';
 
 @Component({

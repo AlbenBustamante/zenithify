@@ -1,10 +1,11 @@
 import { inject, Injectable } from '@angular/core';
-import { CategoryPort, CreateCategoryDto, UpdateCategoryDto } from '../../ports/inbound/category-port';
+import { CATEGORY_PORT } from '../../ports/ports.tokens';
+import { CreateCategoryDto, UpdateCategoryDto } from '../../ports/inbound/category-port';
 import { Category, CategoryType } from '../../../domain/entities';
 
 @Injectable()
 export class CreateCategoryUseCase {
-  private categoryPort = inject(CategoryPort);
+  private categoryPort = inject(CATEGORY_PORT);
 
   async execute(dto: CreateCategoryDto): Promise<Category> {
     return this.categoryPort.create(dto);
@@ -13,7 +14,7 @@ export class CreateCategoryUseCase {
 
 @Injectable()
 export class UpdateCategoryUseCase {
-  private categoryPort = inject(CategoryPort);
+  private categoryPort = inject(CATEGORY_PORT);
 
   async execute(id: string, dto: UpdateCategoryDto): Promise<Category> {
     return this.categoryPort.update(id, dto);
@@ -22,7 +23,7 @@ export class UpdateCategoryUseCase {
 
 @Injectable()
 export class DeleteCategoryUseCase {
-  private categoryPort = inject(CategoryPort);
+  private categoryPort = inject(CATEGORY_PORT);
 
   async execute(id: string): Promise<void> {
     return this.categoryPort.delete(id);
@@ -31,7 +32,7 @@ export class DeleteCategoryUseCase {
 
 @Injectable()
 export class ListCategoriesUseCase {
-  private categoryPort = inject(CategoryPort);
+  private categoryPort = inject(CATEGORY_PORT);
 
   async execute(): Promise<Category[]> {
     return this.categoryPort.findAll();
@@ -40,7 +41,7 @@ export class ListCategoriesUseCase {
 
 @Injectable()
 export class GetCategoriesByTypeUseCase {
-  private categoryPort = inject(CategoryPort);
+  private categoryPort = inject(CATEGORY_PORT);
 
   async execute(type: CategoryType): Promise<Category[]> {
     return this.categoryPort.findByType(type);

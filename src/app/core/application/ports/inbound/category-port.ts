@@ -1,4 +1,4 @@
-import { Category, CategoryType } from '../../domain/entities';
+import { Category, CategoryType } from '../../../domain/entities';
 
 export interface CreateCategoryDto {
   name: string;

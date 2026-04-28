@@ -1,4 +1,4 @@
-import { Category, CategoryType } from '../../domain/entities';
+import { Category, CategoryType } from '../../../domain/entities';
 import { CreateCategoryDto, UpdateCategoryDto } from '../inbound/category-port';
 
 export interface CategoryRepositoryPort {

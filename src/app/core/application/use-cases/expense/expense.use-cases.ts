@@ -1,13 +1,15 @@
 import { inject, Injectable } from '@angular/core';
-import { ExpensePort, CreateExpenseDto, UpdateExpenseDto, ExpenseFilters } from '../../ports/inbound/expense-port';
+import { EXPENSE_PORT, QUOTA_REPOSITORY_PORT } from '../../ports/ports.tokens';
+import { CreateExpenseDto, UpdateExpenseDto, ExpenseFilters } from '../../ports/inbound/expense-port';
 import { QuotaRepositoryPort } from '../../ports/outbound/quota-repository-port';
 import { Expense } from '../../../domain/entities';
 import { QuotaEnforcementService } from '../../../domain/services';
+import { FREEMIUM_LIMITS, QuotaStatusVO } from '../../../domain/value-objects';
 
 @Injectable()
 export class CreateExpenseUseCase {
-  private expensePort = inject(ExpensePort);
-  private quotaRepo = inject(QuotaRepositoryPort);
+  private expensePort = inject(EXPENSE_PORT);
+  private quotaRepo = inject(QUOTA_REPOSITORY_PORT);
   private quotaService = inject(QuotaEnforcementService);
 
   async execute(dto: CreateExpenseDto, userId: string, isPremium: boolean): Promise<Expense> {
@@ -27,7 +29,7 @@ export class CreateExpenseUseCase {
 
 @Injectable()
 export class UpdateExpenseUseCase {
-  private expensePort = inject(ExpensePort);
+  private expensePort = inject(EXPENSE_PORT);
 
   async execute(id: string, dto: UpdateExpenseDto): Promise<Expense> {
     return this.expensePort.update(id, dto);
@@ -36,8 +38,8 @@ export class UpdateExpenseUseCase {
 
 @Injectable()
 export class DeleteExpenseUseCase {
-  private expensePort = inject(ExpensePort);
-  private quotaRepo = inject(QuotaRepositoryPort);
+  private expensePort = inject(EXPENSE_PORT);
+  private quotaRepo = inject(QUOTA_REPOSITORY_PORT);
 
   async execute(id: string, userId: string): Promise<void> {
     const expense = await this.expensePort.findById(id);
@@ -50,7 +52,7 @@ export class DeleteExpenseUseCase {
 
 @Injectable()
 export class ListExpensesUseCase {
-  private expensePort = inject(ExpensePort);
+  private expensePort = inject(EXPENSE_PORT);
 
   async execute(filters?: ExpenseFilters): Promise<Expense[]> {
     return this.expensePort.findAll(filters);
