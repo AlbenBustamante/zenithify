@@ -14,85 +14,101 @@ import { CreateCategoryUseCase, UpdateCategoryUseCase, DeleteCategoryUseCase, Li
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent],
   template: `
-    <div class="space-y-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Categorías</h1>
-          <p class="text-sm text-gray-500 mt-1">Organiza tus gastos e ingresos</p>
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-8">
+      <div class="max-w-7xl mx-auto space-y-8">
+
+        <header class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 animate-slide-up">
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="w-1 h-8 bg-cyan-500 rounded-full"></span>
+              <h1 class="text-4xl font-bold text-slate-900 tracking-tight">Categorías</h1>
+            </div>
+            <p class="text-slate-500 text-sm">Organiza tus gastos e ingresos</p>
+          </div>
+          <app-button (clicked)="openCreateModal()">
+            <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Nueva Categoría
+          </app-button>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <app-card title="Gastos" [noPadding]="true" class="animate-slide-up stagger-1">
+            <div class="divide-y divide-slate-100">
+              @if (expenseCategories().length === 0) {
+                <div class="p-12 text-center">
+                  <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-50/50 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-red-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <p class="text-slate-400 text-sm">No hay categorías de gastos</p>
+                </div>
+              } @else {
+                @for (cat of expenseCategories(); track cat.id) {
+                  <div class="p-5 flex items-center justify-between hover:bg-slate-50/80 transition-colors duration-200">
+                    <div class="flex items-center gap-3">
+                      <span class="text-2xl">{{ cat.icon || '📁' }}</span>
+                      <div>
+                        <span class="font-medium text-slate-800">{{ cat.name }}</span>
+                        @if (cat.isSystem) {
+                          <span class="ml-2 text-xs text-slate-400">(Sistema)</span>
+                        }
+                      </div>
+                    </div>
+                    @if (!cat.isSystem) {
+                      <div class="flex gap-1">
+                        <app-button variant="ghost" size="sm" (clicked)="openEditModal(cat)">Editar</app-button>
+                        <app-button variant="ghost" size="sm" (clicked)="confirmDelete(cat)">Eliminar</app-button>
+                      </div>
+                    }
+                  </div>
+                }
+              }
+            </div>
+          </app-card>
+
+          <app-card title="Ingresos" [noPadding]="true" class="animate-slide-up stagger-2">
+            <div class="divide-y divide-slate-100">
+              @if (incomeCategories().length === 0) {
+                <div class="p-12 text-center">
+                  <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-emerald-50/50 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-emerald-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 112 2h-2a2 2 0 012-2zm0 0V5a2 2 0 012-2h2a2 2 0 012 2v2m-6 9h6a2 2 0 002-2v-6a2 2 0 00-2-2h-6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <p class="text-slate-400 text-sm">No hay categorías de ingresos</p>
+                </div>
+              } @else {
+                @for (cat of incomeCategories(); track cat.id) {
+                  <div class="p-5 flex items-center justify-between hover:bg-slate-50/80 transition-colors duration-200">
+                    <div class="flex items-center gap-3">
+                      <span class="text-2xl">{{ cat.icon || '📁' }}</span>
+                      <div>
+                        <span class="font-medium text-slate-800">{{ cat.name }}</span>
+                        @if (cat.isSystem) {
+                          <span class="ml-2 text-xs text-slate-400">(Sistema)</span>
+                        }
+                      </div>
+                    </div>
+                    @if (!cat.isSystem) {
+                      <div class="flex gap-1">
+                        <app-button variant="ghost" size="sm" (clicked)="openEditModal(cat)">Editar</app-button>
+                        <app-button variant="ghost" size="sm" (clicked)="confirmDelete(cat)">Eliminar</app-button>
+                      </div>
+                    }
+                  </div>
+                }
+              }
+            </div>
+          </app-card>
         </div>
-        <app-button (clicked)="openCreateModal()">
-          <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          Nueva Categoría
-        </app-button>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <app-card title="Gastos" [noPadding]="true">
-          <div class="divide-y divide-gray-100">
-            @if (expenseCategories().length === 0) {
-              <div class="p-6 text-center">
-                <p class="text-gray-400 text-sm">No hay categorías de gastos</p>
-              </div>
-            } @else {
-              @for (cat of expenseCategories(); track cat.id) {
-                <div class="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                  <div class="flex items-center gap-3">
-                    <span class="text-xl">{{ cat.icon || '📁' }}</span>
-                    <div>
-                      <span class="font-medium text-gray-900">{{ cat.name }}</span>
-                      @if (cat.isSystem) {
-                        <span class="ml-2 text-xs text-gray-400">(Sistema)</span>
-                      }
-                    </div>
-                  </div>
-                  @if (!cat.isSystem) {
-                    <div class="flex gap-1">
-                      <app-button variant="ghost" size="sm" (clicked)="openEditModal(cat)">Editar</app-button>
-                      <app-button variant="ghost" size="sm" (clicked)="confirmDelete(cat)">Eliminar</app-button>
-                    </div>
-                  }
-                </div>
-              }
-            }
-          </div>
-        </app-card>
-
-        <app-card title="Ingresos" [noPadding]="true">
-          <div class="divide-y divide-gray-100">
-            @if (incomeCategories().length === 0) {
-              <div class="p-6 text-center">
-                <p class="text-gray-400 text-sm">No hay categorías de ingresos</p>
-              </div>
-            } @else {
-              @for (cat of incomeCategories(); track cat.id) {
-                <div class="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                  <div class="flex items-center gap-3">
-                    <span class="text-xl">{{ cat.icon || '📁' }}</span>
-                    <div>
-                      <span class="font-medium text-gray-900">{{ cat.name }}</span>
-                      @if (cat.isSystem) {
-                        <span class="ml-2 text-xs text-gray-400">(Sistema)</span>
-                      }
-                    </div>
-                  </div>
-                  @if (!cat.isSystem) {
-                    <div class="flex gap-1">
-                      <app-button variant="ghost" size="sm" (clicked)="openEditModal(cat)">Editar</app-button>
-                      <app-button variant="ghost" size="sm" (clicked)="confirmDelete(cat)">Eliminar</app-button>
-                    </div>
-                  }
-                </div>
-              }
-            }
-          </div>
-        </app-card>
       </div>
     </div>
 
     <app-modal [isOpen]="isModalOpen()" [title]="editingCategory() ? 'Editar Categoría' : 'Nueva Categoría'" (close)="closeModal()">
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
         <app-input formControlName="name" label="Nombre" placeholder="Nombre de la categoría"
           [error]="form.controls['name'].invalid && form.controls['name'].touched ? 'Nombre requerido' : ''" />
 
@@ -115,7 +131,7 @@ import { CreateCategoryUseCase, UpdateCategoryUseCase, DeleteCategoryUseCase, Li
     </app-modal>
 
     <app-modal [isOpen]="isDeleteModalOpen()" title="Eliminar Categoría" (close)="closeDeleteModal()">
-      <p class="text-gray-600">¿Estás seguro de que deseas eliminar esta categoría?</p>
+      <p class="text-slate-600">¿Estás seguro de que deseas eliminar esta categoría?</p>
       <div class="flex justify-end gap-3 mt-6">
         <app-button variant="secondary" (clicked)="closeDeleteModal()">Cancelar</app-button>
         <app-button variant="danger" (clicked)="onDelete()" [loading]="isLoading()">Eliminar</app-button>
