@@ -12,11 +12,11 @@ export interface User {
   email: string;
   displayName?: string;
   avatarUrl?: string;
-  defaultCurrency: Currency;
-  timezone: string;
-  isPremium: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  defaultCurrency?: Currency;
+  timezone?: string;
+  isPremium?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface Category {
