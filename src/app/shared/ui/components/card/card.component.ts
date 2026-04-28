@@ -4,12 +4,12 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core';
   selector: 'app-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden hover:shadow-md transition-shadow duration-300">
       @if (title()) {
-        <div class="px-6 py-4 border-b border-gray-100">
-          <h3 class="text-base font-semibold text-gray-900">{{ title() }}</h3>
+        <div class="px-6 py-4 border-b border-slate-100/60">
+          <h3 class="text-sm font-mono font-bold text-slate-600 uppercase tracking-wider">{{ title() }}</h3>
           @if (subtitle()) {
-            <p class="text-sm text-gray-500 mt-0.5">{{ subtitle() }}</p>
+            <p class="text-sm text-slate-400 mt-0.5">{{ subtitle() }}</p>
           }
         </div>
       }
