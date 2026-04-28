@@ -6,7 +6,7 @@ import { Task } from '../../../domain/entities';
 import { QuotaEnforcementService } from '../../../domain/services';
 import { FREEMIUM_LIMITS, QuotaStatusVO } from '../../../domain/value-objects';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CreateTaskUseCase {
   private taskPort = inject(TASK_PORT);
   private quotaRepo = inject(QUOTA_REPOSITORY_PORT);
@@ -27,7 +27,7 @@ export class CreateTaskUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class UpdateTaskUseCase {
   private taskPort = inject(TASK_PORT);
 
@@ -36,7 +36,7 @@ export class UpdateTaskUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class DeleteTaskUseCase {
   private taskPort = inject(TASK_PORT);
   private quotaRepo = inject(QUOTA_REPOSITORY_PORT);
@@ -50,7 +50,7 @@ export class DeleteTaskUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CompleteTaskUseCase {
   private taskPort = inject(TASK_PORT);
 
@@ -59,7 +59,7 @@ export class CompleteTaskUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ListTasksUseCase {
   private taskPort = inject(TASK_PORT);
 
@@ -68,7 +68,7 @@ export class ListTasksUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class GetPendingTasksUseCase {
   private taskPort = inject(TASK_PORT);
 
@@ -77,7 +77,7 @@ export class GetPendingTasksUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class GetOverdueTasksUseCase {
   private taskPort = inject(TASK_PORT);
 

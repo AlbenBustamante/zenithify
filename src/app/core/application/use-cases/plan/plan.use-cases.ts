@@ -4,7 +4,7 @@ import { CreatePlanDto, UpdatePlanDto } from '../../ports/inbound/plan-port';
 import { Plan } from '../../../domain/entities';
 import { SubscriptionCycle } from '../../../domain/value-objects';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CreatePlanUseCase {
   private planPort = inject(PLAN_PORT);
 
@@ -13,7 +13,7 @@ export class CreatePlanUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class UpdatePlanUseCase {
   private planPort = inject(PLAN_PORT);
 
@@ -22,7 +22,7 @@ export class UpdatePlanUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class DeletePlanUseCase {
   private planPort = inject(PLAN_PORT);
 
@@ -31,7 +31,7 @@ export class DeletePlanUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ListPlansUseCase {
   private planPort = inject(PLAN_PORT);
 
@@ -40,7 +40,7 @@ export class ListPlansUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class RenewPlanUseCase {
   private planPort = inject(PLAN_PORT);
 
@@ -59,7 +59,7 @@ export class RenewPlanUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class GetUpcomingRenewalsUseCase {
   private planPort = inject(PLAN_PORT);
 

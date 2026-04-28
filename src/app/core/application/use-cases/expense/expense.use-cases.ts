@@ -6,7 +6,7 @@ import { Expense } from '../../../domain/entities';
 import { QuotaEnforcementService } from '../../../domain/services';
 import { FREEMIUM_LIMITS, QuotaStatusVO } from '../../../domain/value-objects';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CreateExpenseUseCase {
   private expensePort = inject(EXPENSE_PORT);
   private quotaRepo = inject(QUOTA_REPOSITORY_PORT);
@@ -27,7 +27,7 @@ export class CreateExpenseUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class UpdateExpenseUseCase {
   private expensePort = inject(EXPENSE_PORT);
 
@@ -36,7 +36,7 @@ export class UpdateExpenseUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class DeleteExpenseUseCase {
   private expensePort = inject(EXPENSE_PORT);
   private quotaRepo = inject(QUOTA_REPOSITORY_PORT);
@@ -50,7 +50,7 @@ export class DeleteExpenseUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ListExpensesUseCase {
   private expensePort = inject(EXPENSE_PORT);
 

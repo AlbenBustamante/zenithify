@@ -6,7 +6,7 @@ import { Bookmark } from '../../../domain/entities';
 import { QuotaEnforcementService } from '../../../domain/services';
 import { FREEMIUM_LIMITS, QuotaStatusVO } from '../../../domain/value-objects';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CreateBookmarkUseCase {
   private bookmarkPort = inject(BOOKMARK_PORT);
   private quotaRepo = inject(QUOTA_REPOSITORY_PORT);
@@ -27,7 +27,7 @@ export class CreateBookmarkUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class UpdateBookmarkUseCase {
   private bookmarkPort = inject(BOOKMARK_PORT);
 
@@ -36,7 +36,7 @@ export class UpdateBookmarkUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class DeleteBookmarkUseCase {
   private bookmarkPort = inject(BOOKMARK_PORT);
   private quotaRepo = inject(QUOTA_REPOSITORY_PORT);
@@ -50,7 +50,7 @@ export class DeleteBookmarkUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ListBookmarksUseCase {
   private bookmarkPort = inject(BOOKMARK_PORT);
 

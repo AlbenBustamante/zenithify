@@ -3,7 +3,7 @@ import { CATEGORY_PORT } from '../../ports/ports.tokens';
 import { CreateCategoryDto, UpdateCategoryDto } from '../../ports/inbound/category-port';
 import { Category, CategoryType } from '../../../domain/entities';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CreateCategoryUseCase {
   private categoryPort = inject(CATEGORY_PORT);
 
@@ -12,7 +12,7 @@ export class CreateCategoryUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class UpdateCategoryUseCase {
   private categoryPort = inject(CATEGORY_PORT);
 
@@ -21,7 +21,7 @@ export class UpdateCategoryUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class DeleteCategoryUseCase {
   private categoryPort = inject(CATEGORY_PORT);
 
@@ -30,7 +30,7 @@ export class DeleteCategoryUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ListCategoriesUseCase {
   private categoryPort = inject(CATEGORY_PORT);
 
@@ -39,7 +39,7 @@ export class ListCategoriesUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class GetCategoriesByTypeUseCase {
   private categoryPort = inject(CATEGORY_PORT);
 

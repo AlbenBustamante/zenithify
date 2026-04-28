@@ -7,7 +7,7 @@ import { ExchangeRateRepositoryPort } from '../../ports/outbound/exchange-rate-r
 import { Budget } from '../../../domain/entities';
 import { BudgetCalculationService, BudgetUtilization } from '../../../domain/services';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class CreateBudgetUseCase {
   private budgetPort = inject(BUDGET_PORT);
 
@@ -16,7 +16,7 @@ export class CreateBudgetUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class UpdateBudgetUseCase {
   private budgetPort = inject(BUDGET_PORT);
 
@@ -25,7 +25,7 @@ export class UpdateBudgetUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class DeleteBudgetUseCase {
   private budgetPort = inject(BUDGET_PORT);
 
@@ -34,7 +34,7 @@ export class DeleteBudgetUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ListBudgetsUseCase {
   private budgetPort = inject(BUDGET_PORT);
 
@@ -43,7 +43,7 @@ export class ListBudgetsUseCase {
   }
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class GetBudgetSummaryUseCase {
   private budgetPort = inject(BUDGET_PORT);
   private expenseRepo = inject(EXPENSE_REPOSITORY_PORT);
