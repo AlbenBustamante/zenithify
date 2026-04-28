@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { Currency } from '../entities';
 
 interface DolarApiResponse {
@@ -6,6 +7,7 @@ interface DolarApiResponse {
   promedio: number;
 }
 
+@Injectable({ providedIn: 'root' })
 export class CurrencyConversionService {
   private cachedRates: Map<string, { rate: number; timestamp: Date }> = new Map();
   private cacheTimeout = 60 * 60 * 1000;

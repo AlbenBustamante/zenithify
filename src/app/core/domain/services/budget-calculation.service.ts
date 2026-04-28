@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { Budget, Expense, Income } from '../entities';
 import { Money } from '../value-objects';
 
@@ -11,6 +12,7 @@ export interface BudgetUtilization {
   categoryIds: string[];
 }
 
+@Injectable({ providedIn: 'root' })
 export class BudgetCalculationService {
   calculateUtilization(
     budget: Budget,

@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { UserQuota } from '../entities';
 import { FREEMIUM_LIMITS, QuotaStatusVO } from '../value-objects/quota-status.vo';
 
@@ -8,6 +9,7 @@ const resourceKeyMap = {
   bookmark: 'bookmarks',
 } as const;
 
+@Injectable({ providedIn: 'root' })
 export class QuotaEnforcementService {
   checkQuota(quota: UserQuota, resource: 'expense' | 'income' | 'task' | 'bookmark', isPremium: boolean): QuotaStatusVO {
     const now = new Date();
