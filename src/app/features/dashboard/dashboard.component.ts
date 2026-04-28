@@ -11,6 +11,7 @@ import { SupabasePlanRepository } from '../../core/infrastructure/supabase/adapt
 import { SupabaseTaskRepository } from '../../core/infrastructure/supabase/adapters/supabase-task.repository';
 import { SupabaseBudgetRepository } from '../../core/infrastructure/supabase/adapters/supabase-budget.repository';
 import { SupabaseExchangeRateRepository } from '../../core/infrastructure/supabase/adapters/supabase-exchange-rate.repository';
+import { SupabaseAuthAdapter } from '../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
 import { BudgetCalculationService } from '../../core/domain/services';
 import { Expense, Income, Plan, Task } from '../../core/domain/entities';
 
@@ -170,6 +171,7 @@ export class DashboardComponent implements OnInit {
   private budgetRepo = inject(SupabaseBudgetRepository);
   private exchangeRateRepo = inject(SupabaseExchangeRateRepository);
   private budgetCalcService = inject(BudgetCalculationService);
+  private authAdapter = inject(SupabaseAuthAdapter);
 
   today = new Date().toLocaleDateString('es-VE', {
     weekday: 'long',
@@ -215,14 +217,21 @@ export class DashboardComponent implements OnInit {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
+    const currentUser = await this.authAdapter.getCurrentUser();
+    if (!currentUser) {
+      console.error('No user logged in');
+      return;
+    }
+    const userId = currentUser.id;
+
     try {
-      const expenses = await this.expenseRepo.findByDateRange('', startOfMonth, endOfMonth);
-      const incomes = await this.incomeRepo.findByDateRange('', startOfMonth, endOfMonth);
+      const expenses = await this.expenseRepo.findByDateRange(userId, startOfMonth, endOfMonth);
+      const incomes = await this.incomeRepo.findByDateRange(userId, startOfMonth, endOfMonth);
 
       this.totalExpensesThisMonth.set(expenses.reduce((sum, e) => sum + e.amount, 0));
       this.totalIncomesThisMonth.set(incomes.reduce((sum, i) => sum + i.amount, 0));
 
-      const vesRateData = await this.exchangeRateRepo.findByUserAndPair('', 'VES', 'USD');
+      const vesRateData = await this.exchangeRateRepo.findByUserAndPair(userId, 'VES', 'USD');
       this.vesRate.set(vesRateData?.rate ?? 1);
 
       this.totalExpensesThisMonthUSD.set(
@@ -284,7 +293,7 @@ export class DashboardComponent implements OnInit {
       const utilizations = [];
       for (const budget of budgets) {
         const budgetExpenses = await this.expenseRepo.findByDateRange(
-          '',
+          userId,
           new Date(budget.startDate),
           budget.endDate ?? endOfMonth
         );
