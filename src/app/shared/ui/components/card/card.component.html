@@ -1,5 +1,5 @@
 <article
-  class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden hover:shadow-md transition-shadow duration-300"
+  class="relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 hover:shadow-md transition-shadow duration-300 h-full"
 >
   @if (hasTitle()) {
     <header class="px-6 py-4 border-b border-slate-100/60">
@@ -9,7 +9,7 @@
       }
     </header>
   }
-  <div class="px-6 py-5">
+  <div class="px-6 py-5 h-full relative z-10">
     <ng-content />
   </div>
 </article>

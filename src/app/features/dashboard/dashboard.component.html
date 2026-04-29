@@ -18,10 +18,10 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
       <app-card
-        class="relative overflow-hidden bg-linear-to-br from-red-50 to-red-100 border border-red-200/50"
+        class="relative overflow-hidden h-full bg-linear-to-br from-red-50 to-red-100 border border-red-200/50"
       >
         <div class="absolute -top-6 -right-6 w-32 h-32 bg-red-200/50 rounded-full blur-3xl"></div>
-        <div class="relative">
+        <div class="relative flex flex-col h-full">
           <div class="flex items-start justify-between mb-4">
             <span class="text-xs font-bold text-red-600 uppercase tracking-wider"
               >Gastos del Mes</span
@@ -44,24 +44,26 @@
               </svg>
             </div>
           </div>
-          <p class="text-3xl font-bold text-slate-900 mb-1">
-            {{ formatMoney(totalExpensesThisMonth(), 'USD') }}
-          </p>
-          @if (vesRate() > 1) {
-            <p class="text-sm text-red-600/80">
-              {{ formatMoney(totalExpensesThisMonthUSD() * vesRate(), 'VES') }}
+          <div class="mt-auto">
+            <p class="text-3xl font-bold text-slate-900 mb-1">
+              {{ formatMoney(totalExpensesThisMonth(), 'USD') }}
             </p>
-          }
+            @if (vesRate() > 1) {
+              <p class="text-sm text-red-600/80">
+                {{ formatMoney(totalExpensesThisMonthUSD() * vesRate(), 'VES') }}
+              </p>
+            }
+          </div>
         </div>
       </app-card>
 
       <app-card
-        class="relative overflow-hidden bg-linear-to-br from-emerald-50 to-emerald-100 border border-emerald-200/50"
+        class="relative overflow-hidden h-full bg-linear-to-br from-emerald-50 to-emerald-100 border border-emerald-200/50"
       >
         <div
           class="absolute -top-6 -right-6 w-32 h-32 bg-emerald-200/50 rounded-full blur-3xl"
         ></div>
-        <div class="relative">
+        <div class="relative flex flex-col h-full">
           <div class="flex items-start justify-between mb-4">
             <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider"
               >Ingresos del Mes</span
@@ -84,22 +86,24 @@
               </svg>
             </div>
           </div>
-          <p class="text-3xl font-bold text-slate-900 mb-1">
-            {{ formatMoney(totalIncomesThisMonth(), 'USD') }}
-          </p>
-          @if (vesRate() > 1) {
-            <p class="text-sm text-emerald-600/80">
-              {{ formatMoney(totalIncomesThisMonthUSD() * vesRate(), 'VES') }}
+          <div class="mt-auto">
+            <p class="text-3xl font-bold text-slate-900 mb-1">
+              {{ formatMoney(totalIncomesThisMonth(), 'USD') }}
             </p>
-          }
+            @if (vesRate() > 1) {
+              <p class="text-sm text-emerald-600/80">
+                {{ formatMoney(totalIncomesThisMonthUSD() * vesRate(), 'VES') }}
+              </p>
+            }
+          </div>
         </div>
       </app-card>
 
       <app-card
-        class="relative overflow-hidden bg-linear-to-br from-blue-50 to-blue-100 border border-blue-200/50"
+        class="relative overflow-hidden h-full bg-linear-to-br from-blue-50 to-blue-100 border border-blue-200/50"
       >
         <div class="absolute -top-6 -right-6 w-32 h-32 bg-blue-200/50 rounded-full blur-3xl"></div>
-        <div class="relative">
+        <div class="relative flex flex-col h-full">
           <div class="flex items-start justify-between mb-4">
             <span class="text-xs font-bold text-blue-600 uppercase tracking-wider"
               >Balance Neto</span
@@ -122,29 +126,31 @@
               </svg>
             </div>
           </div>
-          <p
-            class="text-3xl font-bold mb-1"
-            [class]="netBalance() >= 0 ? 'text-slate-900' : 'text-red-600'"
-          >
-            {{ formatMoney(netBalance(), 'USD') }}
-          </p>
-          <div class="flex items-center gap-1.5">
-            <span
-              class="w-1.5 h-1.5 rounded-full"
-              [class]="netBalance() >= 0 ? 'bg-emerald-500' : 'bg-red-500'"
-            ></span>
-            <span class="text-xs text-slate-500">Este mes</span>
+          <div class="mt-auto">
+            <p
+              class="text-3xl font-bold mb-1"
+              [class]="netBalance() >= 0 ? 'text-slate-900' : 'text-red-600'"
+            >
+              {{ formatMoney(netBalance(), 'USD') }}
+            </p>
+            <div class="flex items-center gap-1.5">
+              <span
+                class="w-1.5 h-1.5 rounded-full"
+                [class]="netBalance() >= 0 ? 'bg-emerald-500' : 'bg-red-500'"
+              ></span>
+              <span class="text-xs text-slate-500">Este mes</span>
+            </div>
           </div>
         </div>
       </app-card>
 
       <app-card
-        class="relative overflow-hidden bg-linear-to-br from-violet-50 to-violet-100 border border-violet-200/50"
+        class="relative overflow-hidden h-full bg-linear-to-br from-violet-50 to-violet-100 border border-violet-200/50"
       >
         <div
           class="absolute -top-6 -right-6 w-32 h-32 bg-violet-200/50 rounded-full blur-3xl"
         ></div>
-        <div class="relative">
+        <div class="relative flex flex-col h-full">
           <div class="flex items-start justify-between mb-4">
             <span class="text-xs font-bold text-violet-600 uppercase tracking-wider">Tareas</span>
             <div
@@ -165,17 +171,19 @@
               </svg>
             </div>
           </div>
-          <p class="text-3xl font-bold text-slate-900 mb-1">
-            {{ pendingTasks().length }}
-          </p>
-          @if (overdueTasks().length > 0) {
-            <div class="flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
-              <span class="text-xs text-red-500">{{ overdueTasks().length }} vencidas</span>
-            </div>
-          } @else {
-            <span class="text-xs text-slate-500">Sin vencidas</span>
-          }
+          <div class="mt-auto">
+            <p class="text-3xl font-bold text-slate-900 mb-1">
+              {{ pendingTasks().length }}
+            </p>
+            @if (overdueTasks().length > 0) {
+              <div class="flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                <span class="text-xs text-red-500">{{ overdueTasks().length }} vencidas</span>
+              </div>
+            } @else {
+              <span class="text-xs text-slate-500">Sin vencidas</span>
+            }
+          </div>
         </div>
       </app-card>
     </div>

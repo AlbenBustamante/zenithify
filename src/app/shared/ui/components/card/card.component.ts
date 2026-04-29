@@ -4,10 +4,15 @@ import { Component, input, ChangeDetectionStrategy, computed } from '@angular/co
   selector: 'app-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './card.component.html',
+  host: {
+    class: 'inline-block overflow-hidden rounded-2xl'
+  }
 })
 export class CardComponent {
   readonly title = input<string>();
   readonly subtitle = input<string>();
+  readonly noPadding = input(false);
+  readonly filled = input(false);
 
   readonly hasTitle = computed(() => !!this.title());
 }
