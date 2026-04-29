@@ -13,47 +13,7 @@ import { Currency } from '../../../../core/domain/entities';
       multi: true,
     },
   ],
-  template: `
-    <div class="w-full">
-      @if (label()) {
-        <label [for]="inputId()" class="block text-sm font-medium text-gray-700 mb-1.5">
-          {{ label() }}
-          @if (required()) {
-            <span class="text-red-500">*</span>
-          }
-        </label>
-      }
-      <div class="relative rounded-lg shadow-sm">
-        <div class="absolute inset-y-0 left-0 flex items-center">
-          <select
-            [value]="currency()"
-            [disabled]="currencyDisabled()"
-            (change)="onCurrencyChange($event)"
-            class="h-full py-2.5 pl-3 pr-7 text-gray-500 bg-gray-50 border border-gray-300 rounded-l-lg text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 cursor-pointer"
-          >
-            <option value="USD">USD</option>
-            <option value="VES">VES</option>
-          </select>
-        </div>
-        <input
-          [id]="inputId()"
-          type="number"
-          [placeholder]="placeholder()"
-          [disabled]="isDisabled()"
-          [value]="value()"
-          [class]="inputClasses"
-          (input)="onInput($event)"
-          (blur)="onTouched()"
-        />
-        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-          <span class="text-gray-400 text-sm">{{ currency() === 'USD' ? '$' : 'Bs' }}</span>
-        </div>
-      </div>
-      @if (error()) {
-        <p class="mt-1.5 text-sm text-red-600">{{ error() }}</p>
-      }
-    </div>
-  `,
+  templateUrl: './currency-input.component.html',
 })
 export class CurrencyInputComponent implements ControlValueAccessor {
   label = input<string>();

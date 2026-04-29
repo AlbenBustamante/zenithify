@@ -3,11 +3,7 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 @Component({
   selector: 'app-badge',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <span [class]="badgeClasses">
-      <ng-content />
-    </span>
-  `,
+  templateUrl: './badge.component.html',
 })
 export class BadgeComponent {
   variant = input<'default' | 'success' | 'warning' | 'danger' | 'info'>('default');

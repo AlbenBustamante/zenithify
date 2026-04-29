@@ -12,34 +12,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
       multi: true,
     },
   ],
-  template: `
-    <div class="w-full">
-      @if (label()) {
-        <label [for]="selectId()" class="block text-sm font-medium text-gray-700 mb-1.5">
-          {{ label() }}
-          @if (required()) {
-            <span class="text-red-500">*</span>
-          }
-        </label>
-      }
-      <select
-        [id]="selectId()"
-        [disabled]="isDisabled()"
-        [value]="value()"
-        [class]="selectClasses"
-        (change)="onSelectChange($event)"
-        (blur)="onTouched()"
-      >
-        @if (placeholder()) {
-          <option value="" disabled>{{ placeholder() }}</option>
-        }
-        <ng-content />
-      </select>
-      @if (error()) {
-        <p class="mt-1.5 text-sm text-red-600">{{ error() }}</p>
-      }
-    </div>
-  `,
+  templateUrl: './select.component.html',
 })
 export class SelectComponent implements ControlValueAccessor {
   label = input<string>();
