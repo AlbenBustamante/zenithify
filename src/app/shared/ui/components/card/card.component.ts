@@ -8,10 +8,6 @@ import { Component, input, ChangeDetectionStrategy, computed } from '@angular/co
 export class CardComponent {
   readonly title = input<string>();
   readonly subtitle = input<string>();
-  readonly noPadding = input(false);
-  readonly filled = input(false);
 
-  readonly isFilled = computed(() => this.filled());
   readonly hasTitle = computed(() => !!this.title());
-  readonly shouldAddPadding = computed(() => !this.noPadding());
 }
