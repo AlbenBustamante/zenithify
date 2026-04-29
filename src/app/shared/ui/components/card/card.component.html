@@ -1,22 +1,15 @@
-@if (!isFilled()) {
-  <article
-    class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden hover:shadow-md transition-shadow duration-300"
-    [ngClass]="{ 'px-6 py-5': shouldAddPadding() }"
-  >
-    @if (hasTitle()) {
-      <header class="px-6 py-4 border-b border-slate-100/60">
-        <h3 class="text-sm font-semibold text-slate-600 uppercase tracking-wider">{{ title() }}</h3>
-        @if (subtitle()) {
-          <p class="text-sm text-slate-400 mt-0.5">{{ subtitle() }}</p>
-        }
-      </header>
-    }
-    <div [ngClass]="{ 'px-6 py-5': shouldAddPadding() }">
-      <ng-content />
-    </div>
-  </article>
-} @else {
-  <div [ngClass]="{ 'p-6': !shouldAddPadding() }">
+<article
+  class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden hover:shadow-md transition-shadow duration-300"
+>
+  @if (hasTitle()) {
+    <header class="px-6 py-4 border-b border-slate-100/60">
+      <h3 class="text-sm font-semibold text-slate-600 uppercase tracking-wider">{{ title() }}</h3>
+      @if (subtitle()) {
+        <p class="text-sm text-slate-400 mt-0.5">{{ subtitle() }}</p>
+      }
+    </header>
+  }
+  <div class="px-6 py-5">
     <ng-content />
   </div>
-}
+</article>
