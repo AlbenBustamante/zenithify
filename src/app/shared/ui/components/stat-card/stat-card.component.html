@@ -1,0 +1,24 @@
+<div
+  class="relative overflow-hidden h-full rounded-2xl border shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col bg-gradient-to-br"
+  [ngClass]="[gradientFrom(), gradientTo(), border()]"
+>
+  <div
+    class="absolute -top-6 -right-6 w-32 h-32 rounded-full blur-3xl opacity-50"
+    [ngClass]="[blur()]"
+  ></div>
+
+  <div class="relative flex flex-col h-full p-6 z-10">
+    <div class="flex items-start justify-between mb-4">
+      <span class="text-xs font-bold uppercase tracking-wider" [ngClass]="[textColor()]">{{ label() }}</span>
+      <div
+        class="w-10 h-10 rounded-xl flex items-center justify-center border"
+        [ngClass]="[iconBg(), iconBorder()]"
+      >
+        <ng-content select="[icon]" />
+      </div>
+    </div>
+    <div class="mt-auto">
+      <ng-content />
+    </div>
+  </div>
+</div>

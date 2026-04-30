@@ -17,175 +17,71 @@
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-      <app-card
-        class="relative overflow-hidden h-full bg-linear-to-br from-red-50 to-red-100 border border-red-200/50"
-      >
-        <div class="absolute -top-6 -right-6 w-32 h-32 bg-red-200/50 rounded-full blur-3xl"></div>
-        <div class="relative flex flex-col h-full">
-          <div class="flex items-start justify-between mb-4">
-            <span class="text-xs font-bold text-red-600 uppercase tracking-wider"
-              >Gastos del Mes</span
-            >
-            <div
-              class="w-10 h-10 rounded-xl bg-red-100/80 border border-red-200/50 flex items-center justify-center"
-            >
-              <svg
-                class="w-5 h-5 text-red-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-          </div>
-          <div class="mt-auto">
-            <p class="text-3xl font-bold text-slate-900 mb-1">
-              {{ formatMoney(totalExpensesThisMonth(), 'USD') }}
+      <app-stat-card color="red" label="Gastos del Mes">
+        <svg icon class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div class="mt-auto">
+          <p class="text-3xl font-bold text-slate-900 mb-1">
+            {{ formatMoney(totalExpensesThisMonth(), 'USD') }}
+          </p>
+          @if (vesRate() > 1) {
+            <p class="text-sm text-red-600/80">
+              {{ formatMoney(totalExpensesThisMonthUSD() * vesRate(), 'VES') }}
             </p>
-            @if (vesRate() > 1) {
-              <p class="text-sm text-red-600/80">
-                {{ formatMoney(totalExpensesThisMonthUSD() * vesRate(), 'VES') }}
-              </p>
-            }
+          }
+        </div>
+      </app-stat-card>
+
+      <app-stat-card color="emerald" label="Ingresos del Mes">
+        <svg icon class="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+        <div class="mt-auto">
+          <p class="text-3xl font-bold text-slate-900 mb-1">
+            {{ formatMoney(totalIncomesThisMonth(), 'USD') }}
+          </p>
+          @if (vesRate() > 1) {
+            <p class="text-sm text-emerald-600/80">
+              {{ formatMoney(totalIncomesThisMonthUSD() * vesRate(), 'VES') }}
+            </p>
+          }
+        </div>
+      </app-stat-card>
+
+      <app-stat-card color="blue" label="Balance Neto">
+        <svg icon class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <div class="mt-auto">
+          <p class="text-3xl font-bold mb-1" [class]="netBalance() >= 0 ? 'text-slate-900' : 'text-red-600'">
+            {{ formatMoney(netBalance(), 'USD') }}
+          </p>
+          <div class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full" [class]="netBalance() >= 0 ? 'bg-emerald-500' : 'bg-red-500'"></span>
+            <span class="text-xs text-slate-500">Este mes</span>
           </div>
         </div>
-      </app-card>
+      </app-stat-card>
 
-      <app-card
-        class="relative overflow-hidden h-full bg-linear-to-br from-emerald-50 to-emerald-100 border border-emerald-200/50"
-      >
-        <div
-          class="absolute -top-6 -right-6 w-32 h-32 bg-emerald-200/50 rounded-full blur-3xl"
-        ></div>
-        <div class="relative flex flex-col h-full">
-          <div class="flex items-start justify-between mb-4">
-            <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider"
-              >Ingresos del Mes</span
-            >
-            <div
-              class="w-10 h-10 rounded-xl bg-emerald-100/80 border border-emerald-200/50 flex items-center justify-center"
-            >
-              <svg
-                class="w-5 h-5 text-emerald-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                />
-              </svg>
-            </div>
-          </div>
-          <div class="mt-auto">
-            <p class="text-3xl font-bold text-slate-900 mb-1">
-              {{ formatMoney(totalIncomesThisMonth(), 'USD') }}
-            </p>
-            @if (vesRate() > 1) {
-              <p class="text-sm text-emerald-600/80">
-                {{ formatMoney(totalIncomesThisMonthUSD() * vesRate(), 'VES') }}
-              </p>
-            }
-          </div>
-        </div>
-      </app-card>
-
-      <app-card
-        class="relative overflow-hidden h-full bg-linear-to-br from-blue-50 to-blue-100 border border-blue-200/50"
-      >
-        <div class="absolute -top-6 -right-6 w-32 h-32 bg-blue-200/50 rounded-full blur-3xl"></div>
-        <div class="relative flex flex-col h-full">
-          <div class="flex items-start justify-between mb-4">
-            <span class="text-xs font-bold text-blue-600 uppercase tracking-wider"
-              >Balance Neto</span
-            >
-            <div
-              class="w-10 h-10 rounded-xl bg-blue-100/80 border border-blue-200/50 flex items-center justify-center"
-            >
-              <svg
-                class="w-5 h-5 text-blue-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                />
-              </svg>
-            </div>
-          </div>
-          <div class="mt-auto">
-            <p
-              class="text-3xl font-bold mb-1"
-              [class]="netBalance() >= 0 ? 'text-slate-900' : 'text-red-600'"
-            >
-              {{ formatMoney(netBalance(), 'USD') }}
-            </p>
+      <app-stat-card color="violet" label="Tareas">
+        <svg icon class="w-5 h-5 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+        </svg>
+        <div class="mt-auto">
+          <p class="text-3xl font-bold text-slate-900 mb-1">
+            {{ pendingTasks().length }}
+          </p>
+          @if (overdueTasks().length > 0) {
             <div class="flex items-center gap-1.5">
-              <span
-                class="w-1.5 h-1.5 rounded-full"
-                [class]="netBalance() >= 0 ? 'bg-emerald-500' : 'bg-red-500'"
-              ></span>
-              <span class="text-xs text-slate-500">Este mes</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+              <span class="text-xs text-red-500">{{ overdueTasks().length }} vencidas</span>
             </div>
-          </div>
+          } @else {
+            <span class="text-xs text-slate-500">Sin vencidas</span>
+          }
         </div>
-      </app-card>
-
-      <app-card
-        class="relative overflow-hidden h-full bg-linear-to-br from-violet-50 to-violet-100 border border-violet-200/50"
-      >
-        <div
-          class="absolute -top-6 -right-6 w-32 h-32 bg-violet-200/50 rounded-full blur-3xl"
-        ></div>
-        <div class="relative flex flex-col h-full">
-          <div class="flex items-start justify-between mb-4">
-            <span class="text-xs font-bold text-violet-600 uppercase tracking-wider">Tareas</span>
-            <div
-              class="w-10 h-10 rounded-xl bg-violet-100/80 border border-violet-200/50 flex items-center justify-center"
-            >
-              <svg
-                class="w-5 h-5 text-violet-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="1.5"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                />
-              </svg>
-            </div>
-          </div>
-          <div class="mt-auto">
-            <p class="text-3xl font-bold text-slate-900 mb-1">
-              {{ pendingTasks().length }}
-            </p>
-            @if (overdueTasks().length > 0) {
-              <div class="flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
-                <span class="text-xs text-red-500">{{ overdueTasks().length }} vencidas</span>
-              </div>
-            } @else {
-              <span class="text-xs text-slate-500">Sin vencidas</span>
-            }
-          </div>
-        </div>
-      </app-card>
+      </app-stat-card>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 animate-slide-up stagger-5">
@@ -219,7 +115,7 @@
               >
                 <div class="flex items-center gap-4">
                   <div
-                    class="w-12 h-12 rounded-xl bg-linear-to-br from-primary-100 to-primary-200 flex items-center justify-center text-lg font-bold text-primary-700 group-hover:scale-105 transition-transform"
+                    class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center text-lg font-bold text-primary-700 group-hover:scale-105 transition-transform"
                   >
                     {{ plan.name.charAt(0).toUpperCase() }}
                   </div>
@@ -280,8 +176,8 @@
                     class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold text-white"
                     [class]="
                       tx.type === 'expense'
-                        ? 'bg-linear-to-br from-red-400 to-red-600'
-                        : 'bg-linear-to-br from-emerald-400 to-emerald-600'
+                        ? 'bg-gradient-to-br from-red-400 to-red-600'
+                        : 'bg-gradient-to-br from-emerald-400 to-emerald-600'
                     "
                   >
                     {{ tx.type === 'expense' ? '−' : '+' }}
@@ -336,8 +232,8 @@
                   class="absolute top-0 left-0 h-full rounded-full transition-all duration-500 ease-out"
                   [class]="
                     budget.isOverBudget
-                      ? 'bg-linear-to-r from-red-400 to-red-600'
-                      : 'bg-linear-to-r from-primary-400 to-primary-600'
+                      ? 'bg-gradient-to-r from-red-400 to-red-600'
+                      : 'bg-gradient-to-r from-primary-400 to-primary-600'
                   "
                   [style.width.%]="Math.min(budget.percentage, 100)"
                 ></div>

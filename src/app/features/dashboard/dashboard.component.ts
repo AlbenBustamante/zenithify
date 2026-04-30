@@ -1,5 +1,6 @@
 import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CardComponent } from '../../shared/ui/components/card/card.component';
+import { StatCardComponent } from '../../shared/ui/components/stat-card/stat-card.component';
 import { Currency } from '../../core/domain/entities';
 import { Money } from '../../core/domain/value-objects';
 import { formatCurrency } from '../../shared/utils';
@@ -16,7 +17,7 @@ import { Expense, Income, Plan, Task } from '../../core/domain/entities';
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CardComponent],
+  imports: [CardComponent, StatCardComponent],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
