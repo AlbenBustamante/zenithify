@@ -151,15 +151,17 @@
     <div class="bg-slate-50 rounded-xl p-4 space-y-4">
       <div class="flex items-center gap-2">
         <div class="flex-1">
-          <app-input
-            formControlName="exchangeRate"
-            label="Tasa de Cambio (VES/USD)"
-            type="number"
-            placeholder="500"
-            [error]="form.controls['exchangeRate'].invalid && form.controls['exchangeRate'].touched ? 'Tasa requerida' : ''"
-            (input)="onExchangeRateChange()"
-          />
-        </div>
+            <label class="block text-sm font-medium text-gray-700 mb-1.5">
+              Tasa de Cambio (VES/USD)
+            </label>
+            <input
+              type="number"
+              [formControl]="$any(form.get('exchangeRate'))"
+              (blur)="onExchangeRateChange()"
+              class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 transition-colors duration-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
+              placeholder="500"
+            />
+          </div>
         <button
           type="button"
           (click)="refreshRate()"

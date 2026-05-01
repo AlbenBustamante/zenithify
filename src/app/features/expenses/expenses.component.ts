@@ -11,6 +11,7 @@ import { Expense, Category, PaymentMethod } from '../../core/domain/entities';
 import { formatCurrency, formatShortDate } from '../../shared/utils';
 import { SupabaseExpenseRepository } from '../../core/infrastructure/supabase/adapters/supabase-expense.repository';
 import { SupabaseCategoryRepository } from '../../core/infrastructure/supabase/adapters/supabase-category.repository';
+import { SupabaseAuthAdapter } from '../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
 import { CreateExpenseUseCase, UpdateExpenseUseCase, DeleteExpenseUseCase, ListExpensesUseCase } from '../../core/application/use-cases/expense/expense.use-cases';
 import { CurrencyConversionService } from '../../core/domain/services/currency-conversion.service';
 import { environment } from '../../../environments/environment';
@@ -39,6 +40,7 @@ export class ExpensesComponent implements OnInit {
   private deleteExpenseUC = inject(DeleteExpenseUseCase);
   private listExpensesUC = inject(ListExpensesUseCase);
   private currencyService = inject(CurrencyConversionService);
+  private authAdapter = inject(SupabaseAuthAdapter);
 
   paymentMethods: { value: PaymentMethod; label: string }[] = [
     { value: 'cash', label: 'Efectivo' },
@@ -245,6 +247,11 @@ export class ExpensesComponent implements OnInit {
 
     this.isLoading.set(true);
     try {
+      const currentUser = await this.authAdapter.getCurrentUser();
+      if (!currentUser) {
+        console.error('No user logged in');
+        return;
+      }
       const dto = {
         description: this.form.value.description!,
         amountUsd: this.form.value.amountUsd ?? undefined,
@@ -258,7 +265,7 @@ export class ExpensesComponent implements OnInit {
       if (this.editingExpense()) {
         await this.updateExpenseUC.execute(this.editingExpense()!.id, dto);
       } else {
-        await this.createExpenseUC.execute(dto, '', false);
+        await this.createExpenseUC.execute(dto, currentUser.id, false);
       }
 
       this.closeModal();
@@ -275,7 +282,12 @@ export class ExpensesComponent implements OnInit {
 
     this.isLoading.set(true);
     try {
-      await this.deleteExpenseUC.execute(this.deletingExpense()!.id, '');
+      const currentUser = await this.authAdapter.getCurrentUser();
+      if (!currentUser) {
+        console.error('No user logged in');
+        return;
+      }
+      await this.deleteExpenseUC.execute(this.deletingExpense()!.id, currentUser.id);
       this.closeDeleteModal();
       await this.loadExpenses();
     } catch (error) {

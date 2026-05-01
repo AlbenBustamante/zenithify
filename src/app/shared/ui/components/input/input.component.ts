@@ -25,6 +25,8 @@ export class InputComponent implements ControlValueAccessor {
   required = input(false);
   disabled = input(false);
 
+  blurred = output<void>();
+
   private static nextId = 0;
   private uniqueId = `input-${++InputComponent.nextId}`;
 
@@ -51,6 +53,11 @@ export class InputComponent implements ControlValueAccessor {
     const target = event.target as HTMLInputElement;
     this.value.set(target.value);
     this.onChange(target.value);
+  }
+
+  onBlur(): void {
+    this.blurred.emit();
+    this.onTouched();
   }
 
   writeValue(value: string): void {
