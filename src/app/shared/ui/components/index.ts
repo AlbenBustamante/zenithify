@@ -7,3 +7,4 @@ export { ModalComponent } from './modal/modal.component';
 export { SelectComponent } from './select/select.component';
 export { StatCardComponent } from './stat-card/stat-card.component';
 export { SkeletonComponent } from './skeleton/skeleton.component';
+export { DateRangePickerComponent } from './date-range-picker/date-range-picker.component';

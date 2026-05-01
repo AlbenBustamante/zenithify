@@ -64,3 +64,37 @@ export function parseDate(dateString: string): Date {
   const [year, month, day] = dateString.split('-').map(Number);
   return new Date(year, month - 1, day);
 }
+
+export function isSameDay(date1: Date, date2: Date): boolean {
+  return (
+    date1.getDate() === date2.getDate() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getFullYear() === date2.getFullYear()
+  );
+}
+
+export function isBefore(date1: Date, date2: Date): boolean {
+  return date1.getTime() < date2.getTime();
+}
+
+export function isAfter(date1: Date, date2: Date): boolean {
+  return date1.getTime() > date2.getTime();
+}
+
+export function isWithinInterval(date: Date, interval: { start: Date; end: Date }): boolean {
+  return date.getTime() >= interval.start.getTime() && date.getTime() <= interval.end.getTime();
+}
+
+export function addMonths(date: Date, months: number): Date {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() + months);
+  return result;
+}
+
+export function subMonths(date: Date, months: number): Date {
+  return addMonths(date, -months);
+}
+
+export function startOfDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}

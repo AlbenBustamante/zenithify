@@ -1,18 +1,18 @@
-<div class="min-h-screen bg-linear-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-8">
-  <div class="max-w-7xl mx-auto space-y-8">
+<div class="min-h-screen bg-linear-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-6 md:py-8">
+  <div class="max-w-7xl mx-auto space-y-6 md:space-y-8">
     <header
-      class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6"
+      class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 md:gap-6"
     >
       <div class="space-y-2">
         <div class="flex items-center gap-3">
-          <span class="w-1 h-8 bg-primary-600 rounded-full"></span>
-          <h1 class="text-4xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
+          <span class="w-1 h-6 md:h-8 bg-primary-600 rounded-full"></span>
+          <h1 class="text-2xl md:text-4xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
         </div>
-        <p class="text-slate-500 text-sm tracking-wide">{{ today }}</p>
+        <p class="text-slate-500 text-xs md:text-sm tracking-wide">{{ today }}</p>
       </div>
-      <div class="flex items-center gap-6">
+      <div class="flex items-center gap-4 md:gap-6">
         <app-date-range-picker />
-        <div class="flex items-center gap-2 text-xs text-slate-400 uppercase tracking-widest">
+        <div class="hidden sm:flex items-center gap-2 text-xs text-slate-400 uppercase tracking-widest">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span>Live</span>
         </div>
@@ -42,7 +42,7 @@
         </div>
       </app-card>
 
-      <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
         <app-card class="lg:col-span-2">
           <div class="space-y-4">
             <app-skeleton width="40%" height="1rem" />
