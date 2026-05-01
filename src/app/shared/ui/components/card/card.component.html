@@ -1,5 +1,7 @@
 <article
   class="relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 hover:shadow-md transition-shadow duration-300 h-full"
+  [class.px-6]="!noPadding()"
+  [class.py-5]="!noPadding()"
 >
   @if (hasTitle()) {
     <header class="px-6 py-4 border-b border-slate-100/60">
@@ -9,7 +11,7 @@
       }
     </header>
   }
-  <div class="px-6 py-5 h-full relative z-10">
+  <div class="h-full relative z-10" [class.px-6]="!noPadding()" [class.py-5]="!noPadding()">
     <ng-content />
   </div>
 </article>
