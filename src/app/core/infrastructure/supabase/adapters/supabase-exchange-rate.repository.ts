@@ -14,16 +14,20 @@ export class SupabaseExchangeRateRepository implements ExchangeRateRepositoryPor
     fromCurrency: Currency,
     toCurrency: Currency
   ): Promise<ExchangeRate | null> {
+    const today = new Date().toISOString().split('T')[0];
     const { data, error } = await this.supabase
       .from(this.table)
       .select('*')
       .eq('user_id', userId)
       .eq('from_currency', fromCurrency)
       .eq('to_currency', toCurrency)
-      .single();
+      .gte('updated_at', today)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     if (error) return null;
-    return EntityMapper.toExchangeRate(data as ExchangeRateRow);
+    return data ? EntityMapper.toExchangeRate(data as ExchangeRateRow) : null;
   }
 
   async upsert(
