@@ -10,9 +10,12 @@
         </div>
         <p class="text-slate-500 text-sm tracking-wide">{{ today }}</p>
       </div>
-      <div class="flex items-center gap-2 text-xs text-slate-400 uppercase tracking-widest">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span>Live</span>
+      <div class="flex items-center gap-6">
+        <app-date-range-picker />
+        <div class="flex items-center gap-2 text-xs text-slate-400 uppercase tracking-widest">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Live</span>
+        </div>
       </div>
     </header>
 
@@ -83,6 +86,10 @@
         </div>
       </app-stat-card>
     </div>
+
+    <app-card title="Ingresos vs Gastos" class="animate-slide-up stagger-2">
+      <app-expenses-incomes-chart />
+    </app-card>
 
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 animate-slide-up stagger-5">
       <app-card title="Renovaciones Próximas" class="lg:col-span-2">

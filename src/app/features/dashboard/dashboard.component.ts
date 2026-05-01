@@ -1,6 +1,8 @@
-import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, inject, OnInit, ChangeDetectionStrategy, effect } from '@angular/core';
 import { CardComponent } from '../../shared/ui/components/card/card.component';
 import { StatCardComponent } from '../../shared/ui/components/stat-card/stat-card.component';
+import { DateRangePickerComponent } from '../../shared/ui/components/date-range-picker/date-range-picker.component';
+import { ExpensesIncomesChartComponent } from '../../shared/ui/components/expenses-incomes-chart/expenses-incomes-chart.component';
 import { Currency, Expense, Income } from '../../core/domain/entities';
 import { Money } from '../../core/domain/value-objects';
 import { formatCurrency } from '../../shared/utils';
@@ -12,11 +14,12 @@ import { SupabaseBudgetRepository } from '../../core/infrastructure/supabase/ada
 import { SupabaseExchangeRateRepository } from '../../core/infrastructure/supabase/adapters/supabase-exchange-rate.repository';
 import { SupabaseAuthAdapter } from '../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
 import { BudgetCalculationService } from '../../core/domain/services';
+import { DashboardDateRangeService } from './services/dashboard-date-range.service';
 
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CardComponent, StatCardComponent],
+  imports: [CardComponent, StatCardComponent, DateRangePickerComponent, ExpensesIncomesChartComponent],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
@@ -30,6 +33,9 @@ export class DashboardComponent implements OnInit {
   private exchangeRateRepo = inject(SupabaseExchangeRateRepository);
   private budgetCalcService = inject(BudgetCalculationService);
   private authAdapter = inject(SupabaseAuthAdapter);
+  readonly dateRange = inject(DashboardDateRangeService);
+
+  private statsLoaded = signal(false);
 
   today = new Date().toLocaleDateString('es-VE', {
     weekday: 'long',
@@ -66,8 +72,67 @@ export class DashboardComponent implements OnInit {
     isOverBudget: boolean;
   }>>([]);
 
+  constructor() {
+    effect(() => {
+      const start = this.dateRange.startDate();
+      const end = this.dateRange.endDate();
+      if (this.statsLoaded()) {
+        this.loadStatsData(start, end);
+      }
+    });
+  }
+
   async ngOnInit(): Promise<void> {
-    await this.loadDashboardData();
+    await this.loadNonFilteredData();
+    this.statsLoaded.set(true);
+  }
+
+  private async loadNonFilteredData(): Promise<void> {
+    this.pendingTasks.set(await this.taskRepo.findPending());
+    this.overdueTasks.set(await this.taskRepo.findOverdue());
+    this.upcomingRenewals.set(await this.planRepo.findUpcomingRenewals(14));
+
+    const budgets = await this.budgetRepo.findActive();
+    const utilizations = [];
+    const now = new Date();
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    for (const budget of budgets) {
+      const budgetExpenses = await this.expenseRepo.findByDateRange(
+        budget.userId,
+        new Date(budget.startDate),
+        budget.endDate ?? endOfMonth
+      );
+      const vesRateData = await this.exchangeRateRepo.findByUserAndPair(budget.userId, 'VES', 'USD');
+      const rate = vesRateData?.rate ?? 1;
+      utilizations.push(this.budgetCalcService.calculateUtilization(budget, budgetExpenses, rate));
+    }
+    this.budgetUtilizations.set(utilizations);
+  }
+
+  private async loadStatsData(start: Date, end: Date): Promise<void> {
+    const currentUser = await this.authAdapter.getCurrentUser();
+    if (!currentUser) return;
+    const userId = currentUser.id;
+
+    try {
+      const [expenses, incomes] = await Promise.all([
+        this.expenseRepo.findByDateRange(userId, start, end),
+        this.incomeRepo.findByDateRange(userId, start, end),
+      ]);
+
+      this.totalExpensesThisMonth.set(expenses.reduce((sum, e) => sum + this.getMainAmount(e), 0));
+      this.totalIncomesThisMonth.set(incomes.reduce((sum, i) => sum + this.getMainAmount(i), 0));
+
+      const vesRateData = await this.exchangeRateRepo.findByUserAndPair(userId, 'VES', 'USD');
+      this.vesRate.set(vesRateData?.rate ?? 1);
+
+      this.totalExpensesThisMonthUSD.set(expenses.reduce((sum, e) => sum + this.getAmountInUSD(e), 0));
+      this.totalIncomesThisMonthUSD.set(incomes.reduce((sum, i) => sum + this.getAmountInUSD(i), 0));
+
+      this.netBalance.set(this.totalIncomesThisMonthUSD() - this.totalExpensesThisMonthUSD());
+    } catch (error) {
+      console.error('Error loading stats data:', error);
+    }
   }
 
   private getAmountInUSD(item: Expense | Income): number {
@@ -78,95 +143,6 @@ export class DashboardComponent implements OnInit {
 
   private getMainAmount(item: Expense | Income): number {
     return item.amountUsd ?? item.amountVes ?? 0;
-  }
-
-  private async loadDashboardData(): Promise<void> {
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-    const currentUser = await this.authAdapter.getCurrentUser();
-    if (!currentUser) {
-      console.error('No user logged in');
-      return;
-    }
-    const userId = currentUser.id;
-
-    try {
-      const expenses = await this.expenseRepo.findByDateRange(userId, startOfMonth, endOfMonth);
-      const incomes = await this.incomeRepo.findByDateRange(userId, startOfMonth, endOfMonth);
-
-      this.totalExpensesThisMonth.set(expenses.reduce((sum, e) => sum + this.getMainAmount(e), 0));
-      this.totalIncomesThisMonth.set(incomes.reduce((sum, i) => sum + this.getMainAmount(i), 0));
-
-      const vesRateData = await this.exchangeRateRepo.findByUserAndPair(userId, 'VES', 'USD');
-      this.vesRate.set(vesRateData?.rate ?? 1);
-
-      this.totalExpensesThisMonthUSD.set(
-        expenses.reduce((sum, e) => sum + this.getAmountInUSD(e), 0)
-      );
-
-      this.totalIncomesThisMonthUSD.set(
-        incomes.reduce((sum, i) => sum + this.getAmountInUSD(i), 0)
-      );
-
-      this.netBalance.set(this.totalIncomesThisMonthUSD() - this.totalExpensesThisMonthUSD());
-
-      this.pendingTasks.set(await this.taskRepo.findPending());
-      this.overdueTasks.set(await this.taskRepo.findOverdue());
-      this.upcomingRenewals.set(await this.planRepo.findUpcomingRenewals(14));
-
-      const txList: Array<{
-        id: string;
-        type: 'expense' | 'income';
-        description: string;
-        amount: number;
-        currency: Currency;
-        category?: string;
-        date: Date;
-      }> = [];
-
-      expenses.slice(0, 5).forEach((e) => {
-        txList.push({
-          id: e.id,
-          type: 'expense',
-          description: e.description,
-          amount: this.getMainAmount(e),
-          currency: e.amountUsd ? 'USD' : 'VES',
-          date: e.expenseDate,
-        });
-      });
-
-      incomes.slice(0, 5).forEach((i) => {
-        txList.push({
-          id: i.id,
-          type: 'income',
-          description: i.description,
-          amount: this.getMainAmount(i),
-          currency: i.amountUsd ? 'USD' : 'VES',
-          date: i.incomeDate,
-        });
-      });
-
-      txList.sort((a, b) => b.date.getTime() - a.date.getTime());
-      this.recentTransactions.set(txList.slice(0, 5));
-
-      const budgets = await this.budgetRepo.findActive();
-      const utilizations = [];
-      for (const budget of budgets) {
-        const budgetExpenses = await this.expenseRepo.findByDateRange(
-          userId,
-          new Date(budget.startDate),
-          budget.endDate ?? endOfMonth
-        );
-        utilizations.push(
-          this.budgetCalcService.calculateUtilization(budget, budgetExpenses, this.vesRate())
-        );
-      }
-      this.budgetUtilizations.set(utilizations);
-    } catch (error) {
-      console.error('Error loading dashboard data:', error);
-    }
   }
 
   formatMoney(amount: number, currency: Currency): string {
