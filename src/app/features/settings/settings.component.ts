@@ -74,7 +74,9 @@ export class SettingsComponent implements OnInit {
   }
 
   async loadExchangeRate(): Promise<void> {
-    const rate = await this.exchangeRateRepo.findByUserAndPair('', 'VES', 'USD');
+    const user = await this.auth.getCurrentUser();
+    const userId = user?.id ?? '';
+    const rate = await this.exchangeRateRepo.findByUserAndPair(userId, 'VES', 'USD');
     if (rate) {
       this.customRate.set(rate.rate);
       this.exchangeForm.patchValue({ customRate: rate.rate });

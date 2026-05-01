@@ -13,6 +13,7 @@ import { formatCurrency } from '../../shared/utils';
 import { Money } from '../../core/domain/value-objects';
 import { SupabaseBudgetRepository } from '../../core/infrastructure/supabase/adapters/supabase-budget.repository';
 import { SupabaseExpenseRepository } from '../../core/infrastructure/supabase/adapters/supabase-expense.repository';
+import { SupabaseAuthAdapter } from '../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
 import { SupabaseExchangeRateRepository } from '../../core/infrastructure/supabase/adapters/supabase-exchange-rate.repository';
 import { BudgetCalculationService } from '../../core/domain/services';
 import { CreateBudgetUseCase, UpdateBudgetUseCase, DeleteBudgetUseCase, ListBudgetsUseCase, GetBudgetSummaryUseCase } from '../../core/application/use-cases/budget/budget.use-cases';
@@ -37,6 +38,7 @@ export class BudgetsComponent implements OnInit {
   private budgetRepo = inject(SupabaseBudgetRepository);
   private expenseRepo = inject(SupabaseExpenseRepository);
   private exchangeRateRepo = inject(SupabaseExchangeRateRepository);
+  private authAdapter = inject(SupabaseAuthAdapter);
   private budgetCalcService = inject(BudgetCalculationService);
   private createBudgetUC = inject(CreateBudgetUseCase);
   private updateBudgetUC = inject(UpdateBudgetUseCase);
@@ -88,7 +90,9 @@ export class BudgetsComponent implements OnInit {
   }
 
   private async getVESRate(): Promise<number> {
-    const rate = await this.exchangeRateRepo.findByUserAndPair('', 'VES', 'USD');
+    const user = await this.authAdapter.getCurrentUser();
+    const userId = user?.id ?? '';
+    const rate = await this.exchangeRateRepo.findByUserAndPair(userId, 'VES', 'USD');
     return rate?.rate ?? 1;
   }
 

@@ -62,7 +62,7 @@ export class PlansComponent implements OnInit {
       for (const plan of plans.filter((p) => p.isActive)) {
         const cycle = new SubscriptionCycle(
           plan.billingCycle,
-          plan.nextBillingDate,
+          plan.createdAt,
           plan.nextBillingDate,
         );
         monthly += cycle.getMonthlyAmount(plan.amount);
