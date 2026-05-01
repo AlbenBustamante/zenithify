@@ -8,7 +8,7 @@ import { NgClass } from '@angular/common';
   templateUrl: './stat-card.component.html',
 })
 export class StatCardComponent {
-  readonly color = input<'red' | 'emerald' | 'blue' | 'violet'>('blue');
+  readonly color = input<'red' | 'emerald' | 'blue' | 'violet' | 'amber' | 'primary'>('blue');
   readonly label = input<string>('');
 
   private readonly colorMap = {
@@ -51,6 +51,26 @@ export class StatCardComponent {
       iconBorder: 'border-violet-200/30',
       iconText: 'text-violet-400',
       blur: 'bg-violet-200/30',
+    },
+    amber: {
+      gradientFrom: 'from-amber-50',
+      gradientTo: 'to-amber-100',
+      border: 'border-amber-200/50',
+      text: 'text-amber-600',
+      iconBg: 'bg-amber-100/80',
+      iconBorder: 'border-amber-200/50',
+      iconText: 'text-amber-500',
+      blur: 'bg-amber-200/50',
+    },
+    primary: {
+      gradientFrom: 'from-primary-50',
+      gradientTo: 'to-primary-100',
+      border: 'border-primary-200/50',
+      text: 'text-primary-600',
+      iconBg: 'bg-primary-100/80',
+      iconBorder: 'border-primary-200/50',
+      iconText: 'text-primary-500',
+      blur: 'bg-primary-200/50',
     },
   };
 

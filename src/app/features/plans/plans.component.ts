@@ -1,15 +1,7 @@
 import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CardComponent } from '../../shared/ui/components/card/card.component';
-import { ButtonComponent } from '../../shared/ui/components/button/button.component';
-import { InputComponent } from '../../shared/ui/components/input/input.component';
-import { ModalComponent } from '../../shared/ui/components/modal/modal.component';
-import { SelectComponent } from '../../shared/ui/components/select/select.component';
-import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
-import { SkeletonComponent } from '../../shared/ui/components/skeleton/skeleton.component';
 import { Currency, Plan, BillingCycle } from '../../core/domain/entities';
-import { formatCurrency, formatShortDate, daysFromNow } from '../../shared/utils';
+import { formatCurrency } from '../../shared/utils';
 import { SubscriptionCycle } from '../../core/domain/value-objects';
 import { SupabasePlanRepository } from '../../core/infrastructure/supabase/adapters/supabase-plan.repository';
 import {
@@ -17,43 +9,32 @@ import {
   UpdatePlanUseCase,
   DeletePlanUseCase,
   ListPlansUseCase,
-  RenewPlanUseCase,
 } from '../../core/application/use-cases/plan/plan.use-cases';
+import { ButtonComponent } from '../../shared/ui/components/button/button.component';
+import { PlansStatsComponent } from './components/plans-stats/plans-stats.component';
+import { PlansListComponent } from './components/plans-list/plans-list.component';
+import { PlanFormModalComponent } from './components/plan-form-modal/plan-form-modal.component';
+import { PlanDeleteModalComponent } from './components/plan-delete-modal/plan-delete-modal.component';
 
 @Component({
   selector: 'app-plans',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
-    CardComponent,
     ButtonComponent,
-    InputComponent,
-    ModalComponent,
-    SelectComponent,
-    BadgeComponent,
-    SkeletonComponent,
+    PlansStatsComponent,
+    PlansListComponent,
+    PlanFormModalComponent,
+    PlanDeleteModalComponent,
   ],
   templateUrl: './plans.component.html',
 })
 export class PlansComponent implements OnInit {
-  private fb = inject(FormBuilder);
   private planRepo = inject(SupabasePlanRepository);
   private createPlanUC = inject(CreatePlanUseCase);
   private updatePlanUC = inject(UpdatePlanUseCase);
   private deletePlanUC = inject(DeletePlanUseCase);
   private listPlansUC = inject(ListPlansUseCase);
-  private renewPlanUC = inject(RenewPlanUseCase);
-
-  form = this.fb.group({
-    name: ['', [Validators.required]],
-    provider: ['', [Validators.required]],
-    amount: [null as number | null, [Validators.required, Validators.min(0.01)]],
-    currency: ['USD' as Currency],
-    billingCycle: ['monthly' as BillingCycle],
-    nextBillingDate: ['', [Validators.required]],
-    url: [''],
-  });
 
   plans = signal<Plan[]>([]);
   activePlans = signal<Plan[]>([]);
@@ -96,25 +77,11 @@ export class PlansComponent implements OnInit {
 
   openCreateModal(): void {
     this.editingPlan.set(null);
-    this.form.reset({
-      currency: 'USD',
-      billingCycle: 'monthly',
-      nextBillingDate: new Date().toISOString().split('T')[0],
-    });
     this.isModalOpen.set(true);
   }
 
   openEditModal(plan: Plan): void {
     this.editingPlan.set(plan);
-    this.form.patchValue({
-      name: plan.name,
-      provider: plan.provider,
-      amount: plan.amount,
-      currency: plan.currency,
-      billingCycle: plan.billingCycle,
-      nextBillingDate: new Date(plan.nextBillingDate).toISOString().split('T')[0],
-      url: plan.url ?? '',
-    });
     this.isModalOpen.set(true);
   }
 
@@ -133,19 +100,9 @@ export class PlansComponent implements OnInit {
     this.deletingPlan.set(null);
   }
 
-  async onSubmit(): Promise<void> {
-    if (this.form.invalid) return;
+  async onSave(dto: { name: string; provider: string; amount: number; currency: Currency; billingCycle: BillingCycle; nextBillingDate: Date; url?: string }): Promise<void> {
     this.isLoading.set(true);
     try {
-      const dto = {
-        name: this.form.value.name!,
-        provider: this.form.value.provider!,
-        amount: this.form.value.amount!,
-        currency: this.form.value.currency as Currency,
-        billingCycle: this.form.value.billingCycle as BillingCycle,
-        nextBillingDate: new Date(this.form.value.nextBillingDate!),
-        url: this.form.value.url || undefined,
-      };
       if (this.editingPlan()) {
         await this.updatePlanUC.execute(this.editingPlan()!.id, dto);
       } else {
@@ -174,15 +131,7 @@ export class PlansComponent implements OnInit {
     }
   }
 
-  getDaysUntil(plan: Plan): number {
-    return daysFromNow(plan.nextBillingDate);
-  }
-
   formatMoney(amount: number, currency: Currency): string {
     return formatCurrency(amount, currency);
-  }
-
-  formatDate(date: Date): string {
-    return formatShortDate(date);
   }
 }

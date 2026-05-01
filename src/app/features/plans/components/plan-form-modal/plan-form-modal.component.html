@@ -1,0 +1,31 @@
+<app-modal [isOpen]="isOpen()" [title]="editingPlan() ? 'Editar Plan' : 'Nuevo Plan'" (close)="close.emit()">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+    <app-input formControlName="name" label="Nombre" placeholder="Ej: Netflix" [error]="getError('name')" />
+    <app-input formControlName="provider" label="Proveedor" placeholder="Ej: Netflix Inc." [error]="getError('provider')" />
+
+    <div class="grid grid-cols-2 gap-4">
+      <app-input formControlName="amount" label="Monto" type="number" placeholder="0.00" [error]="getError('amount')" />
+      <app-select formControlName="currency" label="Moneda">
+        <option value="USD">USD</option>
+        <option value="VES">VES</option>
+      </app-select>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <app-select formControlName="billingCycle" label="Ciclo de facturación">
+        <option value="monthly">Mensual</option>
+        <option value="yearly">Anual</option>
+      </app-select>
+      <app-input formControlName="nextBillingDate" label="Próxima facturación" type="date" [error]="getError('nextBillingDate')" />
+    </div>
+
+    <app-input formControlName="url" label="URL" type="url" placeholder="https://..." />
+
+    <div class="flex justify-end gap-3 mt-6">
+      <app-button variant="secondary" type="button" (clicked)="close.emit()">Cancelar</app-button>
+      <app-button type="submit" [loading]="loading()" [disabled]="form.invalid">
+        {{ editingPlan() ? 'Actualizar' : 'Guardar' }}
+      </app-button>
+    </div>
+  </form>
+</app-modal>

@@ -1,0 +1,7 @@
+<app-modal [isOpen]="isOpen()" title="Eliminar Plan" (close)="cancel.emit()">
+  <p class="text-slate-600">¿Estás seguro de que deseas eliminar este plan?</p>
+  <div class="flex justify-end gap-3 mt-6">
+    <app-button variant="secondary" (clicked)="cancel.emit()">Cancelar</app-button>
+    <app-button variant="danger" (clicked)="confirm.emit()" [loading]="loading()">Eliminar</app-button>
+  </div>
+</app-modal>
