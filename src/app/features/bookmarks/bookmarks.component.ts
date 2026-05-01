@@ -5,6 +5,7 @@ import { ButtonComponent } from '../../shared/ui/components/button/button.compon
 import { InputComponent } from '../../shared/ui/components/input/input.component';
 import { ModalComponent } from '../../shared/ui/components/modal/modal.component';
 import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
+import { SkeletonComponent } from '../../shared/ui/components/skeleton/skeleton.component';
 import { Bookmark } from '../../core/domain/entities';
 import { SupabaseBookmarkRepository } from '../../core/infrastructure/supabase/adapters/supabase-bookmark.repository';
 import { SupabaseAuthAdapter } from '../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
@@ -13,7 +14,7 @@ import { CreateBookmarkUseCase, UpdateBookmarkUseCase, DeleteBookmarkUseCase, Li
 @Component({
   selector: 'app-bookmarks',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, BadgeComponent],
+  imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, BadgeComponent, SkeletonComponent],
   templateUrl: './bookmarks.component.html',
 })
 export class BookmarksComponent implements OnInit {
@@ -37,6 +38,7 @@ export class BookmarksComponent implements OnInit {
   isModalOpen = signal(false);
   isDeleteModalOpen = signal(false);
   isLoading = signal(false);
+  isDataLoading = signal(true);
   editingBookmark = signal<Bookmark | null>(null);
   deletingBookmark = signal<Bookmark | null>(null);
 
@@ -45,9 +47,13 @@ export class BookmarksComponent implements OnInit {
   }
 
   async loadBookmarks(): Promise<void> {
-    const filter = this.searchTerm() ? { search: this.searchTerm() } : undefined;
-    const bookmarks = await this.bookmarkRepo.findAll(filter);
-    this.bookmarks.set(bookmarks);
+    try {
+      const filter = this.searchTerm() ? { search: this.searchTerm() } : undefined;
+      const bookmarks = await this.bookmarkRepo.findAll(filter);
+      this.bookmarks.set(bookmarks);
+    } finally {
+      this.isDataLoading.set(false);
+    }
   }
 
   onSearch(event: Event): void {

@@ -7,6 +7,7 @@ import { InputComponent } from '../../shared/ui/components/input/input.component
 import { ModalComponent } from '../../shared/ui/components/modal/modal.component';
 import { SelectComponent } from '../../shared/ui/components/select/select.component';
 import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
+import { SkeletonComponent } from '../../shared/ui/components/skeleton/skeleton.component';
 import { Income, Category, IncomeMethod } from '../../core/domain/entities';
 import { formatCurrency, formatShortDate } from '../../shared/utils';
 import { SupabaseIncomeRepository } from '../../core/infrastructure/supabase/adapters/supabase-income.repository';
@@ -28,7 +29,7 @@ function atLeastOneAmountValidator(control: AbstractControl): ValidationErrors |
 @Component({
   selector: 'app-incomes',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent, DecimalPipe],
+  imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent, DecimalPipe, SkeletonComponent],
   templateUrl: './incomes.component.html',
 })
 export class IncomesComponent implements OnInit {
@@ -73,6 +74,7 @@ export class IncomesComponent implements OnInit {
   isDeleteModalOpen = signal(false);
   isRateDialogOpen = signal(false);
   isLoading = signal(false);
+  isDataLoading = signal(true);
   editingIncome = signal<Income | null>(null);
   deletingIncome = signal<Income | null>(null);
   startDate = signal(this.getDefaultStartDate());
@@ -105,6 +107,7 @@ export class IncomesComponent implements OnInit {
         return sum + (usd > 0 ? usd : ves / i.exchangeRate);
       }, 0)
     );
+    this.isDataLoading.set(false);
   }
 
   async loadCategories(): Promise<void> {

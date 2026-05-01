@@ -7,6 +7,7 @@ import { InputComponent } from '../../shared/ui/components/input/input.component
 import { ModalComponent } from '../../shared/ui/components/modal/modal.component';
 import { SelectComponent } from '../../shared/ui/components/select/select.component';
 import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
+import { SkeletonComponent } from '../../shared/ui/components/skeleton/skeleton.component';
 import { Currency, Budget, BudgetPeriod } from '../../core/domain/entities';
 import { formatCurrency } from '../../shared/utils';
 import { Money } from '../../core/domain/value-objects';
@@ -28,7 +29,7 @@ interface BudgetWithUtilization extends Budget {
 @Component({
   selector: 'app-budgets',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, TitleCasePipe, ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent],
+  imports: [CommonModule, TitleCasePipe, ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent, SkeletonComponent],
   templateUrl: './budgets.component.html',
 })
 export class BudgetsComponent implements OnInit {
@@ -57,6 +58,7 @@ export class BudgetsComponent implements OnInit {
   isModalOpen = signal(false);
   isDeleteModalOpen = signal(false);
   isLoading = signal(false);
+  isDataLoading = signal(true);
   editingBudget = signal<Budget | null>(null);
   deletingBudget = signal<Budget | null>(null);
 
@@ -65,20 +67,24 @@ export class BudgetsComponent implements OnInit {
   }
 
   async loadBudgets(): Promise<void> {
-    const budgets = await this.budgetRepo.findAll();
-    const vesRate = await this.getVESRate();
+    try {
+      const budgets = await this.budgetRepo.findAll();
+      const vesRate = await this.getVESRate();
 
-    const budgetsWithUtilization: BudgetWithUtilization[] = [];
-    for (const budget of budgets) {
-      const expenses = await this.expenseRepo.findByDateRange(
-        budget.userId,
-        new Date(budget.startDate),
-        budget.endDate ?? new Date()
-      );
-      const utilization = this.budgetCalcService.calculateUtilization(budget, expenses, vesRate);
-      budgetsWithUtilization.push({ ...budget, utilization });
+      const budgetsWithUtilization: BudgetWithUtilization[] = [];
+      for (const budget of budgets) {
+        const expenses = await this.expenseRepo.findByDateRange(
+          budget.userId,
+          new Date(budget.startDate),
+          budget.endDate ?? new Date()
+        );
+        const utilization = this.budgetCalcService.calculateUtilization(budget, expenses, vesRate);
+        budgetsWithUtilization.push({ ...budget, utilization });
+      }
+      this.budgets.set(budgetsWithUtilization);
+    } finally {
+      this.isDataLoading.set(false);
     }
-    this.budgets.set(budgetsWithUtilization);
   }
 
   private async getVESRate(): Promise<number> {

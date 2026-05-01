@@ -3,6 +3,7 @@ import { CardComponent } from '../../shared/ui/components/card/card.component';
 import { StatCardComponent } from '../../shared/ui/components/stat-card/stat-card.component';
 import { DateRangePickerComponent } from '../../shared/ui/components/date-range-picker/date-range-picker.component';
 import { ExpensesIncomesChartComponent } from '../../shared/ui/components/expenses-incomes-chart/expenses-incomes-chart.component';
+import { SkeletonComponent } from '../../shared/ui/components/skeleton/skeleton.component';
 import { Currency, Expense, Income } from '../../core/domain/entities';
 import { Money } from '../../core/domain/value-objects';
 import { formatCurrency } from '../../shared/utils';
@@ -19,7 +20,7 @@ import { DashboardDateRangeService } from './services/dashboard-date-range.servi
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CardComponent, StatCardComponent, DateRangePickerComponent, ExpensesIncomesChartComponent],
+  imports: [CardComponent, StatCardComponent, DateRangePickerComponent, ExpensesIncomesChartComponent, SkeletonComponent],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
@@ -36,6 +37,7 @@ export class DashboardComponent implements OnInit {
   readonly dateRange = inject(DashboardDateRangeService);
 
   private statsLoaded = signal(false);
+  isLoading = signal(true);
 
   today = new Date().toLocaleDateString('es-VE', {
     weekday: 'long',
@@ -88,25 +90,29 @@ export class DashboardComponent implements OnInit {
   }
 
   private async loadNonFilteredData(): Promise<void> {
-    this.pendingTasks.set(await this.taskRepo.findPending());
-    this.overdueTasks.set(await this.taskRepo.findOverdue());
-    this.upcomingRenewals.set(await this.planRepo.findUpcomingRenewals(14));
+    try {
+      this.pendingTasks.set(await this.taskRepo.findPending());
+      this.overdueTasks.set(await this.taskRepo.findOverdue());
+      this.upcomingRenewals.set(await this.planRepo.findUpcomingRenewals(14));
 
-    const budgets = await this.budgetRepo.findActive();
-    const utilizations = [];
-    const now = new Date();
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    for (const budget of budgets) {
-      const budgetExpenses = await this.expenseRepo.findByDateRange(
-        budget.userId,
-        new Date(budget.startDate),
-        budget.endDate ?? endOfMonth
-      );
-      const vesRateData = await this.exchangeRateRepo.findByUserAndPair(budget.userId, 'VES', 'USD');
-      const rate = vesRateData?.rate ?? 1;
-      utilizations.push(this.budgetCalcService.calculateUtilization(budget, budgetExpenses, rate));
+      const budgets = await this.budgetRepo.findActive();
+      const utilizations = [];
+      const now = new Date();
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      for (const budget of budgets) {
+        const budgetExpenses = await this.expenseRepo.findByDateRange(
+          budget.userId,
+          new Date(budget.startDate),
+          budget.endDate ?? endOfMonth
+        );
+        const vesRateData = await this.exchangeRateRepo.findByUserAndPair(budget.userId, 'VES', 'USD');
+        const rate = vesRateData?.rate ?? 1;
+        utilizations.push(this.budgetCalcService.calculateUtilization(budget, budgetExpenses, rate));
+      }
+      this.budgetUtilizations.set(utilizations);
+    } finally {
+      this.isLoading.set(false);
     }
-    this.budgetUtilizations.set(utilizations);
   }
 
   private async loadStatsData(start: Date, end: Date): Promise<void> {

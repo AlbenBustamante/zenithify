@@ -1,7 +1,7 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-8">
   <div class="max-w-7xl mx-auto space-y-8">
     <header
-      class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 animate-slide-up"
+      class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6"
     >
       <div class="space-y-2">
         <div class="flex items-center gap-3">
@@ -26,7 +26,36 @@
       </app-button>
     </header>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 animate-slide-up stagger-1">
+    @if (isDataLoading()) {
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        @for (i of [1,2,3]; track i) {
+          <app-card [filled]="true" [noPadding]="true">
+            <div class="p-6 space-y-4">
+              <div class="flex items-start justify-between">
+                <app-skeleton width="60%" height="0.75rem" />
+                <app-skeleton width="2.5rem" height="2.5rem" />
+              </div>
+              <app-skeleton width="50%" height="2rem" />
+            </div>
+          </app-card>
+        }
+      </div>
+
+      <app-card [noPadding]="true">
+        <div class="p-8 space-y-4">
+          @for (i of [1,2,3,4,5]; track i) {
+            <div class="flex items-center gap-4">
+              <app-skeleton width="3rem" height="3rem" />
+              <div class="flex-1 space-y-2">
+                <app-skeleton width="40%" height="1rem" />
+                <app-skeleton width="25%" height="0.75rem" />
+              </div>
+            </div>
+          }
+        </div>
+      </app-card>
+    } @else {
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
       <app-card
         [filled]="true"
         [noPadding]="true"
@@ -125,7 +154,7 @@
       </app-card>
     </div>
 
-    <app-card [noPadding]="true" class="animate-slide-up stagger-2">
+    <app-card [noPadding]="true">
       @if (plans().length === 0) {
         <div class="p-16 text-center">
           <div
@@ -201,6 +230,7 @@
         </div>
       }
     </app-card>
+    }
   </div>
 </div>
 

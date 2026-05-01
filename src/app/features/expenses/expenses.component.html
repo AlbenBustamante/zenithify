@@ -1,7 +1,7 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-8">
   <div class="max-w-7xl mx-auto space-y-8">
 
-    <header class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 animate-slide-up">
+    <header class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
       <div class="space-y-2">
         <div class="flex items-center gap-3">
           <span class="w-1 h-8 bg-red-500 rounded-full"></span>
@@ -17,7 +17,7 @@
       </app-button>
     </header>
 
-    <div class="flex gap-4 flex-wrap animate-slide-up stagger-1">
+    <div class="flex gap-4 flex-wrap">
       <div class="flex items-center gap-2">
         <div class="relative">
           <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -51,8 +51,22 @@
       </select>
     </div>
 
-    <app-card [noPadding]="true" class="animate-slide-up stagger-2">
-      @if (expenses().length === 0) {
+    <app-card [noPadding]="true">
+      @if (isDataLoading()) {
+        <div class="p-8 space-y-4">
+          @for (i of [1,2,3,4,5]; track i) {
+            <div class="flex items-center gap-4">
+              <app-skeleton width="6rem" height="1rem" />
+              <app-skeleton width="12rem" height="1rem" />
+              <app-skeleton width="8rem" height="1rem" />
+              <app-skeleton width="5rem" height="1rem" />
+              <div class="flex-1"></div>
+              <app-skeleton width="4rem" height="1rem" />
+              <app-skeleton width="4rem" height="1rem" />
+            </div>
+          }
+        </div>
+      } @else if (expenses().length === 0) {
         <div class="p-16 text-center">
           <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-red-50/80 flex items-center justify-center">
             <svg class="w-10 h-10 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -119,7 +133,7 @@
       }
     </app-card>
 
-    <div class="flex justify-between items-center text-sm animate-slide-up stagger-3">
+    <div class="flex justify-between items-center text-sm">
       <p class="text-slate-500">
         Total: <span class="font-semibold text-slate-800">{{ formatMoney(totalAmount(), 'USD') }}</span>
       </p>

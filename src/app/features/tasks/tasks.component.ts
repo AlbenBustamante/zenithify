@@ -7,6 +7,7 @@ import { InputComponent } from '../../shared/ui/components/input/input.component
 import { ModalComponent } from '../../shared/ui/components/modal/modal.component';
 import { SelectComponent } from '../../shared/ui/components/select/select.component';
 import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
+import { SkeletonComponent } from '../../shared/ui/components/skeleton/skeleton.component';
 import { Task, TaskPriority, TaskStatus } from '../../core/domain/entities';
 import { formatShortDate, isOverdue, daysFromNow } from '../../shared/utils';
 import { SupabaseTaskRepository } from '../../core/infrastructure/supabase/adapters/supabase-task.repository';
@@ -16,7 +17,7 @@ import { CreateTaskUseCase, UpdateTaskUseCase, DeleteTaskUseCase, CompleteTaskUs
 @Component({
   selector: 'app-tasks',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, TitleCasePipe, ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent],
+  imports: [CommonModule, TitleCasePipe, ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent, SkeletonComponent],
   templateUrl: './tasks.component.html',
 })
 export class TasksComponent implements OnInit {
@@ -48,6 +49,7 @@ export class TasksComponent implements OnInit {
   isModalOpen = signal(false);
   isDeleteModalOpen = signal(false);
   isLoading = signal(false);
+  isDataLoading = signal(true);
   editingTask = signal<Task | null>(null);
   deletingTask = signal<Task | null>(null);
 
@@ -56,9 +58,13 @@ export class TasksComponent implements OnInit {
   }
 
   async loadTasks(): Promise<void> {
-    const filter = this.statusFilter() ? { status: this.statusFilter() as TaskStatus } : undefined;
-    const tasks = await this.taskRepo.findAll(filter);
-    this.tasks.set(tasks);
+    try {
+      const filter = this.statusFilter() ? { status: this.statusFilter() as TaskStatus } : undefined;
+      const tasks = await this.taskRepo.findAll(filter);
+      this.tasks.set(tasks);
+    } finally {
+      this.isDataLoading.set(false);
+    }
   }
 
   setStatusFilter(status: TaskStatus | ''): void {

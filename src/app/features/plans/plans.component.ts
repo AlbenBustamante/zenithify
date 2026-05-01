@@ -7,6 +7,7 @@ import { InputComponent } from '../../shared/ui/components/input/input.component
 import { ModalComponent } from '../../shared/ui/components/modal/modal.component';
 import { SelectComponent } from '../../shared/ui/components/select/select.component';
 import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
+import { SkeletonComponent } from '../../shared/ui/components/skeleton/skeleton.component';
 import { Currency, Plan, BillingCycle } from '../../core/domain/entities';
 import { formatCurrency, formatShortDate, daysFromNow } from '../../shared/utils';
 import { SubscriptionCycle } from '../../core/domain/value-objects';
@@ -31,6 +32,7 @@ import {
     ModalComponent,
     SelectComponent,
     BadgeComponent,
+    SkeletonComponent,
   ],
   templateUrl: './plans.component.html',
 })
@@ -60,6 +62,7 @@ export class PlansComponent implements OnInit {
   isModalOpen = signal(false);
   isDeleteModalOpen = signal(false);
   isLoading = signal(false);
+  isDataLoading = signal(true);
   editingPlan = signal<Plan | null>(null);
   deletingPlan = signal<Plan | null>(null);
 
@@ -68,23 +71,27 @@ export class PlansComponent implements OnInit {
   }
 
   async loadPlans(): Promise<void> {
-    const plans = await this.planRepo.findAll();
-    this.plans.set(plans);
-    this.activePlans.set(plans.filter((p) => p.isActive));
+    try {
+      const plans = await this.planRepo.findAll();
+      this.plans.set(plans);
+      this.activePlans.set(plans.filter((p) => p.isActive));
 
-    let monthly = 0;
-    let yearly = 0;
-    for (const plan of plans.filter((p) => p.isActive)) {
-      const cycle = new SubscriptionCycle(
-        plan.billingCycle,
-        plan.nextBillingDate,
-        plan.nextBillingDate,
-      );
-      monthly += cycle.getMonthlyAmount(plan.amount);
-      yearly += cycle.getYearlyAmount(plan.amount);
+      let monthly = 0;
+      let yearly = 0;
+      for (const plan of plans.filter((p) => p.isActive)) {
+        const cycle = new SubscriptionCycle(
+          plan.billingCycle,
+          plan.nextBillingDate,
+          plan.nextBillingDate,
+        );
+        monthly += cycle.getMonthlyAmount(plan.amount);
+        yearly += cycle.getYearlyAmount(plan.amount);
+      }
+      this.monthlyTotal.set(monthly);
+      this.yearlyTotal.set(yearly);
+    } finally {
+      this.isDataLoading.set(false);
     }
-    this.monthlyTotal.set(monthly);
-    this.yearlyTotal.set(yearly);
   }
 
   openCreateModal(): void {

@@ -7,6 +7,7 @@ import { InputComponent } from '../../shared/ui/components/input/input.component
 import { ModalComponent } from '../../shared/ui/components/modal/modal.component';
 import { SelectComponent } from '../../shared/ui/components/select/select.component';
 import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
+import { SkeletonComponent } from '../../shared/ui/components/skeleton/skeleton.component';
 import { Expense, Category, PaymentMethod } from '../../core/domain/entities';
 import { formatCurrency, formatShortDate } from '../../shared/utils';
 import { SupabaseExpenseRepository } from '../../core/infrastructure/supabase/adapters/supabase-expense.repository';
@@ -28,7 +29,7 @@ function atLeastOneAmountValidator(control: AbstractControl): ValidationErrors |
 @Component({
   selector: 'app-expenses',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent, DecimalPipe],
+  imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, BadgeComponent, DecimalPipe, SkeletonComponent],
   templateUrl: './expenses.component.html',
 })
 export class ExpensesComponent implements OnInit {
@@ -68,6 +69,7 @@ export class ExpensesComponent implements OnInit {
   isDeleteModalOpen = signal(false);
   isRateDialogOpen = signal(false);
   isLoading = signal(false);
+  isDataLoading = signal(true);
   editingExpense = signal<Expense | null>(null);
   deletingExpense = signal<Expense | null>(null);
   startDate = signal(this.getDefaultStartDate());
@@ -108,6 +110,8 @@ export class ExpensesComponent implements OnInit {
       );
     } catch (error) {
       console.error('Error loading expenses:', error);
+    } finally {
+      this.isDataLoading.set(false);
     }
   }
 

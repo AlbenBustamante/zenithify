@@ -4,6 +4,7 @@ import { CardComponent } from '../../shared/ui/components/card/card.component';
 import { ButtonComponent } from '../../shared/ui/components/button/button.component';
 import { InputComponent } from '../../shared/ui/components/input/input.component';
 import { SelectComponent } from '../../shared/ui/components/select/select.component';
+import { SkeletonComponent } from '../../shared/ui/components/skeleton/skeleton.component';
 import { Currency } from '../../core/domain/entities';
 import { CurrencyConversionService } from '../../core/domain/services';
 import { SupabaseAuthAdapter } from '../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
@@ -13,7 +14,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-settings',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, SelectComponent],
+  imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, SelectComponent, SkeletonComponent],
   templateUrl: './settings.component.html',
 })
 export class SettingsComponent implements OnInit {
@@ -47,11 +48,16 @@ export class SettingsComponent implements OnInit {
   officialRate = signal(0);
   customRate = signal<number | null>(null);
   isLoading = signal(false);
+  isDataLoading = signal(true);
 
   async ngOnInit(): Promise<void> {
-    await this.loadProfile();
-    await this.loadExchangeRate();
-    await this.refreshOfficialRate();
+    try {
+      await this.loadProfile();
+      await this.loadExchangeRate();
+      await this.refreshOfficialRate();
+    } finally {
+      this.isDataLoading.set(false);
+    }
   }
 
   async loadProfile(): Promise<void> {

@@ -5,6 +5,7 @@ import { ButtonComponent } from '../../shared/ui/components/button/button.compon
 import { InputComponent } from '../../shared/ui/components/input/input.component';
 import { ModalComponent } from '../../shared/ui/components/modal/modal.component';
 import { SelectComponent } from '../../shared/ui/components/select/select.component';
+import { SkeletonComponent } from '../../shared/ui/components/skeleton/skeleton.component';
 import { Category, CategoryType } from '../../core/domain/entities';
 import { SupabaseCategoryRepository } from '../../core/infrastructure/supabase/adapters/supabase-category.repository';
 import { CreateCategoryUseCase, UpdateCategoryUseCase, DeleteCategoryUseCase, ListCategoriesUseCase } from '../../core/application/use-cases/category/category.use-cases';
@@ -12,7 +13,7 @@ import { CreateCategoryUseCase, UpdateCategoryUseCase, DeleteCategoryUseCase, Li
 @Component({
   selector: 'app-categories',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent],
+  imports: [ReactiveFormsModule, CardComponent, ButtonComponent, InputComponent, ModalComponent, SelectComponent, SkeletonComponent],
   templateUrl: './categories.component.html',
 })
 export class CategoriesComponent implements OnInit {
@@ -34,6 +35,7 @@ export class CategoriesComponent implements OnInit {
   isModalOpen = signal(false);
   isDeleteModalOpen = signal(false);
   isLoading = signal(false);
+  isDataLoading = signal(true);
   editingCategory = signal<Category | null>(null);
   deletingCategory = signal<Category | null>(null);
 
@@ -42,9 +44,13 @@ export class CategoriesComponent implements OnInit {
   }
 
   async loadCategories(): Promise<void> {
-    const all = await this.categoryRepo.findAll();
-    this.expenseCategories.set(all.filter((c) => c.type === 'expense' || c.type === 'both'));
-    this.incomeCategories.set(all.filter((c) => c.type === 'income' || c.type === 'both'));
+    try {
+      const all = await this.categoryRepo.findAll();
+      this.expenseCategories.set(all.filter((c) => c.type === 'expense' || c.type === 'both'));
+      this.incomeCategories.set(all.filter((c) => c.type === 'income' || c.type === 'both'));
+    } finally {
+      this.isDataLoading.set(false);
+    }
   }
 
   openCreateModal(): void {

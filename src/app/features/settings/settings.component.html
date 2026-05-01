@@ -1,7 +1,7 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-8">
   <div class="max-w-3xl mx-auto space-y-8">
 
-    <header class="animate-slide-up">
+    <header>
       <div class="space-y-2">
         <div class="flex items-center gap-3">
           <span class="w-1 h-8 bg-slate-600 rounded-full"></span>
@@ -11,7 +11,37 @@
       </div>
     </header>
 
-    <app-card title="Perfil" class="animate-slide-up stagger-1">
+    @if (isDataLoading()) {
+      <app-card title="Perfil">
+        <div class="space-y-5">
+          <app-skeleton width="100%" height="2.5rem" />
+          <app-skeleton width="100%" height="2.5rem" />
+        </div>
+      </app-card>
+      <app-card title="Moneda Preferida">
+        <div class="space-y-5">
+          <app-skeleton width="100%" height="2.5rem" />
+        </div>
+      </app-card>
+      <app-card title="Tasa de Cambio USD/VES">
+        <div class="space-y-5">
+          <app-skeleton width="100%" height="4rem" />
+          <app-skeleton width="100%" height="2.5rem" />
+        </div>
+      </app-card>
+      <app-card title="Cambiar Contraseña">
+        <div class="space-y-5">
+          <app-skeleton width="100%" height="2.5rem" />
+          <app-skeleton width="100%" height="2.5rem" />
+        </div>
+      </app-card>
+      <app-card title="Zona Horaria">
+        <div class="space-y-5">
+          <app-skeleton width="100%" height="2.5rem" />
+        </div>
+      </app-card>
+    } @else {
+    <app-card title="Perfil">
       <form [formGroup]="profileForm" class="space-y-5">
         <app-input formControlName="displayName" label="Nombre" />
         <app-input formControlName="email" label="Email" type="email" />
@@ -21,7 +51,7 @@
       </form>
     </app-card>
 
-    <app-card title="Moneda Preferida" class="animate-slide-up stagger-2">
+    <app-card title="Moneda Preferida">
       <form [formGroup]="currencyForm" class="space-y-5">
         <app-select formControlName="defaultCurrency" label="Moneda por defecto">
           <option value="USD">USD - Dólar estadounidense</option>
@@ -33,7 +63,7 @@
       </form>
     </app-card>
 
-    <app-card title="Tasa de Cambio USD/VES" class="animate-slide-up stagger-3">
+    <app-card title="Tasa de Cambio USD/VES">
       <div class="space-y-5">
         <div class="flex items-center gap-4 p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl border border-emerald-200/50">
           <div class="w-10 h-10 rounded-lg bg-emerald-100/80 border border-emerald-200/50 flex items-center justify-center">
@@ -62,7 +92,7 @@
       </div>
     </app-card>
 
-    <app-card title="Cambiar Contraseña" class="animate-slide-up stagger-4">
+    <app-card title="Cambiar Contraseña">
       <form [formGroup]="passwordForm" class="space-y-5">
         <app-input formControlName="newPassword" label="Nueva Contraseña" type="password" />
         <app-input formControlName="confirmPassword" label="Confirmar Contraseña" type="password" />
@@ -72,7 +102,7 @@
       </form>
     </app-card>
 
-    <app-card title="Zona Horaria" class="animate-slide-up stagger-5">
+    <app-card title="Zona Horaria">
       <form [formGroup]="timezoneForm" class="space-y-5">
         <app-select formControlName="timezone" label="Zona horaria">
           <option value="America/Caracas">América/Caracas (VET)</option>
@@ -85,5 +115,6 @@
         </div>
       </form>
     </app-card>
+    }
   </div>
 </div>
