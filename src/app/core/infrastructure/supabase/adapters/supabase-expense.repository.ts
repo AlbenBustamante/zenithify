@@ -16,11 +16,13 @@ export class SupabaseExpenseRepository implements ExpenseRepositoryPort {
       .from(this.table)
       .insert({
         user_id: user.id,
-        amount: dto.amount,
-        currency: dto.currency,
+        amount_usd: dto.amountUsd ?? null,
+        amount_ves: dto.amountVes ?? null,
+        exchange_rate: dto.exchangeRate,
         description: dto.description,
         category_id: dto.categoryId ?? null,
         expense_date: dto.expenseDate.toISOString().split('T')[0],
+        payment_method: dto.paymentMethod,
         receipt_url: dto.receiptUrl ?? null,
       })
       .select()
@@ -32,11 +34,13 @@ export class SupabaseExpenseRepository implements ExpenseRepositoryPort {
 
   async update(id: string, dto: UpdateExpenseDto): Promise<Expense> {
     const updates: Record<string, unknown> = {};
-    if (dto.amount !== undefined) updates['amount'] = dto.amount;
-    if (dto.currency !== undefined) updates['currency'] = dto.currency;
+    if (dto.amountUsd !== undefined) updates['amount_usd'] = dto.amountUsd ?? null;
+    if (dto.amountVes !== undefined) updates['amount_ves'] = dto.amountVes ?? null;
+    if (dto.exchangeRate !== undefined) updates['exchange_rate'] = dto.exchangeRate;
     if (dto.description !== undefined) updates['description'] = dto.description;
     if (dto.categoryId !== undefined) updates['category_id'] = dto.categoryId;
     if (dto.expenseDate !== undefined) updates['expense_date'] = dto.expenseDate.toISOString().split('T')[0];
+    if (dto.paymentMethod !== undefined) updates['payment_method'] = dto.paymentMethod;
     if (dto.receiptUrl !== undefined) updates['receipt_url'] = dto.receiptUrl;
 
     const { data, error } = await this.supabase
@@ -77,9 +81,6 @@ export class SupabaseExpenseRepository implements ExpenseRepositoryPort {
     }
     if (filters?.categoryId) {
       query = query.eq('category_id', filters.categoryId);
-    }
-    if (filters?.currency) {
-      query = query.eq('currency', filters.currency);
     }
 
     const { data, error } = await query.order('expense_date', { ascending: false });

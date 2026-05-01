@@ -30,13 +30,8 @@ export class BudgetCalculationService {
 
     let totalSpent = 0;
     for (const expense of relevantExpenses) {
-      if (expense.currency === budget.currency) {
-        totalSpent += expense.amount;
-      } else if (expense.currency === 'USD' && budget.currency === 'VES') {
-        totalSpent += expense.amount * exchangeRate;
-      } else {
-        totalSpent += expense.amount / exchangeRate;
-      }
+      const expenseAmountInBudgetCurrency = this.getAmountInCurrency(expense, budget.currency);
+      totalSpent += expenseAmountInBudgetCurrency;
     }
 
     const spentMoney = new Money(totalSpent, budget.currency);
@@ -71,19 +66,11 @@ export class BudgetCalculationService {
       });
 
     for (const income of filterByDate(incomes)) {
-      if (income.currency === 'USD') {
-        totalIncomeUSD += income.amount;
-      } else {
-        totalIncomeUSD += income.amount / exchangeRate;
-      }
+      totalIncomeUSD += this.getAmountInCurrency(income, 'USD');
     }
 
     for (const expense of filterByDate(expenses)) {
-      if (expense.currency === 'USD') {
-        totalExpenseUSD += expense.amount;
-      } else {
-        totalExpenseUSD += expense.amount / exchangeRate;
-      }
+      totalExpenseUSD += this.getAmountInCurrency(expense, 'USD');
     }
 
     const totalIncome = new Money(totalIncomeUSD, 'USD');
@@ -91,5 +78,19 @@ export class BudgetCalculationService {
     const netBalance = totalIncome.subtract(totalExpense);
 
     return { totalIncome, totalExpense, netBalance };
+  }
+
+  private getAmountInCurrency(item: Expense | Income, targetCurrency: 'USD' | 'VES'): number {
+    if (targetCurrency === 'USD') {
+      if ('amountUsd' in item) {
+        return item.amountUsd ?? (item.amountVes ? item.amountVes / item.exchangeRate : 0);
+      }
+      return item.amountUsd ?? (item.amountVes ? item.amountVes / item.exchangeRate : 0);
+    } else {
+      if ('amountVes' in item) {
+        return item.amountVes ?? (item.amountUsd ? item.amountUsd * item.exchangeRate : 0);
+      }
+      return item.amountVes ?? (item.amountUsd ? item.amountUsd * item.exchangeRate : 0);
+    }
   }
 }

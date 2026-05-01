@@ -1,7 +1,7 @@
 import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CardComponent } from '../../shared/ui/components/card/card.component';
 import { StatCardComponent } from '../../shared/ui/components/stat-card/stat-card.component';
-import { Currency } from '../../core/domain/entities';
+import { Currency, Expense, Income } from '../../core/domain/entities';
 import { Money } from '../../core/domain/value-objects';
 import { formatCurrency } from '../../shared/utils';
 import { SupabaseExpenseRepository } from '../../core/infrastructure/supabase/adapters/supabase-expense.repository';
@@ -12,7 +12,6 @@ import { SupabaseBudgetRepository } from '../../core/infrastructure/supabase/ada
 import { SupabaseExchangeRateRepository } from '../../core/infrastructure/supabase/adapters/supabase-exchange-rate.repository';
 import { SupabaseAuthAdapter } from '../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
 import { BudgetCalculationService } from '../../core/domain/services';
-import { Expense, Income, Plan, Task } from '../../core/domain/entities';
 
 @Component({
   selector: 'app-dashboard',
@@ -46,9 +45,9 @@ export class DashboardComponent implements OnInit {
   netBalance = signal(0);
   vesRate = signal(1);
 
-  pendingTasks = signal<Task[]>([]);
-  overdueTasks = signal<Task[]>([]);
-  upcomingRenewals = signal<Plan[]>([]);
+  pendingTasks = signal<any[]>([]);
+  overdueTasks = signal<any[]>([]);
+  upcomingRenewals = signal<any[]>([]);
   recentTransactions = signal<Array<{
     id: string;
     type: 'expense' | 'income';
@@ -71,6 +70,16 @@ export class DashboardComponent implements OnInit {
     await this.loadDashboardData();
   }
 
+  private getAmountInUSD(item: Expense | Income): number {
+    if (item.amountUsd) return item.amountUsd;
+    if (item.amountVes) return item.amountVes / item.exchangeRate;
+    return 0;
+  }
+
+  private getMainAmount(item: Expense | Income): number {
+    return item.amountUsd ?? item.amountVes ?? 0;
+  }
+
   private async loadDashboardData(): Promise<void> {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -87,24 +96,18 @@ export class DashboardComponent implements OnInit {
       const expenses = await this.expenseRepo.findByDateRange(userId, startOfMonth, endOfMonth);
       const incomes = await this.incomeRepo.findByDateRange(userId, startOfMonth, endOfMonth);
 
-      this.totalExpensesThisMonth.set(expenses.reduce((sum, e) => sum + e.amount, 0));
-      this.totalIncomesThisMonth.set(incomes.reduce((sum, i) => sum + i.amount, 0));
+      this.totalExpensesThisMonth.set(expenses.reduce((sum, e) => sum + this.getMainAmount(e), 0));
+      this.totalIncomesThisMonth.set(incomes.reduce((sum, i) => sum + this.getMainAmount(i), 0));
 
       const vesRateData = await this.exchangeRateRepo.findByUserAndPair(userId, 'VES', 'USD');
       this.vesRate.set(vesRateData?.rate ?? 1);
 
       this.totalExpensesThisMonthUSD.set(
-        expenses.reduce((sum, e) => {
-          if (e.currency === 'USD') return sum + e.amount;
-          return sum + e.amount / this.vesRate();
-        }, 0)
+        expenses.reduce((sum, e) => sum + this.getAmountInUSD(e), 0)
       );
 
       this.totalIncomesThisMonthUSD.set(
-        incomes.reduce((sum, i) => {
-          if (i.currency === 'USD') return sum + i.amount;
-          return sum + i.amount / this.vesRate();
-        }, 0)
+        incomes.reduce((sum, i) => sum + this.getAmountInUSD(i), 0)
       );
 
       this.netBalance.set(this.totalIncomesThisMonthUSD() - this.totalExpensesThisMonthUSD());
@@ -128,8 +131,8 @@ export class DashboardComponent implements OnInit {
           id: e.id,
           type: 'expense',
           description: e.description,
-          amount: e.amount,
-          currency: e.currency,
+          amount: this.getMainAmount(e),
+          currency: e.amountUsd ? 'USD' : 'VES',
           date: e.expenseDate,
         });
       });
@@ -139,8 +142,8 @@ export class DashboardComponent implements OnInit {
           id: i.id,
           type: 'income',
           description: i.description,
-          amount: i.amount,
-          currency: i.currency,
+          amount: this.getMainAmount(i),
+          currency: i.amountUsd ? 'USD' : 'VES',
           date: i.incomeDate,
         });
       });

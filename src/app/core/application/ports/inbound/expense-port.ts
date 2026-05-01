@@ -1,20 +1,24 @@
-import { Expense, Currency } from '../../../domain/entities';
+import { Expense, PaymentMethod } from '../../../domain/entities';
 
 export interface CreateExpenseDto {
-  amount: number;
-  currency: Currency;
+  amountUsd?: number;
+  amountVes?: number;
+  exchangeRate: number;
   description: string;
   categoryId?: string;
   expenseDate: Date;
+  paymentMethod: PaymentMethod;
   receiptUrl?: string;
 }
 
 export interface UpdateExpenseDto {
-  amount?: number;
-  currency?: Currency;
+  amountUsd?: number;
+  amountVes?: number;
+  exchangeRate?: number;
   description?: string;
   categoryId?: string;
   expenseDate?: Date;
+  paymentMethod?: PaymentMethod;
   receiptUrl?: string;
 }
 
@@ -22,7 +26,6 @@ export interface ExpenseFilters {
   startDate?: Date;
   endDate?: Date;
   categoryId?: string;
-  currency?: Currency;
 }
 
 export interface ExpensePort {

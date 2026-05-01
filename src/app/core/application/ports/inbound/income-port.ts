@@ -1,26 +1,29 @@
-import { Income, Currency } from '../../../domain/entities';
+import { Income, IncomeMethod } from '../../../domain/entities';
 
 export interface CreateIncomeDto {
-  amount: number;
-  currency: Currency;
+  amountUsd?: number;
+  amountVes?: number;
+  exchangeRate: number;
   description: string;
   categoryId?: string;
   incomeDate: Date;
+  incomeMethod: IncomeMethod;
 }
 
 export interface UpdateIncomeDto {
-  amount?: number;
-  currency?: Currency;
+  amountUsd?: number;
+  amountVes?: number;
+  exchangeRate?: number;
   description?: string;
   categoryId?: string;
   incomeDate?: Date;
+  incomeMethod?: IncomeMethod;
 }
 
 export interface IncomeFilters {
   startDate?: Date;
   endDate?: Date;
   categoryId?: string;
-  currency?: Currency;
 }
 
 export interface IncomePort {

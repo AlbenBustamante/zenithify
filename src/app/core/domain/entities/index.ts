@@ -1,4 +1,6 @@
 export type Currency = 'USD' | 'VES';
+export type PaymentMethod = 'cash' | 'card' | 'divisas' | 'transferencia';
+export type IncomeMethod = 'salario' | 'remesa' | 'freelance' | 'inversiones' | 'regalo' | 'venta' | 'premio' | 'becas' | 'herencia' | 'otro';
 
 export type BillingCycle = 'monthly' | 'yearly';
 export type BudgetPeriod = 'weekly' | 'monthly' | 'yearly';
@@ -33,12 +35,14 @@ export interface Category {
 export interface Expense {
   id: string;
   userId: string;
-  amount: number;
-  currency: Currency;
+  amountUsd?: number;
+  amountVes?: number;
+  exchangeRate: number;
   description: string;
   categoryId?: string;
   category?: Category;
   expenseDate: Date;
+  paymentMethod: PaymentMethod;
   receiptUrl?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -47,12 +51,14 @@ export interface Expense {
 export interface Income {
   id: string;
   userId: string;
-  amount: number;
-  currency: Currency;
+  amountUsd?: number;
+  amountVes?: number;
+  exchangeRate: number;
   description: string;
   categoryId?: string;
   category?: Category;
   incomeDate: Date;
+  incomeMethod: IncomeMethod;
   createdAt: Date;
   updatedAt: Date;
 }

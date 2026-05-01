@@ -16,11 +16,13 @@ export class SupabaseIncomeRepository implements IncomeRepositoryPort {
       .from(this.table)
       .insert({
         user_id: user.id,
-        amount: dto.amount,
-        currency: dto.currency,
+        amount_usd: dto.amountUsd ?? null,
+        amount_ves: dto.amountVes ?? null,
+        exchange_rate: dto.exchangeRate,
         description: dto.description,
         category_id: dto.categoryId ?? null,
         income_date: dto.incomeDate.toISOString().split('T')[0],
+        income_method: dto.incomeMethod,
       })
       .select()
       .single();
@@ -31,11 +33,13 @@ export class SupabaseIncomeRepository implements IncomeRepositoryPort {
 
   async update(id: string, dto: UpdateIncomeDto): Promise<Income> {
     const updates: Record<string, unknown> = {};
-    if (dto.amount !== undefined) updates['amount'] = dto.amount;
-    if (dto.currency !== undefined) updates['currency'] = dto.currency;
+    if (dto.amountUsd !== undefined) updates['amount_usd'] = dto.amountUsd ?? null;
+    if (dto.amountVes !== undefined) updates['amount_ves'] = dto.amountVes ?? null;
+    if (dto.exchangeRate !== undefined) updates['exchange_rate'] = dto.exchangeRate;
     if (dto.description !== undefined) updates['description'] = dto.description;
     if (dto.categoryId !== undefined) updates['category_id'] = dto.categoryId;
     if (dto.incomeDate !== undefined) updates['income_date'] = dto.incomeDate.toISOString().split('T')[0];
+    if (dto.incomeMethod !== undefined) updates['income_method'] = dto.incomeMethod;
 
     const { data, error } = await this.supabase
       .from(this.table)
@@ -75,9 +79,6 @@ export class SupabaseIncomeRepository implements IncomeRepositoryPort {
     }
     if (filters?.categoryId) {
       query = query.eq('category_id', filters.categoryId);
-    }
-    if (filters?.currency) {
-      query = query.eq('currency', filters.currency);
     }
 
     const { data, error } = await query.order('income_date', { ascending: false });

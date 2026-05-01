@@ -15,11 +15,13 @@ export interface ProfileRow {
 export interface ExpenseRow {
   id: string;
   user_id: string;
-  amount: number;
-  currency: string;
+  amount_usd: number | null;
+  amount_ves: number | null;
+  exchange_rate: number;
   description: string;
   category_id: string | null;
   expense_date: string;
+  payment_method: string;
   receipt_url: string | null;
   created_at: string;
   updated_at: string;
@@ -28,11 +30,13 @@ export interface ExpenseRow {
 export interface IncomeRow {
   id: string;
   user_id: string;
-  amount: number;
-  currency: string;
+  amount_usd: number | null;
+  amount_ves: number | null;
+  exchange_rate: number;
   description: string;
   category_id: string | null;
   income_date: string;
+  income_method: string;
   created_at: string;
   updated_at: string;
 }
@@ -171,11 +175,13 @@ export class EntityMapper {
     return {
       id: row.id,
       userId: row.user_id,
-      amount: row.amount,
-      currency: row.currency as 'USD' | 'VES',
+      amountUsd: row.amount_usd ?? undefined,
+      amountVes: row.amount_ves ?? undefined,
+      exchangeRate: row.exchange_rate,
       description: row.description,
       categoryId: row.category_id ?? undefined,
       expenseDate: new Date(row.expense_date),
+      paymentMethod: row.payment_method as 'cash' | 'card' | 'divisas' | 'transferencia',
       receiptUrl: row.receipt_url ?? undefined,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
@@ -186,11 +192,13 @@ export class EntityMapper {
     return {
       id: row.id,
       userId: row.user_id,
-      amount: row.amount,
-      currency: row.currency as 'USD' | 'VES',
+      amountUsd: row.amount_usd ?? undefined,
+      amountVes: row.amount_ves ?? undefined,
+      exchangeRate: row.exchange_rate,
       description: row.description,
       categoryId: row.category_id ?? undefined,
       incomeDate: new Date(row.income_date),
+      incomeMethod: row.income_method as 'salario' | 'remesa' | 'freelance' | 'inversiones' | 'regalo' | 'venta' | 'premio' | 'becas' | 'herencia' | 'otro',
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
     };
