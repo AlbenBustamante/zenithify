@@ -11,6 +11,7 @@ import { Income, Category, IncomeMethod } from '../../core/domain/entities';
 import { formatCurrency, formatShortDate } from '../../shared/utils';
 import { SupabaseIncomeRepository } from '../../core/infrastructure/supabase/adapters/supabase-income.repository';
 import { SupabaseCategoryRepository } from '../../core/infrastructure/supabase/adapters/supabase-category.repository';
+import { SupabaseAuthAdapter } from '../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
 import { CreateIncomeUseCase, UpdateIncomeUseCase, DeleteIncomeUseCase } from '../../core/application/use-cases/income/income.use-cases';
 import { CurrencyConversionService } from '../../core/domain/services/currency-conversion.service';
 import { environment } from '../../../environments/environment';
@@ -38,6 +39,7 @@ export class IncomesComponent implements OnInit {
   private updateIncomeUC = inject(UpdateIncomeUseCase);
   private deleteIncomeUC = inject(DeleteIncomeUseCase);
   private currencyService = inject(CurrencyConversionService);
+  private authAdapter = inject(SupabaseAuthAdapter);
 
   incomeMethods: { value: IncomeMethod; label: string }[] = [
     { value: 'salario', label: 'Salario' },
@@ -236,6 +238,11 @@ export class IncomesComponent implements OnInit {
     if (this.form.invalid) return;
     this.isLoading.set(true);
     try {
+      const currentUser = await this.authAdapter.getCurrentUser();
+      if (!currentUser) {
+        console.error('No user logged in');
+        return;
+      }
       const dto = {
         description: this.form.value.description!,
         amountUsd: this.form.value.amountUsd ?? undefined,
@@ -248,7 +255,7 @@ export class IncomesComponent implements OnInit {
       if (this.editingIncome()) {
         await this.updateIncomeUC.execute(this.editingIncome()!.id, dto);
       } else {
-        await this.createIncomeUC.execute(dto, '', false);
+        await this.createIncomeUC.execute(dto, currentUser.id, false);
       }
       this.closeModal();
       await this.loadIncomes();
@@ -263,7 +270,12 @@ export class IncomesComponent implements OnInit {
     if (!this.deletingIncome()) return;
     this.isLoading.set(true);
     try {
-      await this.deleteIncomeUC.execute(this.deletingIncome()!.id, '');
+      const currentUser = await this.authAdapter.getCurrentUser();
+      if (!currentUser) {
+        console.error('No user logged in');
+        return;
+      }
+      await this.deleteIncomeUC.execute(this.deletingIncome()!.id, currentUser.id);
       this.closeDeleteModal();
       await this.loadIncomes();
     } catch (error) {

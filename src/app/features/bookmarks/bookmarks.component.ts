@@ -7,6 +7,7 @@ import { ModalComponent } from '../../shared/ui/components/modal/modal.component
 import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
 import { Bookmark } from '../../core/domain/entities';
 import { SupabaseBookmarkRepository } from '../../core/infrastructure/supabase/adapters/supabase-bookmark.repository';
+import { SupabaseAuthAdapter } from '../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
 import { CreateBookmarkUseCase, UpdateBookmarkUseCase, DeleteBookmarkUseCase, ListBookmarksUseCase } from '../../core/application/use-cases/bookmark/bookmark.use-cases';
 
 @Component({
@@ -22,6 +23,7 @@ export class BookmarksComponent implements OnInit {
   private updateBookmarkUC = inject(UpdateBookmarkUseCase);
   private deleteBookmarkUC = inject(DeleteBookmarkUseCase);
   private listBookmarksUC = inject(ListBookmarksUseCase);
+  private authAdapter = inject(SupabaseAuthAdapter);
 
   form = this.fb.group({
     title: ['', [Validators.required]],
@@ -90,6 +92,11 @@ export class BookmarksComponent implements OnInit {
     if (this.form.invalid) return;
     this.isLoading.set(true);
     try {
+      const currentUser = await this.authAdapter.getCurrentUser();
+      if (!currentUser) {
+        console.error('No user logged in');
+        return;
+      }
       const tags = this.form.value.tags
         ? this.form.value.tags.split(',').map((t: string) => t.trim()).filter((t: string) => t)
         : [];
@@ -104,7 +111,7 @@ export class BookmarksComponent implements OnInit {
       if (this.editingBookmark()) {
         await this.updateBookmarkUC.execute(this.editingBookmark()!.id, dto);
       } else {
-        await this.createBookmarkUC.execute(dto, '', false);
+        await this.createBookmarkUC.execute(dto, currentUser.id, false);
       }
       this.closeModal();
       await this.loadBookmarks();
@@ -119,7 +126,12 @@ export class BookmarksComponent implements OnInit {
     if (!this.deletingBookmark()) return;
     this.isLoading.set(true);
     try {
-      await this.deleteBookmarkUC.execute(this.deletingBookmark()!.id, '');
+      const currentUser = await this.authAdapter.getCurrentUser();
+      if (!currentUser) {
+        console.error('No user logged in');
+        return;
+      }
+      await this.deleteBookmarkUC.execute(this.deletingBookmark()!.id, currentUser.id);
       this.closeDeleteModal();
       await this.loadBookmarks();
     } catch (error) {

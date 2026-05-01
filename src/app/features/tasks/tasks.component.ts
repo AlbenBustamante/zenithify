@@ -10,6 +10,7 @@ import { BadgeComponent } from '../../shared/ui/components/badge/badge.component
 import { Task, TaskPriority, TaskStatus } from '../../core/domain/entities';
 import { formatShortDate, isOverdue, daysFromNow } from '../../shared/utils';
 import { SupabaseTaskRepository } from '../../core/infrastructure/supabase/adapters/supabase-task.repository';
+import { SupabaseAuthAdapter } from '../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
 import { CreateTaskUseCase, UpdateTaskUseCase, DeleteTaskUseCase, CompleteTaskUseCase, ListTasksUseCase } from '../../core/application/use-cases/task/task.use-cases';
 
 @Component({
@@ -26,6 +27,7 @@ export class TasksComponent implements OnInit {
   private deleteTaskUC = inject(DeleteTaskUseCase);
   private completeTaskUC = inject(CompleteTaskUseCase);
   private listTasksUC = inject(ListTasksUseCase);
+  private authAdapter = inject(SupabaseAuthAdapter);
 
   form = this.fb.group({
     title: ['', [Validators.required]],
@@ -109,6 +111,11 @@ export class TasksComponent implements OnInit {
     if (this.form.invalid) return;
     this.isLoading.set(true);
     try {
+      const currentUser = await this.authAdapter.getCurrentUser();
+      if (!currentUser) {
+        console.error('No user logged in');
+        return;
+      }
       const dto = {
         title: this.form.value.title!,
         description: this.form.value.description || undefined,
@@ -118,7 +125,7 @@ export class TasksComponent implements OnInit {
       if (this.editingTask()) {
         await this.updateTaskUC.execute(this.editingTask()!.id, dto);
       } else {
-        await this.createTaskUC.execute(dto, '', false);
+        await this.createTaskUC.execute(dto, currentUser.id, false);
       }
       this.closeModal();
       await this.loadTasks();
@@ -133,7 +140,12 @@ export class TasksComponent implements OnInit {
     if (!this.deletingTask()) return;
     this.isLoading.set(true);
     try {
-      await this.deleteTaskUC.execute(this.deletingTask()!.id, '');
+      const currentUser = await this.authAdapter.getCurrentUser();
+      if (!currentUser) {
+        console.error('No user logged in');
+        return;
+      }
+      await this.deleteTaskUC.execute(this.deletingTask()!.id, currentUser.id);
       this.closeDeleteModal();
       await this.loadTasks();
     } catch (error) {
