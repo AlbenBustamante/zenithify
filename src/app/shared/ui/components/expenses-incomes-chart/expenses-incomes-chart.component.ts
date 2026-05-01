@@ -2,17 +2,17 @@ import {
   Component,
   inject,
   signal,
+  computed,
   effect,
   ChangeDetectionStrategy,
   OnDestroy,
-  input,
 } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
 import { DashboardDateRangeService } from '../../../../features/dashboard/services/dashboard-date-range.service';
 import { SupabaseExpenseRepository } from '../../../../core/infrastructure/supabase/adapters/supabase-expense.repository';
 import { SupabaseIncomeRepository } from '../../../../core/infrastructure/supabase/adapters/supabase-income.repository';
 import { SupabaseAuthAdapter } from '../../../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
-import { Expense, Income, Currency } from '../../../../core/domain/entities';
+import { Expense, Income } from '../../../../core/domain/entities';
 
 Chart.register(...registerables);
 
@@ -26,9 +26,22 @@ interface DailyData {
   selector: 'app-expenses-incomes-chart',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="relative" [style.height.px]="400">
-      <canvas #chartCanvas></canvas>
-    </div>
+    @if (hasData()) {
+      <div class="relative" [style.height.px]="400">
+        <canvas #chartCanvas></canvas>
+      </div>
+    } @else {
+      <div class="h-96 flex items-center justify-center">
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 flex items-center justify-center">
+            <svg class="w-8 h-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+            </svg>
+          </div>
+          <p class="text-sm text-slate-400">Sin datos en este rango de fechas</p>
+        </div>
+      </div>
+    }
   `,
 })
 export class ExpensesIncomesChartComponent implements OnDestroy {
@@ -41,6 +54,10 @@ export class ExpensesIncomesChartComponent implements OnDestroy {
   private loaded = signal(false);
 
   private dailyData = signal<DailyData[]>([]);
+
+  readonly hasData = computed(() =>
+    this.dailyData().some((d) => d.income > 0 || d.expense > 0)
+  );
 
   constructor() {
     effect(() => {
