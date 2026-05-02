@@ -30,6 +30,7 @@ interface DailyData {
       <div class="relative" [style.height.px]="400">
         <canvas #chartCanvas></canvas>
       </div>
+      <div class="hidden">{{ triggerRender() }}</div>
     } @else {
       <div class="h-96 flex items-center justify-center">
         <div class="text-center">
@@ -58,6 +59,11 @@ export class ExpensesIncomesChartComponent implements OnDestroy {
   readonly hasData = computed(() =>
     this.dailyData().some((d) => d.income > 0 || d.expense > 0)
   );
+
+  triggerRender = () => {
+    this.renderChart(this.dailyData());
+    return '';
+  };
 
   constructor() {
     effect(() => {
@@ -100,9 +106,12 @@ export class ExpensesIncomesChartComponent implements OnDestroy {
   ): DailyData[] {
     const map = new Map<string, { income: number; expense: number }>();
 
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const key = this.dateKey(d);
+    const current = new Date(start);
+    const endTime = end.getTime();
+    while (current.getTime() <= endTime) {
+      const key = this.dateKey(current);
       map.set(key, { income: 0, expense: 0 });
+      current.setDate(current.getDate() + 1);
     }
 
     for (const e of expenses) {

@@ -49,6 +49,8 @@ export class SettingsComponent implements OnInit {
   customRate = signal<number | null>(null);
   isLoading = signal(false);
   isDataLoading = signal(true);
+  isRateLoading = signal(false);
+  isRateRefreshing = signal(false);
 
   async ngOnInit(): Promise<void> {
     try {
@@ -84,11 +86,14 @@ export class SettingsComponent implements OnInit {
   }
 
   async refreshOfficialRate(): Promise<void> {
+    this.isRateRefreshing.set(true);
     try {
       const rate = await this.currencyService.fetchOfficialVESRate(environment.dolarApiUrl);
       this.officialRate.set(rate);
     } catch (error) {
       console.error('Error fetching official rate:', error);
+    } finally {
+      this.isRateRefreshing.set(false);
     }
   }
 
@@ -116,14 +121,14 @@ export class SettingsComponent implements OnInit {
     const rate = this.exchangeForm.value.customRate;
     if (!rate) return;
 
-    this.isLoading.set(true);
+    this.isRateLoading.set(true);
     try {
       await this.exchangeRateRepo.upsert('', 'VES', 'USD', rate);
       this.customRate.set(rate);
     } catch (error) {
       console.error('Error saving exchange rate:', error);
     } finally {
-      this.isLoading.set(false);
+      this.isRateLoading.set(false);
     }
   }
 

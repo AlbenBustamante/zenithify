@@ -1,5 +1,5 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-8">
-  <div class="max-w-3xl mx-auto space-y-8">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-10">
+  <div class="max-w-3xl mx-auto space-y-6">
 
     <header>
       <div class="space-y-2">
@@ -13,53 +13,49 @@
 
     @if (isDataLoading()) {
       <app-card title="Perfil">
-        <div class="space-y-5">
+        <div class="space-y-4">
           <app-skeleton width="100%" height="2.5rem" />
           <app-skeleton width="100%" height="2.5rem" />
         </div>
       </app-card>
       <app-card title="Moneda Preferida">
-        <div class="space-y-5">
+        <div class="space-y-4">
           <app-skeleton width="100%" height="2.5rem" />
         </div>
       </app-card>
       <app-card title="Tasa de Cambio USD/VES">
-        <div class="space-y-5">
+        <div class="space-y-4">
           <app-skeleton width="100%" height="4rem" />
           <app-skeleton width="100%" height="2.5rem" />
         </div>
       </app-card>
       <app-card title="Cambiar Contraseña">
-        <div class="space-y-5">
+        <div class="space-y-4">
           <app-skeleton width="100%" height="2.5rem" />
           <app-skeleton width="100%" height="2.5rem" />
         </div>
       </app-card>
       <app-card title="Zona Horaria">
-        <div class="space-y-5">
+        <div class="space-y-4">
           <app-skeleton width="100%" height="2.5rem" />
         </div>
       </app-card>
     } @else {
     <app-card title="Perfil">
-      <form [formGroup]="profileForm" class="space-y-5">
+      <form [formGroup]="profileForm" class="space-y-4">
         <app-input formControlName="displayName" label="Nombre" />
         <app-input formControlName="email" label="Email" type="email" />
-        <div>
-          <app-button variant="secondary" (clicked)="saveProfile()" [loading]="isLoading()">Guardar Cambios</app-button>
-        </div>
+        <app-button variant="secondary" (clicked)="saveProfile()" [loading]="isLoading()">Guardar Cambios</app-button>
       </form>
     </app-card>
 
     <app-card title="Moneda Preferida">
-      <form [formGroup]="currencyForm" class="space-y-5">
+      <form [formGroup]="currencyForm" class="space-y-4">
         <app-select formControlName="defaultCurrency" label="Moneda por defecto">
           <option value="USD">USD - Dólar estadounidense</option>
           <option value="VES">VES - Bolívar venezolano</option>
         </app-select>
-        <div>
-          <app-button variant="secondary" (clicked)="saveCurrency()" [loading]="isLoading()">Guardar Cambios</app-button>
-        </div>
+        <app-button variant="secondary" (clicked)="saveCurrency()" [loading]="isLoading()">Guardar Cambios</app-button>
       </form>
     </app-card>
 
@@ -73,11 +69,15 @@
           </div>
           <div class="flex-1">
             <p class="text-sm text-slate-600">Tasa oficial del día</p>
-            <p class="text-lg font-bold text-slate-900">{{ officialRate() }}</p>
+            @if (isRateRefreshing()) {
+              <app-skeleton width="6rem" height="1.5rem" />
+            } @else {
+              <p class="text-lg font-bold text-slate-900">{{ officialRate() }}</p>
+            }
           </div>
-          <app-button variant="ghost" size="sm" (clicked)="refreshOfficialRate()">Actualizar</app-button>
+          <app-button variant="ghost" size="sm" (clicked)="refreshOfficialRate()" [loading]="isRateRefreshing()">Actualizar</app-button>
         </div>
-        <form [formGroup]="exchangeForm" class="space-y-5">
+        <form [formGroup]="exchangeForm" class="space-y-4">
           <app-input
             formControlName="customRate"
             label="Mi tasa personalizada"
@@ -85,34 +85,28 @@
             placeholder="Ej: 50"
             hint="Esta tasa override la oficial para todos los cálculos"
           />
-          <div>
-            <app-button variant="secondary" (clicked)="saveExchangeRate()" [loading]="isLoading()">Guardar Tasa</app-button>
-          </div>
+          <app-button variant="secondary" (clicked)="saveExchangeRate()" [loading]="isRateLoading()">Guardar Tasa</app-button>
         </form>
       </div>
     </app-card>
 
     <app-card title="Cambiar Contraseña">
-      <form [formGroup]="passwordForm" class="space-y-5">
+      <form [formGroup]="passwordForm" class="space-y-4">
         <app-input formControlName="newPassword" label="Nueva Contraseña" type="password" />
         <app-input formControlName="confirmPassword" label="Confirmar Contraseña" type="password" />
-        <div>
-          <app-button variant="secondary" (clicked)="changePassword()" [loading]="isLoading()">Cambiar Contraseña</app-button>
-        </div>
+        <app-button variant="secondary" (clicked)="changePassword()" [loading]="isLoading()">Cambiar Contraseña</app-button>
       </form>
     </app-card>
 
     <app-card title="Zona Horaria">
-      <form [formGroup]="timezoneForm" class="space-y-5">
+      <form [formGroup]="timezoneForm" class="space-y-4">
         <app-select formControlName="timezone" label="Zona horaria">
           <option value="America/Caracas">América/Caracas (VET)</option>
           <option value="America/New_York">América/Nueva York (EST)</option>
           <option value="Europe/Madrid">Europa/Madrid (CET)</option>
           <option value="UTC">UTC</option>
         </app-select>
-        <div>
-          <app-button variant="secondary" (clicked)="saveTimezone()" [loading]="isLoading()">Guardar Cambios</app-button>
-        </div>
+        <app-button variant="secondary" (clicked)="saveTimezone()" [loading]="isLoading()">Guardar Cambios</app-button>
       </form>
     </app-card>
     }
