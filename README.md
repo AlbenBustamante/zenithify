@@ -1,59 +1,170 @@
 # Zenithify
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.1.
+> Tu centro de control financiero personal
 
-## Development server
+![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=black)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 
-To start a local development server, run:
+---
+
+Zenithify es una plataforma SaaS personal para gestionar tus finanzas y productividad en un solo lugar. Controla tus gastos e ingresos, establece presupuestos, rastrea suscripciones, organiza tareas y guarda tus enlaces favoritos.
+
+[ Demo](#demo) · [ Inicio Rápido](#inicio-rápido) · [ Funcionalidades](#funcionalidades) · [ Tecnologías](#tecnologías) · [ Arquitectura](#arquitectura)
+
+---
+
+## Demo
+
+![Dashboard](docs/screenshots/dashboard.png)
+![Planes y Suscripciones](docs/screenshots/plans.png)
+![Tareas](docs/screenshots/tasks.png)
+![Marcadores](docs/screenshots/bookmarks.png)
+![Categorías](docs/screenshots/categories.png)
+
+---
+
+## Inicio Rápido
+
+### Requisitos Previos
+
+- **Node.js** 18+ y npm 10+
+- Una cuenta de [Supabase](https://supabase.com) con un proyecto creado
+- PostgreSQL 15+ (provisto por Supabase)
+
+### Configuración del Entorno
+
+1. Clona el repositorio:
+
+```bash
+git clone https://github.com/your-username/zenithify.git
+cd zenithify
+```
+
+2. Instala las dependencias:
+
+```bash
+npm install
+```
+
+3. Configura las variables de entorno en `src/environments/environment.prod.ts`:
+
+```typescript
+export const environment = {
+  production: true,
+  supabaseUrl: 'YOUR_SUPABASE_URL',
+  supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY',
+  dolarApiUrl: 'https://ve.dolarapi.com/v1/dolares',
+};
+```
+
+4. Ejecuta el schema de base de datos en tu proyecto de Supabase:
+
+```bash
+npx supabase db push
+```
+
+O copia manualmente el contenido de `supabase/schema.sql` en el SQL Editor de Supabase.
+
+5. Inicia el servidor de desarrollo:
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+La aplicación estará disponible en `http://localhost:4200`
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+### Compilar para Producción
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Los archivos compilados estarán en `dist/zenithify/browser/`
 
-## Running unit tests
+---
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Funcionalidades
 
-```bash
-ng test
+### Gestión Financiera
+
+| Funcionalidad         | Descripción                                                            |
+| --------------------- | ---------------------------------------------------------------------- |
+| **Gastos e Ingresos** | Registra transacciones en USD y VES con tasas de cambio personalizadas |
+| **Presupuestos**      | Establece límites semanales, mensuales o anuales por categoría         |
+| **Suscripciones**     | Controla fechas de renovación y costos recurrentes                     |
+| **Tasas de Cambio**   | Obtención automática del tipo de cambio oficial VES/USD                |
+
+### Productividad
+
+| Funcionalidad  | Descripción                                                    |
+| -------------- | -------------------------------------------------------------- |
+| **Tareas**     | Tablero Kanban con prioridades y fechas de vencimiento         |
+| **Marcadores** | Guarda URLs con favicons automáticos y etiquetas               |
+| **Categorías** | Sistema de categorías predefinidas + categorías personalizadas |
+
+### Multi-Moneda
+
+- Registro de transacciones en **USD** y **VES**
+- Tasas de cambio configurables por usuario
+- Resumen financiero en ambas monedas
+
+---
+
+## Tecnologías
+
+| Categoría       | Tecnología                                    |
+| --------------- | --------------------------------------------- |
+| **Framework**   | Angular 21 (standalone components, signals)   |
+| **Lenguaje**    | TypeScript (strict mode)                      |
+| **Estilos**     | TailwindCSS 4                                 |
+| **Backend**     | Supabase (PostgreSQL + Auth + Edge Functions) |
+| **Gráficos**    | Chart.js 4.5.1                                |
+| **Testing**     | Vitest                                        |
+| **API Externa** | DolarAPI (tasas de cambio VES)                |
+
+### Autenticación
+
+- Email/Contraseña
+- Google OAuth
+
+---
+
+## Arquitectura
+
+Zenithify sigue una **Arquitectura Hexagonal** (Ports & Adapters):
+
+```
+src/app/
+├── core/
+│   ├── domain/           # Entidades de negocio, value objects, servicios
+│   ├── application/       # Casos de uso, puertos (interfaces), DTOs
+│   └── infrastructure/    # Adaptadores (implementaciones Supabase)
+├── shared/               # Componentes UI, utils, guards, interceptors
+└── features/             # Módulos lazy-loaded
+    ├── dashboard/
+    ├── expenses/
+    ├── incomes/
+    ├── budgets/
+    ├── plans/
+    ├── tasks/
+    ├── bookmarks/
+    ├── categories/
+    ├── settings/
+    └── auth/
 ```
 
-## Running end-to-end tests
+### Seguridad
 
-For end-to-end (e2e) testing, run:
+- **Row Level Security (RLS)** en todas las tablas de PostgreSQL
+- Multi-tenancy implementada a nivel de base de datos
+- Auth guards para rutas protegidas
+- Interceptors para validación de sesiones
 
-```bash
-ng e2e
-```
+---
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Licencia
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+MIT License - ver [LICENSE](LICENSE) para más detalles.
