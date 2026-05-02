@@ -28,6 +28,9 @@ import { PlanDeleteModalComponent } from './components/plan-delete-modal/plan-de
     PlanDeleteModalComponent,
   ],
   templateUrl: './plans.component.html',
+  host: {
+    class: 'overflow-visible'
+  }
 })
 export class PlansComponent implements OnInit {
   private planRepo = inject(SupabasePlanRepository);

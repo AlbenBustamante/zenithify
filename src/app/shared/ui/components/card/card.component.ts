@@ -5,7 +5,7 @@ import { Component, input, ChangeDetectionStrategy, computed } from '@angular/co
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './card.component.html',
   host: {
-    class: 'block overflow-hidden rounded-2xl'
+    class: 'block rounded-2xl'
   }
 })
 export class CardComponent {

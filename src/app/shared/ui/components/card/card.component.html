@@ -1,5 +1,5 @@
 <article
-  class="relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 hover:shadow-md transition-shadow duration-300 h-full"
+  class="relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 hover:shadow-md transition-shadow duration-300 h-full overflow-visible"
   [class.px-6]="!noPadding()"
   [class.py-5]="!noPadding()"
 >
@@ -11,7 +11,7 @@
       }
     </header>
   }
-  <div class="h-full relative z-10" [class.px-6]="!noPadding()" [class.py-5]="!noPadding()">
+  <div class="h-full relative z-10 overflow-visible" [class.px-6]="!noPadding()" [class.py-5]="!noPadding()">
     <ng-content />
   </div>
 </article>

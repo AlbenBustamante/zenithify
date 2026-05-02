@@ -1,0 +1,29 @@
+<article
+  class="group relative rounded-2xl bg-white/60 p-4 sm:p-5 shadow-sm border border-slate-100/80 hover:shadow-md hover:border-slate-200/80 transition-all duration-300"
+>
+  <div
+    class="absolute inset-0 bg-gradient-to-br from-primary-50/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+  ></div>
+
+  <app-plan-item-menu
+    [planName]="plan().name"
+    (editClicked)="handleEdit()"
+    (deleteClicked)="handleDelete()"
+  />
+
+  <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+    <app-plan-item-header
+      [name]="plan().name"
+      [provider]="plan().provider"
+      [isActive]="plan().isActive"
+    />
+
+    <app-plan-item-pricing
+      [amount]="plan().amount"
+      [currency]="plan().currency"
+      [billingCycle]="plan().billingCycle"
+    />
+
+    <app-plan-item-billing [nextBillingDate]="plan().nextBillingDate" />
+  </div>
+</article>

@@ -22,38 +22,13 @@
       <app-button variant="secondary" (clicked)="createClicked.emit()">Agregar tu primera suscripción</app-button>
     </div>
   } @else {
-    <div class="divide-y divide-slate-100">
+    <div class="divide-y divide-slate-100 overflow-visible">
       @for (plan of plans(); track plan.id) {
-        <div class="p-4 sm:p-5 group hover:bg-slate-50/80 transition-colors duration-200">
-          <div class="flex items-start gap-4">
-            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center text-base sm:text-lg font-bold text-primary-700 group-hover:scale-105 transition-transform shrink-0">
-              {{ plan.name.charAt(0).toUpperCase() }}
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-1.5">
-                <p class="font-semibold text-slate-800 text-sm sm:text-base truncate">{{ plan.name }}</p>
-                <app-badge [variant]="plan.isActive ? 'success' : 'danger'" class="shrink-0">
-                  {{ plan.isActive ? 'Activo' : 'Inactivo' }}
-                </app-badge>
-              </div>
-              <p class="text-xs text-slate-400 mb-2 sm:mb-3">{{ plan.provider }}</p>
-              <div class="flex flex-wrap items-center justify-between gap-2 sm:gap-4">
-                <div>
-                  <p class="font-semibold text-slate-800 text-sm sm:text-base">
-                    {{ formatMoney(plan.amount, plan.currency) }}/{{ plan.billingCycle === 'monthly' ? 'mes' : 'año' }}
-                  </p>
-                  <p class="text-xs" [class]="getDaysUntil(plan) <= 7 ? 'text-red-500' : 'text-slate-400'">
-                    Próxima: {{ formatDate(plan.nextBillingDate) }} ({{ getDaysUntil(plan) }} días)
-                  </p>
-                </div>
-                <div class="flex gap-1 shrink-0">
-                  <app-button variant="ghost" size="sm" (clicked)="editClicked.emit(plan)">Editar</app-button>
-                  <app-button variant="ghost" size="sm" (clicked)="deleteClicked.emit(plan)">Eliminar</app-button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <app-plan-item
+          [plan]="plan"
+          (editClicked)="editClicked.emit($event)"
+          (deleteClicked)="deleteClicked.emit($event)"
+        />
       }
     </div>
   }
