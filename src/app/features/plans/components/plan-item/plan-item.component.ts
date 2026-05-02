@@ -3,6 +3,7 @@ import { PlanItemHeaderComponent } from './subcomponents/plan-item-header/plan-i
 import { PlanItemPricingComponent } from './subcomponents/plan-item-pricing/plan-item-pricing.component';
 import { PlanItemBillingComponent } from './subcomponents/plan-item-billing/plan-item-billing.component';
 import { PlanItemMenuComponent } from './subcomponents/plan-item-menu/plan-item-menu.component';
+import { BadgeComponent } from '../../../../shared/ui/components/badge/badge.component';
 import { Plan } from '../../../../core/domain/entities';
 
 @Component({
@@ -13,6 +14,7 @@ import { Plan } from '../../../../core/domain/entities';
     PlanItemPricingComponent,
     PlanItemBillingComponent,
     PlanItemMenuComponent,
+    BadgeComponent,
   ],
   templateUrl: './plan-item.component.html',
 })

@@ -8,11 +8,6 @@
     <h3 class="font-semibold text-slate-800 text-sm sm:text-base truncate">
       {{ name() }}
     </h3>
-    <div class="flex items-center gap-2">
-      <app-badge [variant]="isActive() ? 'success' : 'danger'" size="sm">
-        {{ isActive() ? 'Activo' : 'Inactivo' }}
-      </app-badge>
-    </div>
-    <p class="text-xs text-slate-500 mt-1 font-medium">{{ provider() }}</p>
+    <p class="text-xs text-slate-500 font-medium">{{ provider() }}</p>
   </div>
 </div>
