@@ -8,8 +8,8 @@ const envConfigFile = `
 export const environment = {
   production: true,
   supabase: {
-    url: '${process.env.SUPABASE_URL}',
-    anonKey: '${process.env.SUPABASE_ANON_KEY}',
+    url: '${process.env['SUPABASE_URL']}',
+    anonKey: '${process.env['SUPABASE_ANON_KEY']}',
   },
   dolarApiUrl: 'https://ve.dolarapi.com/v1/dolares'
 };
