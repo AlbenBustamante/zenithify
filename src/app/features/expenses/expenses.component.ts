@@ -9,7 +9,7 @@ import { SelectComponent } from '../../shared/ui/components/select/select.compon
 import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
 import { SkeletonComponent } from '../../shared/ui/components/skeleton/skeleton.component';
 import { Expense, Category, PaymentMethod } from '../../core/domain/entities';
-import { formatCurrency, formatShortDate } from '../../shared/utils';
+import { formatCurrency, formatShortDate, toISOStringDate, parseDate } from '../../shared/utils';
 import { SupabaseExpenseRepository } from '../../core/infrastructure/supabase/adapters/supabase-expense.repository';
 import { SupabaseCategoryRepository } from '../../core/infrastructure/supabase/adapters/supabase-category.repository';
 import { SupabaseAuthAdapter } from '../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
@@ -92,8 +92,8 @@ export class ExpensesComponent implements OnInit {
   async loadExpenses(): Promise<void> {
     try {
       const filters: { startDate?: Date; endDate?: Date; categoryId?: string } = {
-        startDate: new Date(this.startDate()),
-        endDate: new Date(this.endDate()),
+        startDate: parseDate(this.startDate()),
+        endDate: parseDate(this.endDate()),
       };
       if (this.selectedCategory()) {
         filters.categoryId = this.selectedCategory();
@@ -145,7 +145,7 @@ export class ExpensesComponent implements OnInit {
       amountUsd: null,
       amountVes: null,
       exchangeRate: rate,
-      expenseDate: new Date().toISOString().split('T')[0],
+      expenseDate: toISOStringDate(new Date()),
       paymentMethod: 'cash',
       categoryId: '',
       description: '',
@@ -163,7 +163,7 @@ export class ExpensesComponent implements OnInit {
       amountVes: expense.amountVes ?? null,
       exchangeRate: rate,
       categoryId: expense.categoryId ?? '',
-      expenseDate: new Date(expense.expenseDate).toISOString().split('T')[0],
+      expenseDate: toISOStringDate(expense.expenseDate),
       paymentMethod: expense.paymentMethod,
     });
     const hasUsd = expense.amountUsd != null;
@@ -262,7 +262,7 @@ export class ExpensesComponent implements OnInit {
         amountVes: this.form.value.amountVes ?? undefined,
         exchangeRate: this.form.value.exchangeRate!,
         categoryId: this.form.value.categoryId || undefined,
-        expenseDate: new Date(this.form.value.expenseDate!),
+        expenseDate: parseDate(this.form.value.expenseDate!),
         paymentMethod: this.form.value.paymentMethod!,
       };
 
@@ -346,10 +346,10 @@ export class ExpensesComponent implements OnInit {
   private getDefaultStartDate(): string {
     const date = new Date();
     date.setDate(1);
-    return date.toISOString().split('T')[0];
+    return toISOStringDate(date);
   }
 
   private getDefaultEndDate(): string {
-    return new Date().toISOString().split('T')[0];
+    return toISOStringDate(new Date());
   }
 }

@@ -1,0 +1,36 @@
+<app-modal [isOpen]="isOpen()" [title]="'Eliminar Tarea'" size="md" (close)="onClose()">
+  @if (task(); as t) {
+    <div class="space-y-4">
+      <p class="text-slate-600">
+        ¿Estás seguro de que deseas eliminar
+        <span class="font-semibold text-slate-800">"{{ t.title }}"</span>?
+      </p>
+
+      @if (hasChildren()) {
+        <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          Esta tarea tiene <span class="font-semibold">{{ childLabel() }}</span>. Elige qué hacer con ellas:
+        </div>
+      } @else {
+        <p class="text-xs text-slate-400">Esta acción no se puede deshacer.</p>
+      }
+
+      <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 pt-2">
+        <app-button variant="ghost" type="button" (clicked)="onCancel()" [disabled]="isLoading()">
+          Cancelar
+        </app-button>
+        @if (hasChildren()) {
+          <app-button variant="secondary" type="button" (clicked)="onOrphan()" [loading]="isLoading()">
+            Dejar como generales
+          </app-button>
+          <app-button variant="danger" type="button" (clicked)="onCascade()" [loading]="isLoading()">
+            Eliminar también las hijas
+          </app-button>
+        } @else {
+          <app-button variant="danger" type="button" (clicked)="onCascade()" [loading]="isLoading()">
+            Eliminar
+          </app-button>
+        }
+      </div>
+    </div>
+  }
+</app-modal>

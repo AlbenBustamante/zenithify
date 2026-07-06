@@ -103,7 +103,7 @@ export class PlansComponent implements OnInit {
     this.deletingPlan.set(null);
   }
 
-  async onSave(dto: { name: string; provider: string; amount: number; currency: Currency; billingCycle: BillingCycle; nextBillingDate: Date; url?: string }): Promise<void> {
+  async onSave(dto: { name: string; provider: string; amount: number; currency: Currency; billingCycle: BillingCycle; nextBillingDate: Date; url?: string; isActive: boolean }): Promise<void> {
     this.isLoading.set(true);
     try {
       if (this.editingPlan()) {

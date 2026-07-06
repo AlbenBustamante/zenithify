@@ -1,0 +1,177 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-6 md:py-8">
+  <div class="max-w-7xl mx-auto space-y-6 md:space-y-8">
+
+    <header class="space-y-4">
+      <div>
+        <button
+          (click)="goBack()"
+          class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 transition-colors"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          Tareas
+        </button>
+      </div>
+
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 md:gap-6">
+        <div class="space-y-2 min-w-0">
+          <div class="flex items-center gap-3">
+            <span class="w-1 h-6 md:h-8 bg-violet-500 rounded-full shrink-0"></span>
+            <h1 class="text-2xl md:text-4xl font-bold text-slate-900 tracking-tight truncate">
+              {{ parent()?.title ?? 'Cargando...' }}
+            </h1>
+          </div>
+          @if (parent(); as p) {
+            <div class="flex flex-wrap items-center gap-2">
+              <app-badge [variant]="parentStatusVariant()">{{ parentStatusLabel() }}</app-badge>
+              @if (p.dueDate) {
+                <span class="text-xs text-slate-500">
+                  Vence: {{ formatDate(p.dueDate) }}
+                </span>
+              }
+              <span class="text-xs text-slate-400">
+                {{ childrenCounts().pending }} pendientes ·
+                {{ childrenCounts().in_progress }} en progreso ·
+                {{ childrenCounts().completed }} completadas
+              </span>
+            </div>
+          }
+        </div>
+        <app-button (clicked)="openCreateModal()" [disabled]="!parent()">
+          <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Nueva Subtarea
+        </app-button>
+      </div>
+    </header>
+
+    @if (isDataLoading()) {
+      <div class="flex overflow-x-auto gap-4 p-4">
+        @for (col of [1,2,3]; track col) {
+          <div class="min-w-[300px] flex-1 rounded-2xl bg-slate-100/70 border border-slate-200/70 p-4 space-y-3">
+            <app-skeleton width="40%" height="1.25rem" />
+            <div class="space-y-2 pt-2">
+              @for (i of [1,2,3]; track i) {
+                <div class="bg-white rounded-2xl p-4 shadow-sm space-y-2">
+                  <app-skeleton width="70%" height="1rem" />
+                  <app-skeleton width="40%" height="0.75rem" />
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div
+        cdkDropListGroup
+        class="flex overflow-x-auto gap-4 p-4 rounded-2xl bg-white/40 border border-slate-200/60"
+        aria-label="Tablero de subtareas"
+      >
+        @for (column of columns; track column.id) {
+          @let list = column.id === 'pending' ? todoList : column.id === 'in_progress' ? inProgressList : doneList;
+          <section
+            class="min-w-[300px] flex-1 flex flex-col rounded-2xl bg-slate-100/70 border border-slate-200/70"
+            [attr.aria-label]="column.title + ', ' + list.length + ' tareas'"
+          >
+            <header class="flex items-center justify-between gap-3 px-4 pt-4 pb-3">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="w-2 h-2 rounded-full shrink-0" [class]="column.accent"></span>
+                <h2 class="text-sm font-semibold text-slate-700 truncate">{{ column.title }}</h2>
+              </div>
+              <span class="text-xs font-medium text-slate-500 bg-white border border-slate-200 rounded-full px-2 py-0.5">
+                {{ list.length }}
+              </span>
+            </header>
+
+            <div
+              cdkDropList
+              [cdkDropListData]="list"
+              [id]="'col-' + column.id"
+              (cdkDropListDropped)="drop($event, column.id)"
+              class="flex-1 px-3 pb-3 pt-1 space-y-3 min-h-[120px] tasks-column"
+            >
+              @if (list.length === 0) {
+                <div class="rounded-2xl border border-dashed border-slate-200 bg-white/60 p-6 text-center text-xs text-slate-400">
+                  {{ column.emptyLabel }}
+                </div>
+              } @else {
+                @for (task of list; track task.id) {
+                  <article
+                    cdkDrag
+                    class="bg-white rounded-2xl border border-slate-200/70 shadow-sm hover:shadow-md transition-shadow duration-200"
+                  >
+                    <div cdkDragHandle class="cursor-grab active:cursor-grabbing p-4 space-y-2">
+                      <p class="font-medium leading-snug"
+                         [class]="task.status === 'completed' ? 'line-through text-slate-400' : 'text-slate-800'">
+                        {{ task.title }}
+                      </p>
+
+                      @if (task.description) {
+                        <p class="text-xs text-slate-500 line-clamp-2"
+                           [class]="task.status === 'completed' ? 'line-through' : ''">
+                          {{ task.description }}
+                        </p>
+                      }
+
+                      @if (task.dueDate) {
+                        <p class="text-xs"
+                           [class]="isOverdue(task.dueDate) && task.status !== 'completed' ? 'text-red-500' : 'text-slate-400'">
+                          {{ formatDate(task.dueDate) }}
+                          @if (!isOverdue(task.dueDate)) {
+                            <span>({{ daysFromNow(task.dueDate) }} días)</span>
+                          }
+                        </p>
+                      }
+                    </div>
+
+                    <div class="flex items-center justify-between gap-2 px-4 pb-4 pt-1">
+                      <div class="flex items-center gap-1.5 flex-wrap">
+                        @if (childCountFor(task.id) > 0) {
+                          <button
+                            type="button"
+                            (click)="goToDrillDown(task); $event.stopPropagation()"
+                            class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100 transition-colors"
+                            [attr.aria-label]="'Ver ' + childCountFor(task.id) + ' subtareas'"
+                          >
+                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h6l2 2h10v10H3V7z" />
+                            </svg>
+                            {{ childCountFor(task.id) }}
+                          </button>
+                        }
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <app-button variant="ghost" size="sm" (clicked)="openEditModal(task)">Editar</app-button>
+                        <app-button variant="ghost" size="sm" (clicked)="openDeleteModal(task)">Eliminar</app-button>
+                      </div>
+                    </div>
+                  </article>
+                }
+              }
+            </div>
+          </section>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<app-task-form-modal
+  [isOpen]="isFormOpen()"
+  [editingTask]="editingTask()"
+  [parentContextTitle]="parent()?.title ?? null"
+  [isLoading]="isMutating()"
+  (submitForm)="onFormSubmit($event)"
+  (closed)="closeForm()"
+/>
+
+<app-task-delete-modal
+  [isOpen]="isDeleteOpen()"
+  [task]="deletingTask()"
+  [childCount]="deletingChildCount()"
+  [isLoading]="isMutating()"
+  (confirm)="onDeleteConfirm($event)"
+  (closed)="closeDeleteModal()"
+/>

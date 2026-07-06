@@ -4,12 +4,14 @@ import { ModalComponent } from '../../../../shared/ui/components/modal/modal.com
 import { ButtonComponent } from '../../../../shared/ui/components/button/button.component';
 import { InputComponent } from '../../../../shared/ui/components/input/input.component';
 import { SelectComponent } from '../../../../shared/ui/components/select/select.component';
+import { ToggleComponent } from '../../../../shared/ui/components/toggle/toggle.component';
 import { Plan, Currency, BillingCycle } from '../../../../core/domain/entities';
+import { toISOStringDate, parseDate } from '../../../../shared/utils/date.util';
 
 @Component({
   selector: 'app-plan-form-modal',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, ModalComponent, ButtonComponent, InputComponent, SelectComponent],
+  imports: [ReactiveFormsModule, ModalComponent, ButtonComponent, InputComponent, SelectComponent, ToggleComponent],
   templateUrl: './plan-form-modal.component.html',
 })
 export class PlanFormModalComponent {
@@ -19,7 +21,7 @@ export class PlanFormModalComponent {
   editingPlan = input<Plan | null>(null);
   loading = input(false);
   close = output<void>();
-  save = output<{ name: string; provider: string; amount: number; currency: Currency; billingCycle: BillingCycle; nextBillingDate: Date; url?: string }>();
+  save = output<{ name: string; provider: string; amount: number; currency: Currency; billingCycle: BillingCycle; nextBillingDate: Date; url?: string; isActive: boolean }>();
 
   form = this.fb.group({
     name: ['', [Validators.required]],
@@ -29,6 +31,7 @@ export class PlanFormModalComponent {
     billingCycle: ['monthly' as BillingCycle],
     nextBillingDate: ['', [Validators.required]],
     url: [''],
+    isActive: [true],
   });
 
   constructor() {
@@ -41,11 +44,12 @@ export class PlanFormModalComponent {
           amount: plan.amount,
           currency: plan.currency,
           billingCycle: plan.billingCycle,
-          nextBillingDate: new Date(plan.nextBillingDate).toISOString().split('T')[0],
+          nextBillingDate: toISOStringDate(plan.nextBillingDate),
           url: plan.url ?? '',
+          isActive: plan.isActive,
         });
       } else {
-        this.form.reset({ currency: 'USD', billingCycle: 'monthly', nextBillingDate: new Date().toISOString().split('T')[0] });
+        this.form.reset({ currency: 'USD', billingCycle: 'monthly', nextBillingDate: toISOStringDate(new Date()), isActive: true });
       }
     });
   }
@@ -72,8 +76,9 @@ export class PlanFormModalComponent {
       amount: this.form.value.amount!,
       currency: this.form.value.currency as Currency,
       billingCycle: this.form.value.billingCycle as BillingCycle,
-      nextBillingDate: new Date(this.form.value.nextBillingDate!),
+      nextBillingDate: parseDate(this.form.value.nextBillingDate!),
       url: this.form.value.url || undefined,
+      isActive: this.form.value.isActive ?? true,
     });
   }
 }

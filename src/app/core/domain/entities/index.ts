@@ -106,9 +106,25 @@ export interface Task {
   status: TaskStatus;
   categoryId?: string;
   category?: Category;
+  parentTaskId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface TaskStatusCounts {
+  pending: number;
+  in_progress: number;
+  completed: number;
+}
+
+export interface TaskWithChildren {
+  task: Task;
+  children: Task[];
+  derivedStatus: TaskStatus;
+  childrenCount: TaskStatusCounts;
+}
+
+export type TaskDeleteMode = 'cascade' | 'orphan' | 'cancel';
 
 export interface Bookmark {
   id: string;

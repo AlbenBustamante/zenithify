@@ -17,6 +17,9 @@ import { Plan } from '../../../../core/domain/entities';
     BadgeComponent,
   ],
   templateUrl: './plan-item.component.html',
+  host: {
+    class: 'block',
+  },
 })
 export class PlanItemComponent {
   plan = input.required<Plan>();

@@ -210,6 +210,7 @@ CREATE TABLE IF NOT EXISTS public.tasks (
   priority task_priority DEFAULT 'medium',
   status task_status DEFAULT 'pending',
   category_id UUID REFERENCES categories(id),
+  parent_task_id UUID REFERENCES public.tasks(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -587,6 +588,9 @@ CREATE INDEX idx_tasks_user_status ON tasks(user_id, status);
 
 DROP INDEX IF EXISTS idx_tasks_user_due;
 CREATE INDEX idx_tasks_user_due ON tasks(user_id, due_date);
+
+DROP INDEX IF EXISTS idx_tasks_parent;
+CREATE INDEX idx_tasks_parent ON tasks(parent_task_id);
 
 DROP INDEX IF EXISTS idx_plans_user_next_billing;
 CREATE INDEX idx_plans_user_next_billing ON plans(user_id, next_billing_date);

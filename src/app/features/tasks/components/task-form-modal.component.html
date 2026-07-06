@@ -1,0 +1,39 @@
+<app-modal
+  [isOpen]="isOpen()"
+  [title]="modalTitle()"
+  size="md"
+  (close)="onClose()"
+>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+    <app-input
+      formControlName="title"
+      label="Título"
+      placeholder="¿Qué necesitas hacer?"
+      [error]="form.controls['title'].invalid && form.controls['title'].touched ? 'Título requerido' : ''"
+    />
+
+    <app-input formControlName="description" label="Descripción" placeholder="Detalles adicionales..." />
+
+    @if (parentContextTitle(); as parentTitle) {
+      <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+        <span class="font-medium text-slate-500">Vinculada a:</span> {{ parentTitle }}
+      </div>
+    }
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <app-select formControlName="priority" label="Prioridad">
+        <option value="low">Baja</option>
+        <option value="medium">Media</option>
+        <option value="high">Alta</option>
+      </app-select>
+      <app-input formControlName="dueDate" label="Fecha de vencimiento" type="date" />
+    </div>
+
+    <div class="flex justify-end gap-3 mt-6">
+      <app-button variant="secondary" type="button" (clicked)="onClose()">Cancelar</app-button>
+      <app-button type="submit" [loading]="isLoading()" [disabled]="form.invalid">
+        {{ editingTask() ? 'Actualizar' : 'Guardar' }}
+      </app-button>
+    </div>
+  </form>
+</app-modal>

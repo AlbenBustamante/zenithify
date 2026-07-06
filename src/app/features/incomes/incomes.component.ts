@@ -9,7 +9,7 @@ import { SelectComponent } from '../../shared/ui/components/select/select.compon
 import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
 import { SkeletonComponent } from '../../shared/ui/components/skeleton/skeleton.component';
 import { Income, Category, IncomeMethod } from '../../core/domain/entities';
-import { formatCurrency, formatShortDate } from '../../shared/utils';
+import { formatCurrency, formatShortDate, toISOStringDate, parseDate } from '../../shared/utils';
 import { SupabaseIncomeRepository } from '../../core/infrastructure/supabase/adapters/supabase-income.repository';
 import { SupabaseCategoryRepository } from '../../core/infrastructure/supabase/adapters/supabase-category.repository';
 import { SupabaseAuthAdapter } from '../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
@@ -93,10 +93,10 @@ export class IncomesComponent implements OnInit {
   }
 
   async loadIncomes(): Promise<void> {
-    const filters: { startDate?: Date; endDate?: Date; categoryId?: string } = {
-      startDate: new Date(this.startDate()),
-      endDate: new Date(this.endDate()),
-    };
+      const filters: { startDate?: Date; endDate?: Date; categoryId?: string } = {
+        startDate: parseDate(this.startDate()),
+        endDate: parseDate(this.endDate()),
+      };
     if (this.selectedCategory()) filters.categoryId = this.selectedCategory();
     const incomes = await this.incomeRepo.findAll(filters);
     this.incomes.set(incomes);
@@ -136,7 +136,7 @@ export class IncomesComponent implements OnInit {
       amountUsd: null,
       amountVes: null,
       exchangeRate: rate,
-      incomeDate: new Date().toISOString().split('T')[0],
+      incomeDate: toISOStringDate(new Date()),
       incomeMethod: 'salario',
       categoryId: '',
       description: '',
@@ -154,7 +154,7 @@ export class IncomesComponent implements OnInit {
       amountVes: income.amountVes ?? null,
       exchangeRate: rate,
       categoryId: income.categoryId ?? '',
-      incomeDate: new Date(income.incomeDate).toISOString().split('T')[0],
+        incomeDate: toISOStringDate(income.incomeDate),
       incomeMethod: income.incomeMethod,
     });
     const hasUsd = income.amountUsd != null;
@@ -252,7 +252,7 @@ export class IncomesComponent implements OnInit {
         amountVes: this.form.value.amountVes ?? undefined,
         exchangeRate: this.form.value.exchangeRate!,
         categoryId: this.form.value.categoryId || undefined,
-        incomeDate: new Date(this.form.value.incomeDate!),
+        incomeDate: parseDate(this.form.value.incomeDate!),
         incomeMethod: this.form.value.incomeMethod!,
       };
       if (this.editingIncome()) {
@@ -320,10 +320,10 @@ export class IncomesComponent implements OnInit {
   private getDefaultStartDate(): string {
     const date = new Date();
     date.setDate(1);
-    return date.toISOString().split('T')[0];
+    return toISOStringDate(date);
   }
 
   private getDefaultEndDate(): string {
-    return new Date().toISOString().split('T')[0];
+    return toISOStringDate(new Date());
   }
 }

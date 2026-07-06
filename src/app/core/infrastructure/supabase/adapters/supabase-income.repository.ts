@@ -4,6 +4,7 @@ import { Income } from '../../../domain/entities';
 import { SupabaseClientService } from '../supabase-client.service';
 import { EntityMapper, IncomeRow } from '../mappers/entity-mapper';
 import { CreateIncomeDto, UpdateIncomeDto, IncomeFilters } from '../../../application/ports/inbound/income-port';
+import { toISOStringDate } from '../../../../shared/utils/date.util';
 
 @Injectable({ providedIn: 'root' })
 export class SupabaseIncomeRepository implements IncomeRepositoryPort {
@@ -21,7 +22,7 @@ export class SupabaseIncomeRepository implements IncomeRepositoryPort {
         exchange_rate: dto.exchangeRate,
         description: dto.description,
         category_id: dto.categoryId ?? null,
-        income_date: dto.incomeDate.toISOString().split('T')[0],
+        income_date: toISOStringDate(dto.incomeDate),
         income_method: dto.incomeMethod,
       })
       .select()
@@ -38,7 +39,7 @@ export class SupabaseIncomeRepository implements IncomeRepositoryPort {
     if (dto.exchangeRate !== undefined) updates['exchange_rate'] = dto.exchangeRate;
     if (dto.description !== undefined) updates['description'] = dto.description;
     if (dto.categoryId !== undefined) updates['category_id'] = dto.categoryId;
-    if (dto.incomeDate !== undefined) updates['income_date'] = dto.incomeDate.toISOString().split('T')[0];
+    if (dto.incomeDate !== undefined) updates['income_date'] = toISOStringDate(dto.incomeDate);
     if (dto.incomeMethod !== undefined) updates['income_method'] = dto.incomeMethod;
 
     const { data, error } = await this.supabase
@@ -72,10 +73,10 @@ export class SupabaseIncomeRepository implements IncomeRepositoryPort {
     let query = this.supabase.from(this.table).select('*');
 
     if (filters?.startDate) {
-      query = query.gte('income_date', filters.startDate.toISOString().split('T')[0]);
+      query = query.gte('income_date', toISOStringDate(filters.startDate));
     }
     if (filters?.endDate) {
-      query = query.lte('income_date', filters.endDate.toISOString().split('T')[0]);
+      query = query.lte('income_date', toISOStringDate(filters.endDate));
     }
     if (filters?.categoryId) {
       query = query.eq('category_id', filters.categoryId);
@@ -92,8 +93,8 @@ export class SupabaseIncomeRepository implements IncomeRepositoryPort {
       .from(this.table)
       .select('*')
       .eq('user_id', userId)
-      .gte('income_date', startDate.toISOString().split('T')[0])
-      .lte('income_date', endDate.toISOString().split('T')[0])
+      .gte('income_date', toISOStringDate(startDate))
+      .lte('income_date', toISOStringDate(endDate))
       .order('income_date', { ascending: false });
 
     if (error) throw error;
@@ -108,8 +109,8 @@ export class SupabaseIncomeRepository implements IncomeRepositoryPort {
       .from(this.table)
       .select('*')
       .eq('user_id', userId)
-      .gte('income_date', startDate.toISOString().split('T')[0])
-      .lte('income_date', endDate.toISOString().split('T')[0])
+      .gte('income_date', toISOStringDate(startDate))
+      .lte('income_date', toISOStringDate(endDate))
       .order('income_date', { ascending: false });
 
     if (error) throw error;

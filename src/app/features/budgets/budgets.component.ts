@@ -9,7 +9,7 @@ import { SelectComponent } from '../../shared/ui/components/select/select.compon
 import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
 import { SkeletonComponent } from '../../shared/ui/components/skeleton/skeleton.component';
 import { Currency, Budget, BudgetPeriod } from '../../core/domain/entities';
-import { formatCurrency } from '../../shared/utils';
+import { formatCurrency, toISOStringDate, parseDate } from '../../shared/utils';
 import { Money } from '../../core/domain/value-objects';
 import { SupabaseBudgetRepository } from '../../core/infrastructure/supabase/adapters/supabase-budget.repository';
 import { SupabaseExpenseRepository } from '../../core/infrastructure/supabase/adapters/supabase-expense.repository';
@@ -101,7 +101,7 @@ export class BudgetsComponent implements OnInit {
     this.form.reset({
       currency: 'USD',
       period: 'monthly',
-      startDate: new Date().toISOString().split('T')[0],
+        startDate: toISOStringDate(new Date()),
     });
     this.isModalOpen.set(true);
   }
@@ -113,7 +113,7 @@ export class BudgetsComponent implements OnInit {
       amount: budget.amount,
       currency: budget.currency,
       period: budget.period,
-      startDate: new Date(budget.startDate).toISOString().split('T')[0],
+        startDate: toISOStringDate(budget.startDate),
     });
     this.isModalOpen.set(true);
   }
@@ -142,7 +142,7 @@ export class BudgetsComponent implements OnInit {
         amount: this.form.value.amount!,
         currency: this.form.value.currency as Currency,
         period: this.form.value.period as BudgetPeriod,
-        startDate: new Date(this.form.value.startDate!),
+        startDate: parseDate(this.form.value.startDate!),
       };
       if (this.editingBudget()) {
         await this.updateBudgetUC.execute(this.editingBudget()!.id, dto);
