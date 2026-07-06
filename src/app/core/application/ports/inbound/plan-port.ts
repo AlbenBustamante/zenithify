@@ -10,6 +10,7 @@ export interface CreatePlanDto {
   categoryId?: string;
   url?: string;
   notes?: string;
+  isActive?: boolean;
 }
 
 export interface UpdatePlanDto {

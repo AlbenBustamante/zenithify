@@ -26,6 +26,7 @@ export class SupabasePlanRepository implements PlanRepositoryPort {
         category_id: dto.categoryId ?? null,
         url: dto.url ?? null,
         notes: dto.notes ?? null,
+        is_active: dto.isActive ?? true,
       })
       .select()
       .single();

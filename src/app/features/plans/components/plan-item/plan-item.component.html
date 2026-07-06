@@ -11,18 +11,19 @@
     (deleteClicked)="handleDelete()"
   />
 
-  <div class="flex max-sm:flex-col sm:items-center sm:justify-between gap-4 sm:gap-6">
+  <div class="grid grid-cols-1 sm:grid-cols-[2.5fr_1fr_1.4fr_auto] sm:items-center gap-3 sm:gap-5">
     <app-plan-item-header [name]="plan().name" [provider]="plan().provider" />
 
     <app-plan-item-pricing
+      class="sm:justify-self-center"
       [amount]="plan().amount"
       [currency]="plan().currency"
       [billingCycle]="plan().billingCycle"
     />
 
-    <app-plan-item-billing [nextBillingDate]="plan().nextBillingDate" />
+    <app-plan-item-billing class="sm:justify-self-center" [nextBillingDate]="plan().nextBillingDate" />
 
-    <app-badge class="sm:self-end" [variant]="plan().isActive ? 'success' : 'danger'" size="sm">
+    <app-badge class="sm:justify-self-end" [variant]="plan().isActive ? 'success' : 'danger'" size="sm">
       {{ plan().isActive ? 'Activo' : 'Inactivo' }}
     </app-badge>
   </div>

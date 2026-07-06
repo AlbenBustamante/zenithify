@@ -1,0 +1,24 @@
+<div class="w-full">
+  <div class="flex items-center justify-between gap-3">
+    @if (label()) {
+      <label [for]="toggleId()" class="text-sm font-medium text-gray-700 select-none cursor-pointer">
+        {{ label() }}
+      </label>
+    }
+    <button
+      type="button"
+      role="switch"
+      [id]="toggleId()"
+      [attr.aria-checked]="value()"
+      [attr.aria-label]="label() || null"
+      [disabled]="isDisabled()"
+      [class]="trackClasses"
+      (click)="onToggle()"
+    >
+      <span aria-hidden="true" [class]="thumbClasses"></span>
+    </button>
+  </div>
+  @if (error()) {
+    <p class="mt-1.5 text-sm text-red-600">{{ error() }}</p>
+  }
+</div>

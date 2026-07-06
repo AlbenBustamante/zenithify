@@ -21,6 +21,8 @@
 
     <app-input formControlName="url" label="URL" type="url" placeholder="https://..." />
 
+    <app-toggle formControlName="isActive" label="Plan activo" />
+
     <div class="flex justify-end gap-3 mt-6">
       <app-button variant="secondary" type="button" (clicked)="close.emit()">Cancelar</app-button>
       <app-button type="submit" [loading]="loading()" [disabled]="form.invalid">
