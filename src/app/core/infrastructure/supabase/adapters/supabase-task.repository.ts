@@ -21,6 +21,7 @@ export class SupabaseTaskRepository implements TaskRepositoryPort {
         due_date: dto.dueDate?.toISOString() ?? null,
         priority: dto.priority ?? 'medium',
         category_id: dto.categoryId ?? null,
+        parent_task_id: dto.parentTaskId ?? null,
       })
       .select()
       .single();
@@ -37,6 +38,7 @@ export class SupabaseTaskRepository implements TaskRepositoryPort {
     if (dto.priority !== undefined) updates['priority'] = dto.priority;
     if (dto.status !== undefined) updates['status'] = dto.status;
     if (dto.categoryId !== undefined) updates['category_id'] = dto.categoryId;
+    if (dto.parentTaskId !== undefined) updates['parent_task_id'] = dto.parentTaskId;
 
     const { data, error } = await this.supabase
       .from(this.table)
@@ -77,6 +79,13 @@ export class SupabaseTaskRepository implements TaskRepositoryPort {
     if (filters?.categoryId) {
       query = query.eq('category_id', filters.categoryId);
     }
+    if (filters?.parentTaskId !== undefined) {
+      if (filters.parentTaskId === null) {
+        query = query.is('parent_task_id', null);
+      } else {
+        query = query.eq('parent_task_id', filters.parentTaskId);
+      }
+    }
     if (filters?.dueBefore) {
       query = query.lte('due_date', filters.dueBefore.toISOString());
     }
@@ -86,6 +95,18 @@ export class SupabaseTaskRepository implements TaskRepositoryPort {
 
     const { data, error } = await query.order('due_date', { ascending: true });
 
+    if (error) throw error;
+    return (data as TaskRow[]).map(EntityMapper.toTask);
+  }
+
+  async findByParent(parentTaskId: string | null): Promise<Task[]> {
+    let query = this.supabase.from(this.table).select('*');
+    if (parentTaskId === null) {
+      query = query.is('parent_task_id', null);
+    } else {
+      query = query.eq('parent_task_id', parentTaskId);
+    }
+    const { data, error } = await query.order('created_at', { ascending: true });
     if (error) throw error;
     return (data as TaskRow[]).map(EntityMapper.toTask);
   }

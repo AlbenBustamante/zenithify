@@ -7,6 +7,7 @@ export interface TaskRepositoryPort {
   delete(id: string): Promise<void>;
   findById(id: string): Promise<Task | null>;
   findAll(filters?: TaskFilters): Promise<Task[]>;
+  findByParent(parentTaskId: string | null): Promise<Task[]>;
   findPending(): Promise<Task[]>;
   findOverdue(): Promise<Task[]>;
   findDueSoon(days: number): Promise<Task[]>;

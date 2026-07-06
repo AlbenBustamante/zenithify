@@ -6,6 +6,7 @@ export interface CreateTaskDto {
   dueDate?: Date;
   priority?: TaskPriority;
   categoryId?: string;
+  parentTaskId?: string;
 }
 
 export interface UpdateTaskDto {
@@ -15,12 +16,14 @@ export interface UpdateTaskDto {
   priority?: TaskPriority;
   status?: TaskStatus;
   categoryId?: string;
+  parentTaskId?: string | null;
 }
 
 export interface TaskFilters {
   status?: TaskStatus;
   priority?: TaskPriority;
   categoryId?: string;
+  parentTaskId?: string | null;
   dueBefore?: Date;
   dueAfter?: Date;
 }
@@ -31,6 +34,7 @@ export interface TaskPort {
   delete(id: string): Promise<void>;
   findById(id: string): Promise<Task | null>;
   findAll(filters?: TaskFilters): Promise<Task[]>;
+  findByParent(parentTaskId: string | null): Promise<Task[]>;
   findPending(): Promise<Task[]>;
   findOverdue(): Promise<Task[]>;
   findDueSoon(days: number): Promise<Task[]>;

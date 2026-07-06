@@ -83,6 +83,7 @@ export interface TaskRow {
   priority: string;
   status: string;
   category_id: string | null;
+  parent_task_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -251,6 +252,7 @@ export class EntityMapper {
       priority: row.priority as 'low' | 'medium' | 'high',
       status: row.status as 'pending' | 'in_progress' | 'completed',
       categoryId: row.category_id ?? undefined,
+      parentTaskId: row.parent_task_id ?? undefined,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
     };

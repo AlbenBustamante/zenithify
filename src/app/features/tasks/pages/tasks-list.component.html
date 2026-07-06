@@ -1,0 +1,135 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-6 md:py-8">
+  <div class="max-w-7xl mx-auto space-y-6 md:space-y-8">
+
+    <header class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 md:gap-6">
+      <div class="space-y-2">
+        <div class="flex items-center gap-3">
+          <span class="w-1 h-6 md:h-8 bg-violet-500 rounded-full"></span>
+          <h1 class="text-2xl md:text-4xl font-bold text-slate-900 tracking-tight">Tareas</h1>
+        </div>
+        <p class="text-slate-500 text-xs md:text-sm">Organiza tu trabajo en proyectos y subtareas</p>
+      </div>
+      <app-button (clicked)="openCreateModal()">
+        <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        Nueva Tarea General
+      </app-button>
+    </header>
+
+    @if (isDataLoading()) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for (i of [1,2,3,4,5,6]; track i) {
+          <div class="bg-white rounded-2xl border border-slate-200/70 shadow-sm p-5 space-y-3">
+            <app-skeleton width="75%" height="1.25rem" />
+            <app-skeleton width="50%" height="0.875rem" />
+            <div class="flex items-center gap-2 pt-2">
+              <app-skeleton width="3.5rem" height="1.25rem" />
+              <app-skeleton width="3.5rem" height="1.25rem" />
+              <app-skeleton width="3.5rem" height="1.25rem" />
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (!hasAnyGeneral()) {
+      <app-card [noPadding]="true">
+        <div class="p-16 text-center">
+          <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-violet-50/80 flex items-center justify-center">
+            <svg class="w-10 h-10 text-violet-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+          </div>
+          <p class="text-slate-400 text-sm mb-6">Aún no tienes tareas generales</p>
+          <app-button variant="secondary" (clicked)="openCreateModal()">Crear tu primera tarea general</app-button>
+        </div>
+      </app-card>
+    } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for (g of sortedGenerals(); track g.task.id) {
+          <article
+            (click)="openBoard(g.task)"
+            (keydown.enter)="openBoard(g.task)"
+            tabindex="0"
+            role="button"
+            [attr.aria-label]="'Abrir ' + g.task.title"
+            class="group bg-white rounded-2xl border border-slate-200/70 shadow-sm hover:shadow-md hover:border-violet-200 transition-all duration-200 cursor-pointer p-5 space-y-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0 flex-1">
+                <h3 class="text-base font-semibold text-slate-800 group-hover:text-violet-700 transition-colors truncate">
+                  {{ g.task.title }}
+                </h3>
+                @if (g.task.description) {
+                  <p class="text-xs text-slate-500 mt-1 line-clamp-2">{{ g.task.description }}</p>
+                }
+              </div>
+              <app-badge [variant]="statusVariant(g.derivedStatus)">
+                {{ statusLabel(g.derivedStatus) }}
+              </app-badge>
+            </div>
+
+            <div class="flex items-center gap-3 pt-1">
+              <div class="flex items-center gap-1.5 text-xs text-slate-500" [attr.aria-label]="g.counts.pending + ' pendientes'">
+                <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                <span class="font-medium">{{ g.counts.pending }}</span>
+                <span class="text-slate-400">pendientes</span>
+              </div>
+              <div class="flex items-center gap-1.5 text-xs text-slate-500" [attr.aria-label]="g.counts.in_progress + ' en progreso'">
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                <span class="font-medium">{{ g.counts.in_progress }}</span>
+                <span class="text-slate-400">progreso</span>
+              </div>
+              <div class="flex items-center gap-1.5 text-xs text-slate-500" [attr.aria-label]="g.counts.completed + ' completadas'">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span class="font-medium">{{ g.counts.completed }}</span>
+                <span class="text-slate-400">hechas</span>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-1 border-t border-slate-100">
+              <div class="text-xs text-slate-400">
+                @if (g.task.dueDate) {
+                  <span [class]="isOverdue(g.task.dueDate) && g.derivedStatus !== 'completed' ? 'text-red-500 font-medium' : ''">
+                    {{ formatDate(g.task.dueDate) }}
+                  </span>
+                } @else {
+                  Sin fecha
+                }
+              </div>
+              <div class="flex items-center gap-1">
+                <app-button
+                  variant="ghost"
+                  size="sm"
+                  (clicked)="openEditModal(g.task, $event)"
+                >Editar</app-button>
+                <app-button
+                  variant="ghost"
+                  size="sm"
+                  (clicked)="openDeleteModal(g.task, $event)"
+                >Eliminar</app-button>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<app-task-form-modal
+  [isOpen]="isFormOpen()"
+  [editingTask]="editingTask()"
+  [parentContextTitle]="null"
+  [isLoading]="isMutating()"
+  (submitForm)="onFormSubmit($event)"
+  (closed)="closeForm()"
+/>
+
+<app-task-delete-modal
+  [isOpen]="isDeleteOpen()"
+  [task]="deletingTask()"
+  [childCount]="deletingChildCount()"
+  [isLoading]="isMutating()"
+  (confirm)="onDeleteConfirm($event)"
+  (closed)="closeDeleteModal()"
+/>
