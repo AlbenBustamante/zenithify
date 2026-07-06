@@ -3,6 +3,7 @@ import { QuotaRepositoryPort } from '../../../application/ports/outbound/quota-r
 import { UserQuota } from '../../../domain/entities';
 import { SupabaseClientService } from '../supabase-client.service';
 import { EntityMapper, UserQuotaRow } from '../mappers/entity-mapper';
+import { toISOStringDate } from '../../../../shared/utils/date.util';
 
 @Injectable({ providedIn: 'root' })
 export class SupabaseQuotaRepository implements QuotaRepositoryPort {
@@ -69,7 +70,7 @@ export class SupabaseQuotaRepository implements QuotaRepositoryPort {
     const { error } = await this.supabase
       .from(this.table)
       .update({
-        [resetColumnMap[resource]]: new Date().toISOString().split('T')[0],
+        [resetColumnMap[resource]]: toISOStringDate(new Date()),
         [countColumnMap[resource]]: 0,
       })
       .eq('user_id', userId);

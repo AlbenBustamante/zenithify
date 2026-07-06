@@ -1,4 +1,5 @@
 import { User } from '../../../domain/entities';
+import { parseDate } from '../../../../shared/utils/date.util';
 
 export interface ProfileRow {
   id: string;
@@ -180,7 +181,7 @@ export class EntityMapper {
       exchangeRate: row.exchange_rate,
       description: row.description,
       categoryId: row.category_id ?? undefined,
-      expenseDate: new Date(row.expense_date),
+      expenseDate: parseDate(row.expense_date),
       paymentMethod: row.payment_method as 'cash' | 'card' | 'divisas' | 'transferencia',
       receiptUrl: row.receipt_url ?? undefined,
       createdAt: new Date(row.created_at),
@@ -197,7 +198,7 @@ export class EntityMapper {
       exchangeRate: row.exchange_rate,
       description: row.description,
       categoryId: row.category_id ?? undefined,
-      incomeDate: new Date(row.income_date),
+      incomeDate: parseDate(row.income_date),
       incomeMethod: row.income_method as 'salario' | 'remesa' | 'freelance' | 'inversiones' | 'regalo' | 'venta' | 'premio' | 'becas' | 'herencia' | 'otro',
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
@@ -212,8 +213,8 @@ export class EntityMapper {
       amount: row.amount,
       currency: row.currency as 'USD' | 'VES',
       period: row.period as 'weekly' | 'monthly' | 'yearly',
-      startDate: new Date(row.start_date),
-      endDate: row.end_date ? new Date(row.end_date) : undefined,
+      startDate: parseDate(row.start_date),
+      endDate: row.end_date ? parseDate(row.end_date) : undefined,
       categoryIds: row.category_ids,
       isActive: row.is_active,
       createdAt: new Date(row.created_at),
@@ -230,7 +231,7 @@ export class EntityMapper {
       amount: row.amount,
       currency: row.currency as 'USD' | 'VES',
       billingCycle: row.billing_cycle as 'monthly' | 'yearly',
-      nextBillingDate: new Date(row.next_billing_date),
+      nextBillingDate: parseDate(row.next_billing_date),
       categoryId: row.category_id ?? undefined,
       url: row.url ?? undefined,
       notes: row.notes ?? undefined,
@@ -298,13 +299,13 @@ export class EntityMapper {
     return {
       userId: row.user_id,
       expensesCount: row.expenses_count,
-      expensesResetAt: new Date(row.expenses_reset_at),
+      expensesResetAt: parseDate(row.expenses_reset_at),
       incomesCount: row.incomes_count,
-      incomesResetAt: new Date(row.incomes_reset_at),
+      incomesResetAt: parseDate(row.incomes_reset_at),
       tasksCount: row.tasks_count,
-      tasksResetAt: new Date(row.tasks_reset_at),
+      tasksResetAt: parseDate(row.tasks_reset_at),
       bookmarksCount: row.bookmarks_count,
-      bookmarksResetAt: new Date(row.bookmarks_reset_at),
+      bookmarksResetAt: parseDate(row.bookmarks_reset_at),
       updatedAt: new Date(row.updated_at),
     };
   }

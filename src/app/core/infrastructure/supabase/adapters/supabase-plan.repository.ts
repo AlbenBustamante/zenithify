@@ -4,6 +4,7 @@ import { Plan } from '../../../domain/entities';
 import { SupabaseClientService } from '../supabase-client.service';
 import { EntityMapper, PlanRow } from '../mappers/entity-mapper';
 import { CreatePlanDto, UpdatePlanDto } from '../../../application/ports/inbound/plan-port';
+import { toISOStringDate } from '../../../../shared/utils/date.util';
 
 @Injectable({ providedIn: 'root' })
 export class SupabasePlanRepository implements PlanRepositoryPort {
@@ -21,7 +22,7 @@ export class SupabasePlanRepository implements PlanRepositoryPort {
         amount: dto.amount,
         currency: dto.currency,
         billing_cycle: dto.billingCycle,
-        next_billing_date: dto.nextBillingDate.toISOString().split('T')[0],
+        next_billing_date: toISOStringDate(dto.nextBillingDate),
         category_id: dto.categoryId ?? null,
         url: dto.url ?? null,
         notes: dto.notes ?? null,
@@ -40,7 +41,7 @@ export class SupabasePlanRepository implements PlanRepositoryPort {
     if (dto.amount !== undefined) updates['amount'] = dto.amount;
     if (dto.currency !== undefined) updates['currency'] = dto.currency;
     if (dto.billingCycle !== undefined) updates['billing_cycle'] = dto.billingCycle;
-    if (dto.nextBillingDate !== undefined) updates['next_billing_date'] = dto.nextBillingDate.toISOString().split('T')[0];
+    if (dto.nextBillingDate !== undefined) updates['next_billing_date'] = toISOStringDate(dto.nextBillingDate);
     if (dto.categoryId !== undefined) updates['category_id'] = dto.categoryId;
     if (dto.url !== undefined) updates['url'] = dto.url;
     if (dto.notes !== undefined) updates['notes'] = dto.notes;
@@ -102,7 +103,7 @@ export class SupabasePlanRepository implements PlanRepositoryPort {
       .from(this.table)
       .select('*')
       .eq('is_active', true)
-      .lte('next_billing_date', futureDate.toISOString().split('T')[0])
+      .lte('next_billing_date', toISOStringDate(futureDate))
       .order('next_billing_date', { ascending: true });
 
     if (error) throw error;

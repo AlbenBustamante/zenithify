@@ -9,7 +9,7 @@ import { SelectComponent } from '../../shared/ui/components/select/select.compon
 import { BadgeComponent } from '../../shared/ui/components/badge/badge.component';
 import { SkeletonComponent } from '../../shared/ui/components/skeleton/skeleton.component';
 import { Task, TaskPriority, TaskStatus } from '../../core/domain/entities';
-import { formatShortDate, isOverdue, daysFromNow } from '../../shared/utils';
+import { formatShortDate, isOverdue, daysFromNow, toISOStringDate, parseDate } from '../../shared/utils';
 import { SupabaseTaskRepository } from '../../core/infrastructure/supabase/adapters/supabase-task.repository';
 import { SupabaseAuthAdapter } from '../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
 import { CreateTaskUseCase, UpdateTaskUseCase, DeleteTaskUseCase, CompleteTaskUseCase, ListTasksUseCase } from '../../core/application/use-cases/task/task.use-cases';
@@ -93,7 +93,7 @@ export class TasksComponent implements OnInit {
       title: task.title,
       description: task.description ?? '',
       priority: task.priority,
-      dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '',
+      dueDate: task.dueDate ? toISOStringDate(task.dueDate) : '',
     });
     this.isModalOpen.set(true);
   }
@@ -126,7 +126,7 @@ export class TasksComponent implements OnInit {
         title: this.form.value.title!,
         description: this.form.value.description || undefined,
         priority: this.form.value.priority as TaskPriority,
-        dueDate: this.form.value.dueDate ? new Date(this.form.value.dueDate) : undefined,
+        dueDate: this.form.value.dueDate ? parseDate(this.form.value.dueDate) : undefined,
       };
       if (this.editingTask()) {
         await this.updateTaskUC.execute(this.editingTask()!.id, dto);

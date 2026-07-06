@@ -4,6 +4,7 @@ import { Expense, Currency } from '../../../domain/entities';
 import { SupabaseClientService } from '../supabase-client.service';
 import { EntityMapper, ExpenseRow } from '../mappers/entity-mapper';
 import { CreateExpenseDto, UpdateExpenseDto, ExpenseFilters } from '../../../application/ports/inbound/expense-port';
+import { toISOStringDate } from '../../../../shared/utils/date.util';
 
 @Injectable({ providedIn: 'root' })
 export class SupabaseExpenseRepository implements ExpenseRepositoryPort {
@@ -21,7 +22,7 @@ export class SupabaseExpenseRepository implements ExpenseRepositoryPort {
         exchange_rate: dto.exchangeRate,
         description: dto.description,
         category_id: dto.categoryId ?? null,
-        expense_date: dto.expenseDate.toISOString().split('T')[0],
+        expense_date: toISOStringDate(dto.expenseDate),
         payment_method: dto.paymentMethod,
         receipt_url: dto.receiptUrl ?? null,
       })
@@ -39,7 +40,7 @@ export class SupabaseExpenseRepository implements ExpenseRepositoryPort {
     if (dto.exchangeRate !== undefined) updates['exchange_rate'] = dto.exchangeRate;
     if (dto.description !== undefined) updates['description'] = dto.description;
     if (dto.categoryId !== undefined) updates['category_id'] = dto.categoryId;
-    if (dto.expenseDate !== undefined) updates['expense_date'] = dto.expenseDate.toISOString().split('T')[0];
+    if (dto.expenseDate !== undefined) updates['expense_date'] = toISOStringDate(dto.expenseDate);
     if (dto.paymentMethod !== undefined) updates['payment_method'] = dto.paymentMethod;
     if (dto.receiptUrl !== undefined) updates['receipt_url'] = dto.receiptUrl;
 
@@ -74,10 +75,10 @@ export class SupabaseExpenseRepository implements ExpenseRepositoryPort {
     let query = this.supabase.from(this.table).select('*');
 
     if (filters?.startDate) {
-      query = query.gte('expense_date', filters.startDate.toISOString().split('T')[0]);
+      query = query.gte('expense_date', toISOStringDate(filters.startDate));
     }
     if (filters?.endDate) {
-      query = query.lte('expense_date', filters.endDate.toISOString().split('T')[0]);
+      query = query.lte('expense_date', toISOStringDate(filters.endDate));
     }
     if (filters?.categoryId) {
       query = query.eq('category_id', filters.categoryId);
@@ -94,8 +95,8 @@ export class SupabaseExpenseRepository implements ExpenseRepositoryPort {
       .from(this.table)
       .select('*')
       .eq('user_id', userId)
-      .gte('expense_date', startDate.toISOString().split('T')[0])
-      .lte('expense_date', endDate.toISOString().split('T')[0])
+      .gte('expense_date', toISOStringDate(startDate))
+      .lte('expense_date', toISOStringDate(endDate))
       .order('expense_date', { ascending: false });
 
     if (error) throw error;
@@ -110,8 +111,8 @@ export class SupabaseExpenseRepository implements ExpenseRepositoryPort {
       .from(this.table)
       .select('*')
       .eq('user_id', userId)
-      .gte('expense_date', startDate.toISOString().split('T')[0])
-      .lte('expense_date', endDate.toISOString().split('T')[0])
+      .gte('expense_date', toISOStringDate(startDate))
+      .lte('expense_date', toISOStringDate(endDate))
       .order('expense_date', { ascending: false });
 
     if (error) throw error;

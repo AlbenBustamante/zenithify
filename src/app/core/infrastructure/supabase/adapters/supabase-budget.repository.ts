@@ -4,6 +4,7 @@ import { Budget } from '../../../domain/entities';
 import { SupabaseClientService } from '../supabase-client.service';
 import { EntityMapper, BudgetRow } from '../mappers/entity-mapper';
 import { CreateBudgetDto, UpdateBudgetDto } from '../../../application/ports/inbound/budget-port';
+import { toISOStringDate } from '../../../../shared/utils/date.util';
 
 @Injectable({ providedIn: 'root' })
 export class SupabaseBudgetRepository implements BudgetRepositoryPort {
@@ -20,8 +21,8 @@ export class SupabaseBudgetRepository implements BudgetRepositoryPort {
         amount: dto.amount,
         currency: dto.currency,
         period: dto.period,
-        start_date: dto.startDate.toISOString().split('T')[0],
-        end_date: dto.endDate?.toISOString().split('T')[0] ?? null,
+        start_date: toISOStringDate(dto.startDate),
+        end_date: dto.endDate ? toISOStringDate(dto.endDate) : null,
         category_ids: dto.categoryIds ?? [],
       })
       .select()
@@ -37,8 +38,8 @@ export class SupabaseBudgetRepository implements BudgetRepositoryPort {
     if (dto.amount !== undefined) updates['amount'] = dto.amount;
     if (dto.currency !== undefined) updates['currency'] = dto.currency;
     if (dto.period !== undefined) updates['period'] = dto.period;
-    if (dto.startDate !== undefined) updates['start_date'] = dto.startDate.toISOString().split('T')[0];
-    if (dto.endDate !== undefined) updates['end_date'] = dto.endDate?.toISOString().split('T')[0] ?? null;
+    if (dto.startDate !== undefined) updates['start_date'] = toISOStringDate(dto.startDate);
+    if (dto.endDate !== undefined) updates['end_date'] = dto.endDate ? toISOStringDate(dto.endDate) : null;
     if (dto.categoryIds !== undefined) updates['category_ids'] = dto.categoryIds;
     if (dto.isActive !== undefined) updates['is_active'] = dto.isActive;
 

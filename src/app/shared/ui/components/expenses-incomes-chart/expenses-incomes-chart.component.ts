@@ -13,6 +13,7 @@ import { SupabaseExpenseRepository } from '../../../../core/infrastructure/supab
 import { SupabaseIncomeRepository } from '../../../../core/infrastructure/supabase/adapters/supabase-income.repository';
 import { SupabaseAuthAdapter } from '../../../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
 import { Expense, Income } from '../../../../core/domain/entities';
+import { toISOStringDate } from '../../../../shared/utils/date.util';
 
 Chart.register(...registerables);
 
@@ -139,7 +140,7 @@ export class ExpensesIncomesChartComponent implements OnDestroy {
   }
 
   private dateKey(date: Date): string {
-    return date.toISOString().split('T')[0];
+    return toISOStringDate(date);
   }
 
   private renderChart(data: DailyData[]): void {
