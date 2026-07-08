@@ -226,7 +226,7 @@ export class ExpensesIncomesChartComponent implements OnDestroy {
           },
           y: {
             beginAtZero: true,
-            max: maxValue * 1.1,
+            max: Math.round(maxValue * 1.1 * 100) / 100,
             grid: { color: '#f1f5f9' },
             ticks: {
               font: { family: 'Inter', size: 11 },
