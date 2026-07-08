@@ -34,13 +34,22 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         @for (i of [1,2,3,4,5,6]; track i) {
           <app-card>
-            <div class="space-y-4">
+            <div class="flex flex-col gap-y-4">
               <div class="flex items-start gap-4">
                 <app-skeleton width="3rem" height="3rem" />
-                <div class="flex-1 space-y-2">
+                <div class="flex-1 flex flex-col gap-y-3">
                   <app-skeleton width="70%" height="1rem" />
                   <app-skeleton width="50%" height="0.75rem" />
                 </div>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <app-skeleton width="3rem" height="1.25rem" />
+                <app-skeleton width="2.5rem" height="1.25rem" />
+                <app-skeleton width="3.5rem" height="1.25rem" />
+              </div>
+              <div class="flex justify-end gap-2 pt-4 border-t border-slate-100">
+                <app-skeleton width="3rem" height="1.5rem" />
+                <app-skeleton width="3.5rem" height="1.5rem" />
               </div>
             </div>
           </app-card>

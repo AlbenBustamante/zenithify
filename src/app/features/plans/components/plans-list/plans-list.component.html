@@ -1,11 +1,21 @@
 @if (loading()) {
-  <div class="space-y-3 sm:space-y-4">
+  <div class="flex flex-col gap-y-3 sm:gap-y-4">
     @for (i of [1,2,3,4,5]; track i) {
       <div class="flex items-center gap-4 rounded-2xl bg-white/60 p-4 sm:p-5 shadow-sm border border-slate-100/80">
         <app-skeleton width="3rem" height="3rem" />
-        <div class="flex-1 space-y-2">
+        <div class="flex-1 flex flex-col gap-y-3">
           <app-skeleton width="40%" height="1rem" />
           <app-skeleton width="25%" height="0.75rem" />
+        </div>
+        <div class="hidden sm:flex sm:flex-col sm:gap-y-2 sm:items-center">
+          <app-skeleton width="3rem" height="0.875rem" />
+          <app-skeleton width="2rem" height="0.625rem" />
+        </div>
+        <div class="hidden sm:flex sm:flex-col sm:gap-y-2 sm:items-center">
+          <app-skeleton width="4rem" height="0.75rem" />
+        </div>
+        <div class="hidden sm:block">
+          <app-skeleton width="3.5rem" height="1.25rem" />
         </div>
       </div>
     }
