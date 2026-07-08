@@ -1,7 +1,7 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-6 md:py-8">
-  <div class="max-w-7xl mx-auto space-y-6 md:space-y-8">
+  <div class="max-w-7xl mx-auto flex flex-col gap-y-6 md:gap-y-8">
 
-    <header class="space-y-4">
+    <header class="flex flex-col gap-y-4">
       <div>
         <button
           (click)="goBack()"
@@ -15,7 +15,7 @@
       </div>
 
       <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 md:gap-6">
-        <div class="space-y-2 min-w-0">
+        <div class="flex flex-col gap-y-2 min-w-0">
           <div class="flex items-center gap-3">
             <span class="w-1 h-6 md:h-8 bg-violet-500 rounded-full shrink-0"></span>
             <h1 class="text-2xl md:text-4xl font-bold text-slate-900 tracking-tight truncate">
@@ -94,7 +94,7 @@
               [cdkDropListData]="list"
               [id]="'col-' + column.id"
               (cdkDropListDropped)="drop($event, column.id)"
-              class="flex-1 px-3 pb-3 pt-1 space-y-3 min-h-[120px] tasks-column"
+              class="flex-1 px-3 pb-3 pt-1 flex flex-col gap-y-3 min-h-[120px] tasks-column"
             >
               @if (list.length === 0) {
                 <div class="rounded-2xl border border-dashed border-slate-200 bg-white/60 p-6 text-center text-xs text-slate-400">
@@ -106,7 +106,7 @@
                     cdkDrag
                     class="bg-white rounded-2xl border border-slate-200/70 shadow-sm hover:shadow-md transition-shadow duration-200"
                   >
-                    <div cdkDragHandle class="cursor-grab active:cursor-grabbing p-4 space-y-2">
+                    <div cdkDragHandle class="cursor-grab active:cursor-grabbing p-4 flex flex-col gap-y-2">
                       <p class="font-medium leading-snug"
                          [class]="task.status === 'completed' ? 'line-through text-slate-400' : 'text-slate-800'">
                         {{ task.title }}

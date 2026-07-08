@@ -1,8 +1,8 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-8">
-  <div class="max-w-7xl mx-auto space-y-8">
+  <div class="max-w-7xl mx-auto flex flex-col gap-y-8">
 
     <header class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-      <div class="space-y-2">
+      <div class="flex flex-col gap-y-2">
         <div class="flex items-center gap-3">
           <span class="w-1 h-8 bg-primary-600 rounded-full"></span>
           <h1 class="text-4xl font-bold text-slate-900 tracking-tight">Presupuestos</h1>
@@ -74,7 +74,7 @@
                   {{ budget.utilization.percentage.toFixed(0) }}%
                 </app-badge>
               </div>
-              <div class="space-y-4">
+              <div class="flex flex-col gap-y-4">
                 <div class="flex justify-between">
                   <span class="text-sm text-slate-500">Límite</span>
                   <span class="font-medium text-slate-700">{{ formatMoney(budget.amount, budget.currency) }}</span>
@@ -106,7 +106,7 @@
 </div>
 
 <app-modal [isOpen]="isModalOpen()" [title]="editingBudget() ? 'Editar Presupuesto' : 'Nuevo Presupuesto'" (close)="closeModal()">
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-y-5">
     <app-input formControlName="name" label="Nombre" placeholder="Ej: Presupuesto mensual alimentación"
       [error]="form.controls['name'].invalid && form.controls['name'].touched ? 'Nombre requerido' : ''" />
 

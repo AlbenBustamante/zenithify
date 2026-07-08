@@ -4,7 +4,7 @@
   size="md"
   (close)="onClose()"
 >
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-y-5">
     <app-input
       formControlName="title"
       label="Título"

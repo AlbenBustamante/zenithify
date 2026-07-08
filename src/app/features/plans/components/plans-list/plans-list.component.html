@@ -31,7 +31,7 @@
     <app-button variant="secondary" (clicked)="createClicked.emit()">Agregar tu primera suscripción</app-button>
   </div>
 } @else {
-  <div class="space-y-3 sm:space-y-4">
+  <div class="flex flex-col gap-y-3 sm:gap-y-4">
     @for (plan of plans(); track plan.id) {
       <app-plan-item
         [plan]="plan"
