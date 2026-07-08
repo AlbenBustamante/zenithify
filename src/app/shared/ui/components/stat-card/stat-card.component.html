@@ -18,7 +18,14 @@
       </div>
     </div>
     <div class="mt-auto">
-      <ng-content />
+      @if (loading()) {
+        <app-skeleton width="50%" height="2rem" [color]="color()" />
+        <div class="mt-2">
+          <app-skeleton width="40%" height="0.75rem" [color]="color()" />
+        </div>
+      } @else {
+        <ng-content />
+      }
     </div>
   </div>
 </div>

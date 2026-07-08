@@ -1,15 +1,17 @@
 import { Component, input, ChangeDetectionStrategy, computed } from '@angular/core';
 import { NgClass } from '@angular/common';
+import { SkeletonComponent } from '../skeleton/skeleton.component';
 
 @Component({
   selector: 'app-stat-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgClass],
+  imports: [NgClass, SkeletonComponent],
   templateUrl: './stat-card.component.html',
 })
 export class StatCardComponent {
   readonly color = input<'red' | 'emerald' | 'blue' | 'violet' | 'amber' | 'primary'>('blue');
   readonly label = input<string>('');
+  readonly loading = input<boolean>(false);
 
   private readonly colorMap = {
     red: {
