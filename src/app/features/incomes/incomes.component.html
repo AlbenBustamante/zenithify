@@ -18,8 +18,8 @@
     </header>
 
     <div class="flex gap-4 flex-wrap">
-      <div class="flex items-center gap-2">
-        <div class="relative">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+        <div class="relative w-full sm:w-auto">
           <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
@@ -27,7 +27,7 @@
             type="date"
             [value]="startDate()"
             (change)="onStartDateChange($event)"
-            class="pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white/80 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+            class="w-full sm:w-auto pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white/80 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
           />
         </div>
         <span class="text-slate-400 text-sm">hasta</span>
@@ -35,7 +35,7 @@
           type="date"
           [value]="endDate()"
           (change)="onEndDateChange($event)"
-          class="rounded-xl border border-slate-200 bg-white/80 py-2.5 px-3 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+          class="w-full sm:w-auto rounded-xl border border-slate-200 bg-white/80 py-2.5 px-3 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
         />
       </div>
 
