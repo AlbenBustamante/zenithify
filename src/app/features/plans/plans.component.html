@@ -1,10 +1,10 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-stone-100 px-4 py-8">
-  <div class="max-w-7xl mx-auto flex flex-col gap-y-8">
-    <header class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+  <div class="max-w-7xl mx-auto flex flex-col gap-y-6 sm:gap-y-8">
+    <header class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
       <div class="flex flex-col gap-y-2">
         <div class="flex items-center gap-3">
           <span class="w-1 h-8 bg-amber-500 rounded-full"></span>
-          <h1 class="text-4xl font-bold text-slate-900 tracking-tight">Planes y Suscripciones</h1>
+          <h1 class="text-2xl sm:text-4xl font-bold text-slate-900 tracking-tight">Planes y Suscripciones</h1>
         </div>
         <p class="text-slate-500 text-sm">Gestiona tus suscripciones recurrentes</p>
       </div>
@@ -30,15 +30,15 @@
       </div>
       <app-plans-list [plans]="[]" [loading]="true" />
     } @else {
-      <div class="flex flex-col gap-y-8">
+      <div class="flex flex-col gap-y-6 sm:gap-y-8">
         <app-plans-stats>
-          <span monthly class="text-3xl font-bold text-slate-900">{{
+          <span monthly class="text-2xl sm:text-3xl font-bold text-slate-900">{{
             formatMoney(monthlyTotal(), 'USD')
           }}</span>
-          <span yearly class="text-3xl font-bold text-slate-900">{{
+          <span yearly class="text-2xl sm:text-3xl font-bold text-slate-900">{{
             formatMoney(yearlyTotal(), 'USD')
           }}</span>
-          <span active class="text-3xl font-bold text-slate-900">{{ activePlans().length }}</span>
+          <span active class="text-2xl sm:text-3xl font-bold text-slate-900">{{ activePlans().length }}</span>
         </app-plans-stats>
 
         <app-plans-list

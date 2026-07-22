@@ -8,7 +8,7 @@
           <path d="M2 12l10 5 10-5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <h2 class="text-2xl font-bold text-gray-900">Crear Cuenta</h2>
+      <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Crear Cuenta</h2>
       <p class="mt-2 text-sm text-gray-600">
         ¿Ya tienes cuenta?
         <a routerLink="/auth/login" class="font-medium text-primary-600 hover:text-primary-700">
@@ -18,7 +18,7 @@
     </div>
 
     <app-card>
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-y-5">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-y-4 sm:gap-y-5">
         <app-input
           formControlName="email"
           label="Email"
@@ -60,17 +60,16 @@
         </app-button>
       </form>
 
-      <div class="mt-6">
+      <div class="mt-4 sm:mt-6">
         <div class="relative">
           <div class="absolute inset-0 flex items-center">
             <div class="w-full border-t border-gray-200"></div>
           </div>
-          <div class="relative flex justify-center text-sm">
-            <span class="px-4 bg-white text-gray-500">O continúa con</span>
+          <div class="relative flex justify-center text-xs sm:text-sm">
+            <span class="px-3 sm:px-4 bg-white text-gray-500">O continúa con</span>
           </div>
         </div>
-
-        <div class="mt-4">
+        <div class="mt-3 sm:mt-4">
           <app-button
             variant="secondary"
             (clicked)="signInWithGoogle()"

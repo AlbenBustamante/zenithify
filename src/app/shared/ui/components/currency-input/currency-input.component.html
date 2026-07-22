@@ -1,6 +1,6 @@
 <div class="w-full">
   @if (label()) {
-    <label [for]="inputId()" class="block text-sm font-medium text-gray-700 mb-1.5">
+    <label [for]="inputId()" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
       {{ label() }}
       @if (required()) {
         <span class="text-red-500">*</span>
@@ -13,7 +13,7 @@
         [value]="currency()"
         [disabled]="currencyDisabled()"
         (change)="onCurrencyChange($event)"
-        class="h-full py-2.5 pl-3 pr-7 text-gray-500 bg-gray-50 border border-gray-300 rounded-l-lg text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 cursor-pointer"
+        class="h-full py-2 sm:py-2.5 pl-2.5 sm:pl-3 pr-6 sm:pr-7 text-gray-500 bg-gray-50 border border-gray-300 rounded-l-lg text-xs sm:text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 cursor-pointer"
       >
         <option value="USD">USD</option>
         <option value="VES">VES</option>
@@ -30,10 +30,10 @@
       (blur)="onTouched()"
     />
     <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-      <span class="text-gray-400 text-sm">{{ currency() === 'USD' ? '$' : 'Bs' }}</span>
+      <span class="text-gray-400 text-xs sm:text-sm">{{ currency() === 'USD' ? '$' : 'Bs' }}</span>
     </div>
   </div>
   @if (error()) {
-    <p class="mt-1.5 text-sm text-red-600">{{ error() }}</p>
+    <p class="mt-1 sm:mt-1.5 text-xs sm:text-sm text-red-600">{{ error() }}</p>
   }
 </div>

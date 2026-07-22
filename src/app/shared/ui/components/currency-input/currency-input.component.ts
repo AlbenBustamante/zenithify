@@ -36,7 +36,7 @@ export class CurrencyInputComponent implements ControlValueAccessor {
   onTouched: () => void = () => {};
 
   get inputClasses(): string {
-    const base = 'block w-full rounded-r-lg border bg-white pl-24 pr-10 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 transition-colors duration-200';
+    const base = 'block w-full rounded-r-lg border bg-white pl-20 sm:pl-24 pr-8 sm:pr-10 py-2 sm:py-2.5 text-xs sm:text-sm text-gray-900 placeholder:text-gray-400 transition-colors duration-200';
     const state = this.error()
       ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-500'
       : 'border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500';

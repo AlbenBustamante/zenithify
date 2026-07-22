@@ -1,17 +1,19 @@
 <article
   class="relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200/60 hover:shadow-md transition-shadow duration-300 h-full overflow-visible"
-  [class.px-6]="!noPadding()"
-  [class.py-5]="!noPadding()"
+  [class.px-4]="!noPadding()"
+  [class.sm:px-6]="!noPadding()"
+  [class.py-4]="!noPadding()"
+  [class.sm:py-5]="!noPadding()"
 >
   @if (hasTitle()) {
-    <header class="px-6 py-4 border-b border-slate-100/60">
-      <h3 class="text-sm font-semibold text-slate-600 uppercase tracking-wider">{{ title() }}</h3>
+    <header class="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-100/60">
+      <h3 class="text-xs sm:text-sm font-semibold text-slate-600 uppercase tracking-wider">{{ title() }}</h3>
       @if (subtitle()) {
         <p class="text-sm text-slate-400 mt-0.5">{{ subtitle() }}</p>
       }
     </header>
   }
-  <div class="h-full relative z-10 overflow-visible" [class.px-6]="!noPadding()" [class.py-5]="!noPadding()">
+  <div class="h-full relative z-10 overflow-visible" [class.px-4]="!noPadding()" [class.sm:px-6]="!noPadding()" [class.py-4]="!noPadding()" [class.sm:py-5]="!noPadding()">
     <ng-content />
   </div>
 </article>

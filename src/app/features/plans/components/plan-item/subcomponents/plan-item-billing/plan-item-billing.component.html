@@ -1,6 +1,6 @@
 <div class="flex sm:flex-col items-end sm:items-center gap-1 sm:ml-auto">
   <p class="text-xs text-slate-400">
-    <span class="font-medium text-slate-500">Próximo cobro:</span>
+    <span class="text-sm sm:text-base font-medium text-slate-500">Próximo cobro:</span>
   </p>
   <p class="text-sm font-medium" [class]="isUrgent() ? 'text-amber-600' : 'text-slate-600'">
     <time [attr.datetime]="nextBillingDate().toString()">{{ formattedDate() }}</time>
