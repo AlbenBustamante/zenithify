@@ -11,6 +11,7 @@ export class ButtonComponent {
   type = input<'button' | 'submit' | 'reset'>('button');
   disabled = input(false);
   loading = input(false);
+  fullWidth = input(false);
 
   clicked = output<MouseEvent>();
 
@@ -28,11 +29,12 @@ export class ButtonComponent {
       ghost: 'bg-transparent text-slate-600 hover:bg-slate-100 focus:ring-2 focus:ring-slate-500 focus:ring-offset-2',
     };
 
-    const base = 'inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
+    const base = 'items-center justify-center gap-2 rounded-xl font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
     const size = sizeClasses[this.size()];
     const variant = variantClasses[this.variant()];
+    const width = this.fullWidth() ? 'flex w-full' : 'inline-flex';
 
-    return [base, size, variant].join(' ');
+    return [width, base, size, variant].join(' ');
   }
 
   handleClick(event: MouseEvent): void {
