@@ -2,6 +2,8 @@ import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@ang
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { SupabaseAuthAdapter } from './core/infrastructure/supabase/adapters';
+import { ToastService } from './shared/services/toast.service';
+import { ToastComponent } from './shared/ui/components';
 
 interface NavItem {
   label: string;
@@ -12,13 +14,14 @@ interface NavItem {
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink, ToastComponent],
   templateUrl: './app.component.html',
 })
 export class App implements OnInit {
   private auth = inject(SupabaseAuthAdapter);
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
+  protected toast = inject(ToastService);
 
   isAuthenticated = signal(false);
   mobileMenuOpen = signal(false);

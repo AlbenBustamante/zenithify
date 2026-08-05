@@ -8,17 +8,30 @@
           <path d="M2 12l10 5 10-5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <h2 class="text-xl sm:text-2xl font-bold text-gray-900">Crear Cuenta</h2>
+      <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+        @if (registeredEmail()) {
+          ¡Ya casi estamos!
+        } @else {
+          Crear Cuenta
+        }
+      </h2>
       <p class="mt-2 text-sm text-gray-600">
-        ¿Ya tienes cuenta?
-        <a routerLink="/auth/login" class="font-medium text-primary-600 hover:text-primary-700">
-          Inicia sesión
-        </a>
+        @if (registeredEmail()) {
+          Revisa tu correo para confirmar tu cuenta.
+        } @else {
+          ¿Ya tienes cuenta?
+          <a routerLink="/auth/login" class="font-medium text-primary-600 hover:text-primary-700">
+            Inicia sesión
+          </a>
+        }
       </p>
     </div>
 
     <app-card>
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-y-5 sm:gap-y-6">
+      @if (registeredEmail(); as email) {
+        <app-email-confirmation [email]="email" />
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-y-5 sm:gap-y-6">
         <app-input
           formControlName="email"
           label="Email"
@@ -85,6 +98,7 @@
           </app-button>
         </div>
       </div>
+      }
     </app-card>
   </div>
 </div>

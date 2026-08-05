@@ -9,3 +9,4 @@ export { StatCardComponent } from './stat-card/stat-card.component';
 export { SkeletonComponent } from './skeleton/skeleton.component';
 export { DateRangePickerComponent } from './date-range-picker/date-range-picker.component';
 export { ToggleComponent } from './toggle/toggle.component';
+export { ToastComponent } from './toast/toast.component';

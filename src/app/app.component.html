@@ -88,4 +88,13 @@
   <main [class]="mainClasses">
     <router-outlet />
   </main>
+
+  <div class="fixed top-4 right-4 z-50">
+    <app-toast
+      [message]="toast.message()"
+      [type]="toast.type()"
+      [visible]="toast.visible()"
+      (dismiss)="toast.dismiss()"
+    />
+  </div>
 </div>

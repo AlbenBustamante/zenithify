@@ -23,7 +23,7 @@ export class SupabaseAuthAdapter implements AuthPort {
     };
   }
 
-  async signUpWithEmail(email: string, password: string, displayName?: string): Promise<User> {
+  async signUpWithEmail(email: string, password: string, displayName?: string): Promise<User | null> {
     const { data, error } = await this.supabase.auth.signUp({
       email,
       password,
@@ -33,7 +33,8 @@ export class SupabaseAuthAdapter implements AuthPort {
     });
 
     if (error) throw error;
-    if (!data.user) throw new Error('User not found after sign up');
+
+    if (!data.user || !data.session) return null;
 
     return {
       id: data.user.id,
@@ -42,19 +43,12 @@ export class SupabaseAuthAdapter implements AuthPort {
     };
   }
 
-  async signInWithGoogle(): Promise<User> {
-    const { data, error } = await this.supabase.auth.signInWithOAuth({
+  async signInWithGoogle(): Promise<void> {
+    const { error } = await this.supabase.auth.signInWithOAuth({
       provider: 'google',
     });
 
     if (error) throw error;
-
-    const user = await this.supabase.auth.getUser();
-    if (!user.data.user) throw new Error('User not found after Google sign in');
-    return {
-      id: user.data.user.id,
-      email: user.data.user.email ?? '',
-    };
   }
 
   async signOut(): Promise<void> {
