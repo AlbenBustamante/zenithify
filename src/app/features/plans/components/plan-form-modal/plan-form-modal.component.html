@@ -1,5 +1,5 @@
 <app-modal [isOpen]="isOpen()" [title]="editingPlan() ? 'Editar Plan' : 'Nuevo Plan'" (close)="close.emit()">
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-y-4 sm:gap-y-5">
     <app-input formControlName="name" label="Nombre" placeholder="Ej: Netflix" [error]="getError('name')" />
     <app-input formControlName="provider" label="Proveedor" placeholder="Ej: Netflix Inc." [error]="getError('provider')" />
 
@@ -23,7 +23,7 @@
 
     <app-toggle formControlName="isActive" label="Plan activo" />
 
-    <div class="flex justify-end gap-3 mt-6">
+    <div class="flex justify-end gap-2 sm:gap-3 mt-4 sm:mt-6">
       <app-button variant="secondary" type="button" (clicked)="close.emit()">Cancelar</app-button>
       <app-button type="submit" [loading]="loading()" [disabled]="form.invalid">
         {{ editingPlan() ? 'Actualizar' : 'Guardar' }}

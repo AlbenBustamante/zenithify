@@ -13,7 +13,7 @@ import { SupabaseExpenseRepository } from '../../../../core/infrastructure/supab
 import { SupabaseIncomeRepository } from '../../../../core/infrastructure/supabase/adapters/supabase-income.repository';
 import { SupabaseAuthAdapter } from '../../../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
 import { Expense, Income } from '../../../../core/domain/entities';
-import { toISOStringDate } from '../../../../shared/utils/date.util';
+import { toISOStringDate, parseDate } from '../../../../shared/utils/date.util';
 
 Chart.register(...registerables);
 
@@ -152,7 +152,7 @@ export class ExpensesIncomesChartComponent implements OnDestroy {
     }
 
     const labels = data.map((d) => {
-      const date = new Date(d.date);
+      const date = parseDate(d.date);
       return date.toLocaleDateString('es-VE', { month: 'short', day: 'numeric' });
     });
 
@@ -226,7 +226,7 @@ export class ExpensesIncomesChartComponent implements OnDestroy {
           },
           y: {
             beginAtZero: true,
-            max: maxValue * 1.1,
+            max: Math.round(maxValue * 1.1 * 100) / 100,
             grid: { color: '#f1f5f9' },
             ticks: {
               font: { family: 'Inter', size: 11 },

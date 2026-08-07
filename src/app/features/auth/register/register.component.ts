@@ -5,11 +5,12 @@ import { CardComponent } from '../../../shared/ui/components/card/card.component
 import { InputComponent } from '../../../shared/ui/components/input/input.component';
 import { ButtonComponent } from '../../../shared/ui/components/button/button.component';
 import { SupabaseAuthAdapter } from '../../../core/infrastructure/supabase/adapters/supabase-auth.adapter';
+import { EmailConfirmationComponent } from '../email-confirmation/email-confirmation.component';
 
 @Component({
   selector: 'app-register',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, CardComponent, InputComponent, ButtonComponent, RouterLink],
+  imports: [ReactiveFormsModule, CardComponent, InputComponent, ButtonComponent, RouterLink, EmailConfirmationComponent],
   templateUrl: './register.component.html',
 })
 export class RegisterComponent {
@@ -25,6 +26,7 @@ export class RegisterComponent {
 
   isLoading = signal(false);
   errorMessage = signal('');
+  registeredEmail = signal<string | null>(null);
 
   async onSubmit(): Promise<void> {
     if (this.form.invalid) return;
@@ -38,11 +40,16 @@ export class RegisterComponent {
     this.errorMessage.set('');
 
     try {
-      await this.auth.signUpWithEmail(
+      const user = await this.auth.signUpWithEmail(
         this.form.value.email!,
         this.form.value.password!
       );
-      this.router.navigate(['/dashboard']);
+
+      if (user) {
+        this.router.navigate(['/dashboard']);
+      } else {
+        this.registeredEmail.set(this.form.value.email ?? '');
+      }
     } catch (error) {
       this.errorMessage.set('Error al crear la cuenta');
     } finally {
@@ -54,9 +61,8 @@ export class RegisterComponent {
     this.isLoading.set(true);
     try {
       await this.auth.signInWithGoogle();
-      this.router.navigate(['/dashboard']);
     } catch (error) {
-      this.errorMessage.set('Error con Google OAuth');
+      this.errorMessage.set('Error al iniciar sesión con Google');
     } finally {
       this.isLoading.set(false);
     }

@@ -1,8 +1,8 @@
 export const environment = {
   production: true,
   supabase: {
-    url: 'https://your-project.supabase.co',
-    anonKey: 'your-anon-key',
+    url: import.meta.env['NG_APP_SUPABASE_URL'],
+    anonKey: import.meta.env['NG_APP_SUPABASE_ANON_KEY'],
   },
   dolarApiUrl: 'https://ve.dolarapi.com/v1/dolares',
 };

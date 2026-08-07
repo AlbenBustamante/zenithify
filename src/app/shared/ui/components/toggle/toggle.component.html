@@ -1,7 +1,7 @@
 <div class="w-full">
   <div class="flex items-center justify-between gap-3">
     @if (label()) {
-      <label [for]="toggleId()" class="text-sm font-medium text-gray-700 select-none cursor-pointer">
+      <label [for]="toggleId()" class="text-xs sm:text-sm font-medium text-gray-700 select-none cursor-pointer">
         {{ label() }}
       </label>
     }
@@ -19,6 +19,6 @@
     </button>
   </div>
   @if (error()) {
-    <p class="mt-1.5 text-sm text-red-600">{{ error() }}</p>
+    <p class="mt-1 sm:mt-1.5 text-xs sm:text-sm text-red-600">{{ error() }}</p>
   }
 </div>

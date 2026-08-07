@@ -11,8 +11,8 @@ export class BadgeComponent {
 
   get badgeClasses(): string {
     const sizeClasses = {
-      sm: 'px-2 py-0.5 text-xs',
-      md: 'px-2.5 py-1 text-xs',
+      sm: 'px-1.5 sm:px-2 py-0.5 text-xs',
+      md: 'px-2 sm:px-2.5 py-0.5 sm:py-1 text-xs',
     };
 
     const variantClasses: Record<string, string> = {

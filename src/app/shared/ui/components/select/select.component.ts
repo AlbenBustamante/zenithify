@@ -32,7 +32,7 @@ export class SelectComponent implements ControlValueAccessor {
   onTouched: () => void = () => {};
 
   get selectClasses(): string {
-    const base = 'block w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-gray-900 transition-colors duration-200 cursor-pointer';
+    const base = 'block w-full rounded-lg border bg-white px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm text-gray-900 transition-colors duration-200 cursor-pointer';
     const state = this.error()
       ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-500'
       : 'border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500';

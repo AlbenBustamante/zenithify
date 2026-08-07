@@ -38,8 +38,12 @@ export class LoginComponent {
         this.form.value.password!
       );
       this.router.navigate(['/dashboard']);
-    } catch (error) {
-      this.errorMessage.set('Email o contraseña incorrectos');
+    } catch (error: any) {
+      if (error?.code === 'email_not_confirmed') {
+        this.errorMessage.set('Tu email aún no ha sido confirmado. Revisa tu bandeja de entrada.');
+      } else {
+        this.errorMessage.set('Email o contraseña incorrectos');
+      }
     } finally {
       this.isLoading.set(false);
     }
@@ -49,9 +53,8 @@ export class LoginComponent {
     this.isLoading.set(true);
     try {
       await this.auth.signInWithGoogle();
-      this.router.navigate(['/dashboard']);
     } catch (error) {
-      this.errorMessage.set('Error con Google OAuth');
+      this.errorMessage.set('Error al iniciar sesión con Google');
     } finally {
       this.isLoading.set(false);
     }

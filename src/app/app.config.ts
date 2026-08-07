@@ -1,6 +1,6 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
-import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 import { routes } from './app.routes';
 
@@ -17,10 +17,24 @@ import { SupabaseExchangeRateRepository } from './core/infrastructure/supabase/a
 import { SupabaseNotificationAdapter } from './core/infrastructure/supabase/adapters/supabase-notification.adapter';
 
 import {
-  AUTH_PORT, EXPENSE_PORT, INCOME_PORT, BUDGET_PORT, PLAN_PORT, TASK_PORT, BOOKMARK_PORT, CATEGORY_PORT,
-  EXPENSE_REPOSITORY_PORT, INCOME_REPOSITORY_PORT, BUDGET_REPOSITORY_PORT, PLAN_REPOSITORY_PORT,
-  TASK_REPOSITORY_PORT, BOOKMARK_REPOSITORY_PORT, CATEGORY_REPOSITORY_PORT, QUOTA_REPOSITORY_PORT,
-  EXCHANGE_RATE_REPOSITORY_PORT, NOTIFICATION_PORT,
+  AUTH_PORT,
+  EXPENSE_PORT,
+  INCOME_PORT,
+  BUDGET_PORT,
+  PLAN_PORT,
+  TASK_PORT,
+  BOOKMARK_PORT,
+  CATEGORY_PORT,
+  EXPENSE_REPOSITORY_PORT,
+  INCOME_REPOSITORY_PORT,
+  BUDGET_REPOSITORY_PORT,
+  PLAN_REPOSITORY_PORT,
+  TASK_REPOSITORY_PORT,
+  BOOKMARK_REPOSITORY_PORT,
+  CATEGORY_REPOSITORY_PORT,
+  QUOTA_REPOSITORY_PORT,
+  EXCHANGE_RATE_REPOSITORY_PORT,
+  NOTIFICATION_PORT,
 } from './core/application/ports/ports.tokens';
 
 export const appConfig: ApplicationConfig = {
