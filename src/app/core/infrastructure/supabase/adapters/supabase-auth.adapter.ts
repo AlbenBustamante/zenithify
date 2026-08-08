@@ -23,7 +23,11 @@ export class SupabaseAuthAdapter implements AuthPort {
     };
   }
 
-  async signUpWithEmail(email: string, password: string, displayName?: string): Promise<User | null> {
+  async signUpWithEmail(
+    email: string,
+    password: string,
+    displayName?: string,
+  ): Promise<User | null> {
     const { data, error } = await this.supabase.auth.signUp({
       email,
       password,
@@ -46,6 +50,9 @@ export class SupabaseAuthAdapter implements AuthPort {
   async signInWithGoogle(): Promise<void> {
     const { error } = await this.supabase.auth.signInWithOAuth({
       provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+      },
     });
 
     if (error) throw error;
